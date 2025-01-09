@@ -1,0 +1,20 @@
+{
+  "name": "inft-2202",
+  "version": "1.0.0",
+  "description": "inft 2202 submission folder",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LaurieTardif21/inft-2202.git"
+  },
+  "author": "Laurie Tardif",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LaurieTardif21/inft-2202/issues"
+  },
+  "homepage": "https://github.com/LaurieTardif21/inft-2202#readme"
+}
