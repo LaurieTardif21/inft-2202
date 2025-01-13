@@ -1,11 +1,3 @@
-/*
-    Name: Laurie Tarif
-    filename: app.js
-    Course: INFT 2202
-    Date: January 10, 2025
-    Description: This is my general application script.  Functions that are required on every page should live here.
-*/
-
 // animals.services.js
 
 // Function to get the list of animals from localStorage
@@ -21,6 +13,10 @@ export function getAnimals() {
 export function addAnimal(animal) {
     return new Promise((resolve) => {
         const animals = JSON.parse(localStorage.getItem('animals')) || [];
+        
+        // Assign a unique ID by using the current timestamp (or use any other method)
+        animal.id = Date.now();
+        
         animals.push(animal); // Add the new animal to the array
         localStorage.setItem('animals', JSON.stringify(animals)); // Save the updated list back to localStorage
         resolve();

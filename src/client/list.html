@@ -37,9 +37,9 @@
         <h1 class="display-4 text-center">Animal List</h1>
         <p class="text-center">Below is the list of animals you have added:</p>
 
-        <!-- Message Box -->
-        <div id="message-box" class="alert alert-warning d-none text-center">
-            There are currently no animals in the list.
+        <!-- Message Box for Empty List -->
+        <div id="message-box" class="alert alert-info text-center">
+            No animals in the list. Add some animals!
         </div>
 
         <!-- Animal List Table -->
@@ -47,15 +47,14 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Breed</th>
-                    <th>Eyes</th>
-                    <th>Legs</th>
-                    <th>Sound</th>
-                    <th></th> <!-- Action buttons (Edit/Delete) -->
+                    <th>Species</th>
+                    <th>Age</th>
+                    <th>Color</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Animal data will be inserted here dynamically -->
+                <!-- Rows will be added dynamically -->
             </tbody>
         </table>
     </main>

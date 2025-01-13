@@ -1,77 +1,64 @@
-/*
-    Name: Laurie Tardif
-    Filename: list.js
-    Course: INFT 2202
-    Date: January 10, 2025
-    Description: This is the general application script. Functions that are required on the add page live here.
-*/
+// list.js
+import { getAnimals, deleteAnimal } from './animals.services.js';
 
-// Importing the animals services module
-import { getAnimals } from './animals.services.js';
-
-// Function to draw the animals table
+// Function to draw the table with animals
 function drawAnimalsTable(animals) {
     const messageBox = document.getElementById('message-box');
-    const animalsTable = document.getElementById('animals-list');
-    const tbody = animalsTable.querySelector('tbody');
+    const table = document.getElementById('animals-list');
+    const tbody = table.querySelector('tbody');
 
-    // Clear any previous rows in the table
+    // Clear the table body before adding new rows
     tbody.innerHTML = '';
 
-    // Check if there are any animals in the list
-    if (animals.length > 0) {
-        // Hide the message box and show the table
-        messageBox.classList.add('d-none');
-        animalsTable.classList.remove('d-none');
+    if (animals.length === 0) {
+        messageBox.classList.remove('d-none'); // Show message box if no animals
+        table.classList.add('d-none'); // Hide the table
+    } else {
+        messageBox.classList.add('d-none'); // Hide message box if animals are present
+        table.classList.remove('d-none'); // Show the table
 
-        // Loop through each animal and add a row to the table
+        // Insert rows for each animal
         animals.forEach(animal => {
             const row = tbody.insertRow();
 
-            // Insert cells for each animal property
+            // Insert animal data into cells
             row.insertCell().textContent = animal.name;
-            row.insertCell().textContent = animal.breed;
-            row.insertCell().textContent = animal.eyes;
-            row.insertCell().textContent = animal.legs;
-            row.insertCell().textContent = animal.sound;
+            row.insertCell().textContent = animal.species;
+            row.insertCell().textContent = animal.age;
+            row.insertCell().textContent = animal.color;
 
-            // Insert an empty cell for the edit/delete buttons
+            // Insert the Actions cell with Edit and Delete buttons
             const actionsCell = row.insertCell();
             const editButton = document.createElement('button');
-            editButton.classList.add('btn', 'btn-warning', 'btn-sm', 'me-2');
             editButton.textContent = 'Edit';
-            // Add event listener for edit button (you can implement the edit functionality later)
-            editButton.addEventListener('click', () => editAnimal(animal.id));
+            editButton.classList.add('btn', 'btn-warning', 'btn-sm');
+            editButton.onclick = () => editAnimal(animal.id); // Define edit functionality
 
             const deleteButton = document.createElement('button');
-            deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
             deleteButton.textContent = 'Delete';
-            // Add event listener for delete button
-            deleteButton.addEventListener('click', () => deleteAnimal(animal.id));
+            deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
+            deleteButton.onclick = () => deleteAnimalHandler(animal.id); // Define delete functionality
 
-            // Append the buttons to the actions cell
             actionsCell.appendChild(editButton);
             actionsCell.appendChild(deleteButton);
         });
-    } else {
-        // If there are no animals, hide the table and show the message box
-        animalsTable.classList.add('d-none');
-        messageBox.classList.remove('d-none');
     }
 }
 
-// Fetch the list of animals when the page loads and call drawAnimalsTable
-window.addEventListener('DOMContentLoaded', () => {
+// Function to handle the delete button click
+function deleteAnimalHandler(animalId) {
+    deleteAnimal(animalId).then(() => {
+        // Reload the list after deletion
+        loadAnimals();
+    });
+}
+
+// Function to load animals and populate the table
+function loadAnimals() {
     getAnimals().then(animals => {
         drawAnimalsTable(animals);
     });
-});
-
-// Placeholder for the edit and delete functionality (you can implement these as needed)
-function editAnimal(animalId) {
-    console.log('Edit animal with ID:', animalId);
 }
 
-function deleteAnimal(animalId) {
-    console.log('Delete animal with ID:', animalId);
-}
+// Initial load of animals when the page loads
+document.addEventListener('DOMContentLoaded', loadAnimals);
