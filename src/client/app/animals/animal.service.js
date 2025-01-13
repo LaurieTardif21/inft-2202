@@ -17,9 +17,9 @@ export function addAnimal(animal) {
     return new Promise((resolve, reject) => {
         try {
             const animals = JSON.parse(localStorage.getItem('animals')) || [];
-            animal.id = Date.now();
+            animal.id = Date.now();  // Set a unique ID for each animal
             animals.push(animal); // Add the new animal to the array
-            localStorage.setItem('animals', JSON.stringify(animals)); // Save the updated list back to localStorage
+            localStorage.setItem('animals', JSON.stringify(animals)); // Save the updated list to localStorage
             resolve();
         } catch (error) {
             reject('Error adding animal to localStorage: ' + error);
