@@ -38,10 +38,30 @@
         <h1 class="display-4 text-center">Add New Animal</h1>
         <p class="text-center">Use the form below to add new animals to the list.</p>
         <!-- Form -->
-        <form id="animalForm">
+        <form id="animalForm" novalidate>
             <div class="mb-3">
                 <label for="animalName" class="form-label">Animal Name</label>
                 <input type="text" class="form-control" id="animalName" name="animalName" placeholder="Enter animal name">
+                <p class="text-danger d-none"></p>
+            </div>
+            <div class="mb-3">
+                <label for="animalBreed" class="form-label">Breed</label>
+                <input type="text" class="form-control" id="animalBreed" name="animalBreed" placeholder="Enter breed">
+                <p class="text-danger d-none"></p>
+            </div>
+            <div class="mb-3">
+                <label for="animalEyes" class="form-label">Number of Eyes</label>
+                <input type="number" class="form-control" id="animalEyes" name="animalEyes" placeholder="Enter number of eyes">
+                <p class="text-danger d-none"></p>
+            </div>
+            <div class="mb-3">
+                <label for="animalLegs" class="form-label">Number of Legs</label>
+                <input type="number" class="form-control" id="animalLegs" name="animalLegs" placeholder="Enter number of legs">
+                <p class="text-danger d-none"></p>
+            </div>
+            <div class="mb-3">
+                <label for="animalSound" class="form-label">Sound</label>
+                <input type="text" class="form-control" id="animalSound" name="animalSound" placeholder="Enter sound">
                 <p class="text-danger d-none"></p>
             </div>
             <button type="submit" class="btn btn-primary">Add Animal</button>
