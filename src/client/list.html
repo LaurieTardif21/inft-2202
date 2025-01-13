@@ -37,8 +37,27 @@
         <h1 class="display-4 text-center">Animal List</h1>
         <p class="text-center">Below is the list of animals you have added:</p>
 
-        <!-- Animal List -->
-        <ul id="animalList" class="list-group"></ul>
+        <!-- Message Box -->
+        <div id="message-box" class="alert alert-warning d-none text-center">
+            There are currently no animals in the list.
+        </div>
+
+        <!-- Animal List Table -->
+        <table id="animals-list" class="table table-striped d-none">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Breed</th>
+                    <th>Eyes</th>
+                    <th>Legs</th>
+                    <th>Sound</th>
+                    <th></th> <!-- Action buttons (Edit/Delete) -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Animal data will be inserted here dynamically -->
+            </tbody>
+        </table>
     </main>
 
     <!-- Footer -->
@@ -55,6 +74,6 @@
     </script>
 
     <!-- Custom JS -->
-    <script src="app/list.js"></script>
+    <script type="module" src="app/list.js"></script>
 </body>
 </html>
