@@ -1,25 +1,26 @@
 /*
     Name: Laurie Tardif
-    filename: add.js
+    Filename: add.js
     Course: INFT 2202
     Date: January 10, 2025
-    Description: Script for adding items and validating the form.
+    Description: This is the general application script. Functions that are required on the add page live here.
 */
 
-// Validate the form
+// Validate the animal form
 function validateAnimalForm(form) {
     let isValid = true;
 
-    // Validate item name
-    const itemName = form.itemName.value.trim();
-    const itemNameError = form.itemName.nextElementSibling;
+    // Check the animalName field
+    const animalName = form.animalName.value.trim();
+    const errorField = form.animalName.nextElementSibling;
 
-    if (itemName === "") {
-        itemNameError.textContent = "Item name is required.";
-        itemNameError.classList.remove("d-none");
+    if (animalName === '') {
+        errorField.textContent = 'Animal name is required.';
+        errorField.classList.remove('d-none');
         isValid = false;
     } else {
-        itemNameError.classList.add("d-none");
+        errorField.textContent = '';
+        errorField.classList.add('d-none');
     }
 
     return isValid;
@@ -27,16 +28,16 @@ function validateAnimalForm(form) {
 
 // Add the animal to local storage
 function putAnimalInStorage(animal) {
-    let animals = JSON.parse(localStorage.getItem("animals")) || [];
+    let animals = JSON.parse(localStorage.getItem('animals')) || [];
 
     // Check if the animal already exists
-    if (animals.some(existingAnimal => existingAnimal.name === animal.name)) {
-        throw new Error("That animal already exists!");
+    if (animals.some(existingAnimal => existingAnimal.name.toLowerCase() === animal.name.toLowerCase())) {
+        throw new Error('That animal already exists!');
     }
 
-    // Add the animal and save it to local storage
+    // Add the new animal and update local storage
     animals.push(animal);
-    localStorage.setItem("animals", JSON.stringify(animals));
+    localStorage.setItem('animals', JSON.stringify(animals));
 }
 
 // Handle form submission
@@ -45,22 +46,26 @@ function submitAnimalForm(event) {
 
     const form = event.target;
 
+    // Validate the form
     if (validateAnimalForm(form)) {
         const animal = {
-            name: form.itemName.value.trim(),
+            name: form.animalName.value.trim()
         };
 
         try {
+            // Attempt to add the animal to storage
             putAnimalInStorage(animal);
-            // Redirect to the list page
-            window.location.href = "list.html";
+
+            // Redirect to list.html on success
+            window.location.href = 'list.html';
         } catch (error) {
-            const itemNameError = form.itemName.nextElementSibling;
-            itemNameError.textContent = error.message;
-            itemNameError.classList.remove("d-none");
+            // Display the error message in the name's error field
+            const errorField = form.animalName.nextElementSibling;
+            errorField.textContent = error.message;
+            errorField.classList.remove('d-none');
         }
     }
 }
 
 // Attach the event listener to the form
-document.getElementById("animalForm").addEventListener("submit", submitAnimalForm);
+document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
