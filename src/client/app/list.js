@@ -1,4 +1,3 @@
-// list.js
 import { getAnimals, deleteAnimal } from './animals.services.js';
 
 // Function to draw the table with animals
@@ -50,13 +49,18 @@ function deleteAnimalHandler(animalId) {
     deleteAnimal(animalId).then(() => {
         // Reload the list after deletion
         loadAnimals();
+    }).catch(error => {
+        console.error('Error deleting animal:', error);
     });
 }
 
 // Function to load animals and populate the table
 function loadAnimals() {
     getAnimals().then(animals => {
+        console.log('Loaded animals:', animals); // Check if the animals data is correct
         drawAnimalsTable(animals);
+    }).catch(error => {
+        console.error('Error loading animals:', error); // Handle any errors while loading
     });
 }
 
