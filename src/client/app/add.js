@@ -6,6 +6,10 @@
     Description: This is the general application script. Functions that are required on the add page live here.
 */
 
+// Constants for max number of legs and eyes
+const MAX_EYES = 2;  // Maximum number of eyes (example for validation)
+const MAX_LEGS = 4;   // Maximum number of legs (example for validation)
+
 // Validate the animal form
 function validateAnimalForm(form) {
     let isValid = true;
@@ -14,8 +18,8 @@ function validateAnimalForm(form) {
     const fields = [
         { name: 'animalName', message: 'Animal name is required.' },
         { name: 'animalBreed', message: 'Breed is required.' },
-        { name: 'animalEyes', message: 'Number of eyes is required and must be a positive number.', isNumber: true },
-        { name: 'animalLegs', message: 'Number of legs is required and must be a positive number.', isNumber: true },
+        { name: 'animalEyes', message: `Number of eyes is required and must be a number between 1 and ${MAX_EYES}.`, isNumber: true, max: MAX_EYES },
+        { name: 'animalLegs', message: `Number of legs is required and must be a number between 1 and ${MAX_LEGS}.`, isNumber: true, max: MAX_LEGS },
         { name: 'animalSound', message: 'Sound is required.' },
     ];
 
@@ -27,7 +31,7 @@ function validateAnimalForm(form) {
 
         if (field.isNumber) {
             const numberValue = Number(value);
-            if (!value || isNaN(numberValue) || numberValue < 0) {
+            if (!value || isNaN(numberValue) || numberValue < 1 || numberValue > field.max) {
                 errorField.textContent = field.message;
                 errorField.classList.remove('d-none');
                 input.classList.add('is-invalid');
