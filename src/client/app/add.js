@@ -77,7 +77,7 @@ function putAnimalInStorage(animal) {
 // Handle form submission
 function submitAnimalForm(event) {
     event.preventDefault();
-    window.location.href = 'list.html';
+    window.location.href = './list.html';
 
     const form = event.target;
 
