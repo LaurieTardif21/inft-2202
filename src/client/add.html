@@ -68,34 +68,10 @@
 <script>
     // Set the current year dynamically in the footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-    // Form submission handling
-    document.getElementById('animalForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        let hasError = false;
-
-        // Validate each field
-        document.querySelectorAll('#animalForm .form-control').forEach(input => {
-            const errorDiv = input.nextElementSibling; // The error message div
-            if (!input.value.trim()) {
-                // If value is empty, show error
-                errorDiv.textContent = `${input.previousElementSibling.textContent} is required.`;
-                errorDiv.classList.remove('d-none');
-                hasError = true;
-            } else {
-                // If value is valid, hide the error
-                errorDiv.textContent = '';
-                errorDiv.classList.add('d-none');
-            }
-        });
-
-        if (!hasError) {
-            // Redirect to list.html if no errors
-            window.location.href = 'list.html';
-        }
-    });
 </script>
+
+<!-- Attach the updated add.js -->
+<script src="add.js"></script>
 
 </body>
 </html>
