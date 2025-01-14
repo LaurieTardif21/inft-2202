@@ -1,4 +1,4 @@
-import { getAnimals, deleteAnimal } from "./animals/animal.service.js";
+import { getAnimals, deleteAnimal } from "/animals/animal.service.js";
 // Function to draw the table with animals
 function drawAnimalsTable(animals) {
     const messageBox = document.getElementById('message-box');
