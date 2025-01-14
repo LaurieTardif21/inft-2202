@@ -1,4 +1,3 @@
-<!-- add.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,16 +32,16 @@
             <input type="text" class="form-control" id="name" required>
         </div>
         <div class="mb-3">
-            <label for="species" class="form-label">Species</label>
-            <input type="text" class="form-control" id="species" required>
+            <label for="legs" class="form-label">Number of Legs</label>
+            <input type="number" class="form-control" id="legs" min="0" required>
         </div>
         <div class="mb-3">
-            <label for="age" class="form-label">Age</label>
-            <input type="number" class="form-control" id="age" required>
+            <label for="eyes" class="form-label">Number of Eyes</label>
+            <input type="number" class="form-control" id="eyes" min="0" required>
         </div>
         <div class="mb-3">
-            <label for="color" class="form-label">Color</label>
-            <input type="text" class="form-control" id="color" required>
+            <label for="sound" class="form-label">Sound</label>
+            <input type="text" class="form-control" id="sound" required>
         </div>
         <button type="submit" class="btn btn-primary">Add Animal</button>
     </form>
@@ -58,19 +57,19 @@
 
 <!-- Custom JS -->
 <script type="module">
-import { addAnimal } from './animals.services.js';
+import { addAnimal } from './animal.service.js';
 
 document.getElementById('animal-form').addEventListener('submit', function(event) {
     event.preventDefault();  // Prevent form submission
 
     // Get the values from the form
     const name = document.getElementById('name').value;
-    const species = document.getElementById('species').value;
-    const age = document.getElementById('age').value;
-    const color = document.getElementById('color').value;
+    const legs = parseInt(document.getElementById('legs').value, 10);
+    const eyes = parseInt(document.getElementById('eyes').value, 10);
+    const sound = document.getElementById('sound').value;
 
     // Create an animal object
-    const animal = { name, species, age, color };
+    const animal = { name, legs, eyes, sound };
 
     // Call the addAnimal function from the service
     addAnimal(animal).then(() => {
