@@ -30,27 +30,27 @@
         <div class="mb-3">
             <label for="animalName" class="form-label">Animal Name</label>
             <input type="text" class="form-control" id="animalName" name="animalName" required>
-            <div class="text-danger d-none"></div>
+            <div class="text-danger d-none"></div> <!-- Error message for Animal Name -->
         </div>
         <div class="mb-3">
             <label for="animalBreed" class="form-label">Breed</label>
             <input type="text" class="form-control" id="animalBreed" name="animalBreed" required>
-            <div class="text-danger d-none"></div>
+            <div class="text-danger d-none"></div> <!-- Error message for Breed -->
         </div>
         <div class="mb-3">
             <label for="animalEyes" class="form-label">Number of Eyes</label>
             <input type="number" class="form-control" id="animalEyes" name="animalEyes" required>
-            <div class="text-danger d-none"></div>
+            <div class="text-danger d-none"></div> <!-- Error message for Eyes -->
         </div>
         <div class="mb-3">
             <label for="animalLegs" class="form-label">Number of Legs</label>
             <input type="number" class="form-control" id="animalLegs" name="animalLegs" required>
-            <div class="text-danger d-none"></div>
+            <div class="text-danger d-none"></div> <!-- Error message for Legs -->
         </div>
         <div class="mb-3">
             <label for="animalSound" class="form-label">Sound</label>
             <input type="text" class="form-control" id="animalSound" name="animalSound" required>
-            <div class="text-danger d-none"></div>
+            <div class="text-danger d-none"></div> <!-- Error message for Sound -->
         </div>
         <button type="submit" class="btn btn-primary">Add Animal</button>
     </form>
@@ -77,12 +77,14 @@
 
         // Validate each field
         document.querySelectorAll('#animalForm .form-control').forEach(input => {
-            const errorDiv = input.nextElementSibling;
+            const errorDiv = input.nextElementSibling; // The error message div
             if (!input.value.trim()) {
+                // If value is empty, show error
                 errorDiv.textContent = `${input.previousElementSibling.textContent} is required.`;
                 errorDiv.classList.remove('d-none');
                 hasError = true;
             } else {
+                // If value is valid, hide the error
                 errorDiv.textContent = '';
                 errorDiv.classList.add('d-none');
             }
