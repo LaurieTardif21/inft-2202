@@ -1,4 +1,4 @@
-// animals.services.js
+// animal.service.js
 
 // Function to get the list of animals from localStorage
 export function getAnimals() {
