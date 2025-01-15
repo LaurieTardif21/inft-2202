@@ -76,7 +76,7 @@ function putAnimalInStorage(animal) {
 
 // Handle form submission
 function submitAnimalForm(event) {
-    event.preventDefault();
+    event.preventDefault(); // Prevent the form from submitting the default way.
 
     const form = event.target;
 
@@ -91,10 +91,10 @@ function submitAnimalForm(event) {
         };
 
         try {
-            // Attempt to add the animal to storage
+            // Attempt to add the animal to local storage
             putAnimalInStorage(animal);
 
-            // Redirect to list.html on success
+            // If successful, redirect to list.html
             window.location.href = './list.html';
         } catch (error) {
             // Display the error message in the name's error field
