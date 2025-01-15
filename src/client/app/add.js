@@ -77,7 +77,6 @@ function putAnimalInStorage(animal) {
 // Handle form submission
 function submitAnimalForm(event) {
     event.preventDefault();
-    window.location.href = './list.html';
 
     const form = event.target;
 
@@ -96,7 +95,7 @@ function submitAnimalForm(event) {
             putAnimalInStorage(animal);
 
             // Redirect to list.html on success
-            window.location.href = 'list.html';
+            window.location.href = './list.html';
         } catch (error) {
             // Display the error message in the name's error field
             const errorField = form.animalName.nextElementSibling;
@@ -105,6 +104,15 @@ function submitAnimalForm(event) {
         }
     }
 }
+
+// Clear error message when the user starts typing a new name
+document.getElementById('animalName').addEventListener('input', () => {
+    const errorField = document.getElementById('animalName').nextElementSibling;
+    if (errorField) {
+        errorField.textContent = '';
+        errorField.classList.add('d-none');
+    }
+});
 
 // Attach the event listener to the form
 document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
