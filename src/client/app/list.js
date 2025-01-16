@@ -1,4 +1,5 @@
-import { getAnimals, deleteAnimal } from "./animals/animal.service.js"; 
+import { getAnimals, deleteAnimal } from "./animals/animal.service.js";
+
 // Function to draw the table with animals
 function drawAnimalsTable(animals) {
     const messageBox = document.getElementById('message-box');
@@ -21,9 +22,10 @@ function drawAnimalsTable(animals) {
 
             // Insert animal data into cells
             row.insertCell().textContent = animal.name;
-            row.insertCell().textContent = animal.species;
-            row.insertCell().textContent = animal.age;
-            row.insertCell().textContent = animal.color;
+            row.insertCell().textContent = animal.breed; // Updated field
+            row.insertCell().textContent = animal.numberOfEyes; // Updated field
+            row.insertCell().textContent = animal.numberOfLegs; // Updated field
+            row.insertCell().textContent = animal.sound; // Updated field
 
             // Insert the Actions cell with Edit and Delete buttons
             const actionsCell = row.insertCell();
