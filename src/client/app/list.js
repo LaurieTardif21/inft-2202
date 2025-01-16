@@ -2,6 +2,8 @@ import { getAnimals, deleteAnimal } from "./animals/animal.service.js";
 
 // Function to draw the table with animals
 function drawAnimalsTable(animals) {
+    console.log('Animals to display:', animals); // Debugging log to check the data
+
     const messageBox = document.getElementById('message-box');
     const table = document.getElementById('animals-list');
     const tbody = table.querySelector('tbody');
@@ -22,10 +24,10 @@ function drawAnimalsTable(animals) {
 
             // Insert animal data into cells
             row.insertCell().textContent = animal.name;
-            row.insertCell().textContent = animal.breed; // Ensure breed is displayed
-            row.insertCell().textContent = animal.numberOfEyes; // Ensure numberOfEyes is displayed
-            row.insertCell().textContent = animal.numberOfLegs; // Ensure numberOfLegs is displayed
-            row.insertCell().textContent = animal.sound; // Ensure sound is displayed
+            row.insertCell().textContent = animal.breed;
+            row.insertCell().textContent = animal.numberOfEyes;
+            row.insertCell().textContent = animal.numberOfLegs;
+            row.insertCell().textContent = animal.sound;
 
             // Insert the Actions cell with Edit and Delete buttons
             const actionsCell = row.insertCell();

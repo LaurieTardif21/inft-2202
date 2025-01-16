@@ -1,5 +1,3 @@
-// animal.service.js
-
 // Function to get the list of animals from localStorage
 export function getAnimals() {
     return new Promise((resolve, reject) => {
