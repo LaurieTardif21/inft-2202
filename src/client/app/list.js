@@ -25,8 +25,8 @@ function drawAnimalsTable(animals) {
             // Insert animal data into cells
             row.insertCell().textContent = animal.name;
             row.insertCell().textContent = animal.breed;
-            row.insertCell().textContent = animal.numberOfEyes;
-            row.insertCell().textContent = animal.numberOfLegs;
+            row.insertCell().textContent = animal.eyes;
+            row.insertCell().textContent = animal.legs;
             row.insertCell().textContent = animal.sound;
 
             // Insert the Actions cell with Edit and Delete buttons
