@@ -22,10 +22,10 @@ function drawAnimalsTable(animals) {
 
             // Insert animal data into cells
             row.insertCell().textContent = animal.name;
-            row.insertCell().textContent = animal.breed; // Updated field
-            row.insertCell().textContent = animal.numberOfEyes; // Updated field
-            row.insertCell().textContent = animal.numberOfLegs; // Updated field
-            row.insertCell().textContent = animal.sound; // Updated field
+            row.insertCell().textContent = animal.breed; // Ensure breed is displayed
+            row.insertCell().textContent = animal.numberOfEyes; // Ensure numberOfEyes is displayed
+            row.insertCell().textContent = animal.numberOfLegs; // Ensure numberOfLegs is displayed
+            row.insertCell().textContent = animal.sound; // Ensure sound is displayed
 
             // Insert the Actions cell with Edit and Delete buttons
             const actionsCell = row.insertCell();
