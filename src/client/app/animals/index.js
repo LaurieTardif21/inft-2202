@@ -1,4 +1,4 @@
-import { addAnimal } from './animal.service.js';
+import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
 
 function animal() {
     const form = document.createElement('form');
