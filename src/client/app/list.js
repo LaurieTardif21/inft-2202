@@ -20,6 +20,12 @@ function drawAnimalsTable(animals) {
 
         // Insert rows for each animal
         animals.forEach(animal => {
+            console.log('Animal:', animal); // Log each animal to check the id
+
+            if (!animal.id) {
+                console.error('Missing ID for animal:', animal); // Log any animal missing an ID
+            }
+
             const row = tbody.insertRow();
 
             // Insert animal data into cells
@@ -36,7 +42,7 @@ function drawAnimalsTable(animals) {
             editButton.classList.add('btn', 'btn-warning', 'btn-sm');
             editButton.onclick = () => {
                 if (animal.id) {
-                    editAnimal(animal.id); // Ensure ID exists before calling editAnimal
+                    editAnimal(animal.id); // Proceed if ID is defined
                 } else {
                     console.error('Animal ID is undefined.');
                 }
@@ -47,7 +53,7 @@ function drawAnimalsTable(animals) {
             deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
             deleteButton.onclick = () => {
                 if (animal.id) {
-                    deleteAnimalHandler(animal.id); // Ensure ID exists before calling delete
+                    deleteAnimalHandler(animal.id); // Proceed if ID is defined
                 } else {
                     console.error('Animal ID is undefined.');
                 }
