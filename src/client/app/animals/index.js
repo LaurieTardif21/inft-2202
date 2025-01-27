@@ -2,18 +2,18 @@ import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
 
 function animal() {
     const form = document.createElement('form');
-    const animalList = document.createElement('ul');
-    animalList.id = 'animalList'; // List container for animals
-    let description = 'Manage Animals';
+    const description = 'Manage Animals';
 
-    // Create the form content
+    // Container for animals list (if required)
+    const animalList = document.createElement('ul');
+    animalList.id = 'animalList';
+
     function createContent() {
         const container = document.createElement('div');
         container.classList.add('mb-2');
 
-        // Animal Name
         const nameLabel = document.createElement('label');
-        nameLabel.textContent = "Animal Name:";
+        nameLabel.textContent = 'Animal Name:';
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.name = 'name';
@@ -21,9 +21,8 @@ function animal() {
         nameInput.classList.add('form-control');
         nameInput.required = true;
 
-        // Animal Breed
         const breedLabel = document.createElement('label');
-        breedLabel.textContent = "Breed:";
+        breedLabel.textContent = 'Breed:';
         const breedInput = document.createElement('input');
         breedInput.type = 'text';
         breedInput.name = 'breed';
@@ -31,20 +30,18 @@ function animal() {
         breedInput.classList.add('form-control');
         breedInput.required = true;
 
-        // Number of Eyes
         const eyesLabel = document.createElement('label');
-        eyesLabel.textContent = "Number of Eyes:";
+        eyesLabel.textContent = 'Number of Eyes:';
         const eyesInput = document.createElement('input');
         eyesInput.type = 'number';
         eyesInput.name = 'eyes';
         eyesInput.id = 'animalEyes';
         eyesInput.classList.add('form-control');
         eyesInput.required = true;
-        eyesInput.min = 0; // Ensure the number of eyes can't be negative
+        eyesInput.min = 0;
 
-        // Animal Legs
         const legsLabel = document.createElement('label');
-        legsLabel.textContent = "Legs:";
+        legsLabel.textContent = 'Legs:';
         const legsInput = document.createElement('input');
         legsInput.type = 'number';
         legsInput.name = 'legs';
@@ -52,9 +49,8 @@ function animal() {
         legsInput.classList.add('form-control');
         legsInput.required = true;
 
-        // Animal Sound
         const soundLabel = document.createElement('label');
-        soundLabel.textContent = "Sound:";
+        soundLabel.textContent = 'Sound:';
         const soundInput = document.createElement('input');
         soundInput.type = 'text';
         soundInput.name = 'sound';
@@ -62,7 +58,6 @@ function animal() {
         soundInput.classList.add('form-control');
         soundInput.required = true;
 
-        // Submit Button
         const submitBtn = document.createElement('button');
         submitBtn.textContent = 'Add Animal';
         submitBtn.type = 'submit';
@@ -83,27 +78,32 @@ function animal() {
         form.appendChild(container);
     }
 
-    // Handle form submission to add new animal
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         const animalData = {
             name: form.animalName.value,
             breed: form.animalBreed.value,
-            eyes: parseInt(form.animalEyes.value, 10), // Parse input as a number
-            legs: parseInt(form.animalLegs.value, 10), // Parse input as a number
-            sound: form.animalSound.value
+            eyes: parseInt(form.animalEyes.value, 10),
+            legs: parseInt(form.animalLegs.value, 10),
+            sound: form.animalSound.value,
         };
 
-        addAnimal(animalData).then(() => {
-            form.reset();
-            loadAnimals(); // Reload the list after adding new animal
-        }).catch(error => {
-            console.error("Error adding animal:", error);
-        });
+        addAnimal(animalData)
+            .then(() => {
+                form.reset();
+                // Optionally, you can call a function here to update the animal list
+            })
+            .catch(error => {
+                console.error('Error adding animal:', error);
+            });
     });
 
     createContent();
-    return form;
+
+    return {
+        element: form,
+        description, // Optional: For debugging or future use
+    };
 }
 
-document.getElementById('animal-container').appendChild(animal());
+export default animal;
