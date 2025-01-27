@@ -1,5 +1,3 @@
-// index.js
-
 import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
 
 function animal() {
@@ -104,7 +102,7 @@ function animal() {
     });
 
     createContent();
-    return { element: form }; // Return an object with 'element' property
+    return form;
 }
 
-export default animal; // Default export for the 'animal' function
+document.getElementById('animal-container').appendChild(animal());
