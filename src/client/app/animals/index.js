@@ -33,9 +33,9 @@ function animal() {
 
         // Animal Eyes
         const eyesLabel = document.createElement('label');
-        eyesLabel.textContent = "number of eye:";
+        eyesLabel.textContent = "eye color:";
         const eyesInput = document.createElement('input');
-        eyesInput.type = 'number';
+        eyesInput.type = 'text';
         eyesInput.name = 'eyes';
         eyesInput.id = 'animalEyes';
         eyesInput.classList.add('form-control');
