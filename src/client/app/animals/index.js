@@ -31,15 +31,16 @@ function animal() {
         breedInput.classList.add('form-control');
         breedInput.required = true;
 
-        // Animal Eyes
+        // Number of Eyes
         const eyesLabel = document.createElement('label');
-        eyesLabel.textContent = "eye color:";
+        eyesLabel.textContent = "Number of Eyes:";
         const eyesInput = document.createElement('input');
-        eyesInput.type = 'text';
+        eyesInput.type = 'number';
         eyesInput.name = 'eyes';
         eyesInput.id = 'animalEyes';
         eyesInput.classList.add('form-control');
         eyesInput.required = true;
+        eyesInput.min = 0; // Ensure the number of eyes can't be negative
 
         // Animal Legs
         const legsLabel = document.createElement('label');
@@ -88,8 +89,8 @@ function animal() {
         const animalData = {
             name: form.animalName.value,
             breed: form.animalBreed.value,
-            eyes: form.animalEyes.value,
-            legs: form.animalLegs.value,
+            eyes: parseInt(form.animalEyes.value, 10), // Parse input as a number
+            legs: parseInt(form.animalLegs.value, 10), // Parse input as a number
             sound: form.animalSound.value
         };
 
