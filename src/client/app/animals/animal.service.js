@@ -77,7 +77,6 @@ export function deleteAnimal(animalId) {
                 fetch(`/api/animals/${animalId}`, {
                     method: 'DELETE'
                 })
-                    .then(response => response.json())
                     .then(() => resolve())
                     .catch(error => reject('Error deleting animal from API: ' + error));
             } else {
@@ -85,43 +84,6 @@ export function deleteAnimal(animalId) {
             }
         } catch (error) {
             reject('Error deleting animal: ' + error);
-        }
-    });
-}
-
-// Function to update an existing animal in the list (to localStorage or API)
-export function updateAnimal(updatedAnimal) {
-    return new Promise((resolve, reject) => {
-        try {
-            const source = 'localStorage'; // Switch to API if needed
-
-            if (source === 'localStorage') {
-                // Update in localStorage
-                const animals = JSON.parse(localStorage.getItem('animals')) || [];
-                const index = animals.findIndex(animal => animal.id === updatedAnimal.id);
-                if (index === -1) {
-                    throw new Error(`Animal with ID ${updatedAnimal.id} not found`);
-                }
-                animals[index] = updatedAnimal; // Update the animal object
-                localStorage.setItem('animals', JSON.stringify(animals)); // Save to localStorage
-                resolve();
-            } else if (source === 'api') {
-                // Update in API (example: replace with actual API request)
-                fetch(`/api/animals/${updatedAnimal.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedAnimal)
-                })
-                    .then(response => response.json())
-                    .then(() => resolve())
-                    .catch(error => reject('Error updating animal in API: ' + error));
-            } else {
-                reject('Unknown data source');
-            }
-        } catch (error) {
-            reject('Error updating animal: ' + error);
         }
     });
 }
