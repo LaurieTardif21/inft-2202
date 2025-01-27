@@ -2,7 +2,9 @@ import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
 
 function animal() {
     const form = document.createElement('form');
-    let description = 'Add Animal';
+    const animalList = document.createElement('ul');
+    animalList.id = 'animalList'; // List container for animals
+    let description = 'Manage Animals';
 
     // Create the form content
     function createContent() {
@@ -15,7 +17,7 @@ function animal() {
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.name = 'name';
-        nameInput.id = 'animalName'; // Keep the ID as 'animalName'
+        nameInput.id = 'animalName';
         nameInput.classList.add('form-control');
         nameInput.required = true;
 
@@ -25,7 +27,7 @@ function animal() {
         const breedInput = document.createElement('input');
         breedInput.type = 'text';
         breedInput.name = 'breed';
-        breedInput.id = 'animalBreed'; // Keep the ID as 'animalBreed'
+        breedInput.id = 'animalBreed';
         breedInput.classList.add('form-control');
         breedInput.required = true;
 
@@ -35,7 +37,7 @@ function animal() {
         const eyesInput = document.createElement('input');
         eyesInput.type = 'number';
         eyesInput.name = 'eyes';
-        eyesInput.id = 'animalEyes'; // Keep the ID as 'animalEyes'
+        eyesInput.id = 'animalEyes';
         eyesInput.classList.add('form-control');
         eyesInput.required = true;
 
@@ -45,7 +47,7 @@ function animal() {
         const legsInput = document.createElement('input');
         legsInput.type = 'number';
         legsInput.name = 'legs';
-        legsInput.id = 'animalLegs'; // Keep the ID as 'animalLegs'
+        legsInput.id = 'animalLegs';
         legsInput.classList.add('form-control');
         legsInput.required = true;
 
@@ -55,7 +57,7 @@ function animal() {
         const soundInput = document.createElement('input');
         soundInput.type = 'text';
         soundInput.name = 'sound';
-        soundInput.id = 'animalSound'; // Keep the ID as 'animalSound'
+        soundInput.id = 'animalSound';
         soundInput.classList.add('form-control');
         soundInput.required = true;
 
@@ -63,7 +65,7 @@ function animal() {
         const submitButton = document.createElement('button');
         submitButton.type = 'submit';
         submitButton.classList.add('btn', 'btn-primary');
-        submitButton.textContent = 'Submit';
+        submitButton.textContent = 'Add Animal';
 
         // Append all the elements
         container.append(
@@ -79,23 +81,41 @@ function animal() {
         return form;
     }
 
-    // Validate the form before submitting
-    function validate() {
-        let valid = true;
+    // Fetch and display the animal list
+    function renderAnimalList() {
+        // Clear the current list
+        animalList.innerHTML = '';
 
-        // Check if all the fields are filled out
-        const name = document.getElementById('animalName').value;
-        const breed = document.getElementById('animalBreed').value;
-        const eyes = document.getElementById('animalEyes').value;
-        const legs = document.getElementById('animalLegs').value;
-        const sound = document.getElementById('animalSound').value;
+        getAnimals()
+            .then((animals) => {
+                animals.forEach((animal) => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${animal.name} (${animal.breed})`;
 
-        if (!name || !breed || !eyes || !legs || !sound) {
-            valid = false;
-            alert("All fields are required.");
-        }
+                    // Delete button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
+                    deleteButton.addEventListener('click', () => {
+                        deleteAnimal(animal.id)
+                            .then(() => {
+                                alert('Animal deleted successfully!');
+                                renderAnimalList(); // Refresh the list
+                            })
+                            .catch((error) => {
+                                console.error('Error deleting animal:', error);
+                                alert('An error occurred while deleting the animal.');
+                            });
+                    });
 
-        return valid;
+                    listItem.append(deleteButton);
+                    animalList.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching animals:', error);
+                alert('An error occurred while fetching the animal list.');
+            });
     }
 
     // Handle form submission
@@ -116,24 +136,39 @@ function animal() {
         const animalData = {
             name,
             breed,
-            eyes,
-            legs,
+            eyes: parseInt(eyes, 10),
+            legs: parseInt(legs, 10),
             sound
         };
 
         // Send the data to the animal service to be added
         addAnimal(animalData)
             .then(() => {
-                console.log("Animal added successfully!");
-                alert("Animal added successfully!");
-
-                // Optionally, clear the form
+                console.log('Animal added successfully!');
+                alert('Animal added successfully!');
                 form.reset();
+                renderAnimalList(); // Refresh the list
             })
             .catch((error) => {
-                console.error("Error adding animal:", error);
-                alert("An error occurred while adding the animal.");
+                console.error('Error adding animal:', error);
+                alert('An error occurred while adding the animal.');
             });
+    }
+
+    // Validate the form before submitting
+    function validate() {
+        const name = document.getElementById('animalName').value;
+        const breed = document.getElementById('animalBreed').value;
+        const eyes = document.getElementById('animalEyes').value;
+        const legs = document.getElementById('animalLegs').value;
+        const sound = document.getElementById('animalSound').value;
+
+        if (!name || !breed || !eyes || !legs || !sound) {
+            alert('All fields are required.');
+            return false;
+        }
+
+        return true;
     }
 
     // Attach a submit event handler to the form
@@ -142,10 +177,18 @@ function animal() {
         submit(); // Handle the submit
     });
 
-    // Return the description and the created form element
+    // Initial render of the animal list
+    renderAnimalList();
+
+    // Return the description, form element, and animal list
     return {
         description,
-        element: createContent()
+        element: (() => {
+            const wrapper = document.createElement('div');
+            wrapper.appendChild(createContent());
+            wrapper.appendChild(animalList);
+            return wrapper;
+        })()
     };
 }
 
