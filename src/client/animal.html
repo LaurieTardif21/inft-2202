@@ -1,4 +1,9 @@
 <!-- animal.html -->
+<!-- Name: Laurie Tardif -->
+<!-- Course: INFT 2202 -->
+<!-- Date: January 20, 2025 -->
+<!-- Description: Animal page for the site. -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,9 +59,9 @@
 
     <!-- Import Animal Form Script -->
     <script type="module">
-        import { animal } from './app/animals/index.js';  // Import the animal function
-        const animalForm = animal(); // Call the function to get the form
-        document.getElementById('animalForm').appendChild(animalForm.element); // Append the form to the container
+        import animalBuilder from  "./app/animals/index.js";
+        const animal = animalBuilder();
+        document.getElementById('animalForm').appendChild(animal.element);
     </script>
 </body>
 </html>
