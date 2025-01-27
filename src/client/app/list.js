@@ -34,12 +34,24 @@ function drawAnimalsTable(animals) {
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.classList.add('btn', 'btn-warning', 'btn-sm');
-            editButton.onclick = () => editAnimal(animal.id); // Define edit functionality
+            editButton.onclick = () => {
+                if (animal.id) {
+                    editAnimal(animal.id); // Ensure ID exists before calling editAnimal
+                } else {
+                    console.error('Animal ID is undefined.');
+                }
+            };
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
             deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
-            deleteButton.onclick = () => deleteAnimalHandler(animal.id); // Define delete functionality
+            deleteButton.onclick = () => {
+                if (animal.id) {
+                    deleteAnimalHandler(animal.id); // Ensure ID exists before calling delete
+                } else {
+                    console.error('Animal ID is undefined.');
+                }
+            };
 
             actionsCell.appendChild(editButton);
             actionsCell.appendChild(deleteButton);
@@ -49,22 +61,32 @@ function drawAnimalsTable(animals) {
 
 // Function to handle the delete button click
 function deleteAnimalHandler(animalId) {
-    deleteAnimal(animalId).then(() => {
-        // Reload the list after deletion
-        loadAnimals();
-    }).catch(error => {
-        console.error('Error deleting animal:', error);
-    });
+    deleteAnimal(animalId)
+        .then(() => {
+            console.log(`Animal with ID ${animalId} deleted successfully.`);
+            loadAnimals(); // Reload the list after deletion
+        })
+        .catch(error => {
+            console.error('Error deleting animal:', error);
+        });
+}
+
+// Placeholder for the edit functionality
+function editAnimal(animalId) {
+    console.log(`Editing animal with ID: ${animalId}`);
+    // Add your edit logic here
 }
 
 // Function to load animals and populate the table
 function loadAnimals() {
-    getAnimals().then(animals => {
-        console.log('Loaded animals:', animals); // Check if the animals data is correct
-        drawAnimalsTable(animals);
-    }).catch(error => {
-        console.error('Error loading animals:', error); // Handle any errors while loading
-    });
+    getAnimals()
+        .then(animals => {
+            console.log('Loaded animals:', animals); // Check if the animals data is correct
+            drawAnimalsTable(animals);
+        })
+        .catch(error => {
+            console.error('Error loading animals:', error); // Handle any errors while loading
+        });
 }
 
 // Initial load of animals when the page loads
