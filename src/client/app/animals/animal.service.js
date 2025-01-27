@@ -1,4 +1,5 @@
-// animal.service.js
+// Import the uuid library to generate unique IDs
+import { v4 as uuidv4 } from 'uuid';
 
 // Function to get the list of animals (from localStorage or API)
 export function getAnimals() {
@@ -9,11 +10,11 @@ export function getAnimals() {
                 // Fetch from localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
 
-                // Ensure each animal has an 'id'
-                animals.forEach((animal, index) => {
+                // Ensure each animal has a unique 'id'
+                animals.forEach((animal) => {
                     if (!animal.id) {
-                        // Assign a unique ID if not present (based on the index or Date.now())
-                        animal.id = Date.now() + index; // Or use something like uuid()
+                        // Assign a unique ID if not present (using uuid)
+                        animal.id = uuidv4();
                     }
                 });
 
@@ -23,10 +24,10 @@ export function getAnimals() {
                 fetch('/api/animals') // Example API URL
                     .then(response => response.json())
                     .then(animals => {
-                        // Ensure each animal has an 'id'
-                        animals.forEach((animal, index) => {
+                        // Ensure each animal has a unique 'id'
+                        animals.forEach((animal) => {
                             if (!animal.id) {
-                                animal.id = Date.now() + index; // Or use something like uuid()
+                                animal.id = uuidv4();
                             }
                         });
 
@@ -51,7 +52,7 @@ export function addAnimal(animal) {
             if (source === 'localStorage') {
                 // Add to localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
-                animal.id = Date.now(); // Ensure unique ID for each animal
+                animal.id = uuidv4(); // Ensure unique ID for each animal (using uuid)
                 animals.push(animal); // Add the new animal to the array
                 localStorage.setItem('animals', JSON.stringify(animals)); // Save to localStorage
                 resolve();
@@ -85,7 +86,7 @@ export function deleteAnimal(animalId) {
             if (source === 'localStorage') {
                 // Remove from localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
-                const updatedAnimals = animals.filter(animal => animal.id !== animalId); // Filter out the deleted animal
+                const updatedAnimals = animals.filter(animal => animal.id !== animalId); // Filter out the deleted animal by ID
                 localStorage.setItem('animals', JSON.stringify(updatedAnimals)); // Save to localStorage
                 resolve();
             } else if (source === 'api') {
