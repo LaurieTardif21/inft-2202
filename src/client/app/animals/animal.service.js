@@ -1,3 +1,5 @@
+// animal.service.js
+
 // Function to get the list of animals (from localStorage or API)
 export function getAnimals() {
     return new Promise((resolve, reject) => {
@@ -6,12 +8,29 @@ export function getAnimals() {
             if (source === 'localStorage') {
                 // Fetch from localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
+                
+                // Ensure each animal has an 'id'
+                animals.forEach(animal => {
+                    if (!animal.id) {
+                        animal.id = Date.now(); // Assign a unique ID if not present
+                    }
+                });
+
                 resolve(animals);
             } else if (source === 'api') {
                 // Fetch from API (example: replace with actual API request)
                 fetch('/api/animals') // Example API URL
                     .then(response => response.json())
-                    .then(animals => resolve(animals))
+                    .then(animals => {
+                        // Ensure each animal has an 'id'
+                        animals.forEach(animal => {
+                            if (!animal.id) {
+                                animal.id = Date.now(); // Assign a unique ID if not present
+                            }
+                        });
+
+                        resolve(animals);
+                    })
                     .catch(error => reject('Error fetching animals from API: ' + error));
             } else {
                 reject('Unknown data source');
@@ -31,7 +50,7 @@ export function addAnimal(animal) {
             if (source === 'localStorage') {
                 // Add to localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
-                animal.id = Date.now(); // Set a unique ID for each animal
+                animal.id = Date.now(); // Ensure unique ID for each animal
                 animals.push(animal); // Add the new animal to the array
                 localStorage.setItem('animals', JSON.stringify(animals)); // Save to localStorage
                 resolve();
@@ -56,27 +75,24 @@ export function addAnimal(animal) {
     });
 }
 
-// Function to delete an animal from the list (from localStorage or API)
+// Function to delete an animal by ID (from localStorage or API)
 export function deleteAnimal(animalId) {
     return new Promise((resolve, reject) => {
         try {
             const source = 'localStorage'; // Switch to API if needed
 
             if (source === 'localStorage') {
-                // Delete from localStorage
+                // Remove from localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
-                const index = animals.findIndex(item => item.id === animalId);
-                if (index === -1) {
-                    throw new Error(`Animal with ID ${animalId} not found`);
-                }
-                animals.splice(index, 1); // Remove the animal from the array
-                localStorage.setItem('animals', JSON.stringify(animals)); // Save to localStorage
+                const updatedAnimals = animals.filter(animal => animal.id !== animalId); // Filter out the deleted animal
+                localStorage.setItem('animals', JSON.stringify(updatedAnimals)); // Save to localStorage
                 resolve();
             } else if (source === 'api') {
-                // Delete from API (example: replace with actual API request)
+                // Remove from API (example: replace with actual API request)
                 fetch(`/api/animals/${animalId}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
                 })
+                    .then(response => response.json())
                     .then(() => resolve())
                     .catch(error => reject('Error deleting animal from API: ' + error));
             } else {
