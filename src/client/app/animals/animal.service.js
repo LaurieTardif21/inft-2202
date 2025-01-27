@@ -8,11 +8,12 @@ export function getAnimals() {
             if (source === 'localStorage') {
                 // Fetch from localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
-                
+
                 // Ensure each animal has an 'id'
-                animals.forEach(animal => {
+                animals.forEach((animal, index) => {
                     if (!animal.id) {
-                        animal.id = Date.now(); // Assign a unique ID if not present
+                        // Assign a unique ID if not present (based on the index or Date.now())
+                        animal.id = Date.now() + index; // Or use something like uuid()
                     }
                 });
 
@@ -23,9 +24,9 @@ export function getAnimals() {
                     .then(response => response.json())
                     .then(animals => {
                         // Ensure each animal has an 'id'
-                        animals.forEach(animal => {
+                        animals.forEach((animal, index) => {
                             if (!animal.id) {
-                                animal.id = Date.now(); // Assign a unique ID if not present
+                                animal.id = Date.now() + index; // Or use something like uuid()
                             }
                         });
 
