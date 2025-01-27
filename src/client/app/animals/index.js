@@ -1,6 +1,7 @@
+// index.js
 import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
 
-function animal() {
+export function animal() {
     const form = document.createElement('form');
     const animalList = document.createElement('ul');
     animalList.id = 'animalList'; // List container for animals
@@ -102,7 +103,5 @@ function animal() {
     });
 
     createContent();
-    return form;
+    return { element: form }; // Return the form as part of an object
 }
-
-document.getElementById('animal-container').appendChild(animal());
