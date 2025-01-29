@@ -1,4 +1,4 @@
-import { getAnimals, deleteAnimal } from "./animals/animal.service";
+import { getAnimals, deleteAnimal } from "animals/animal.service";
 
 // Function to draw the table with animals
 function drawAnimalsTable(animals) {
