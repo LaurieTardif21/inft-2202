@@ -1,4 +1,7 @@
-
+// Function to generate a unique ID without uuid
+function generateId() {
+    return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+}
 
 // Function to get the list of animals (from localStorage or API)
 export function getAnimals() {
@@ -12,8 +15,8 @@ export function getAnimals() {
                 // Ensure each animal has a unique 'id'
                 animals.forEach((animal) => {
                     if (!animal.id) {
-                        // Assign a unique ID if not present (using uuid)
-                        animal.id = uuidv4();
+                        // Assign a unique ID if not present
+                        animal.id = generateId();
                     }
                 });
 
@@ -26,7 +29,7 @@ export function getAnimals() {
                         // Ensure each animal has a unique 'id'
                         animals.forEach((animal) => {
                             if (!animal.id) {
-                                animal.id = uuidv4();
+                                animal.id = generateId();
                             }
                         });
 
@@ -51,7 +54,7 @@ export function addAnimal(animal) {
             if (source === 'localStorage') {
                 // Add to localStorage
                 const animals = JSON.parse(localStorage.getItem('animals')) || [];
-                animal.id = uuidv4(); // Ensure unique ID for each animal (using uuid)
+                animal.id = generateId(); // Ensure unique ID for each animal
                 animals.push(animal); // Add the new animal to the array
                 localStorage.setItem('animals', JSON.stringify(animals)); // Save to localStorage
                 resolve();
