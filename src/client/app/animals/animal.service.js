@@ -1,6 +1,9 @@
 // Import the uuid library to generate unique IDs
 import { v4 as uuidv4 } from 'uuid';
 
+const uniqueId = uuidv4();
+console.log(uniqueId);
+
 // Function to get the list of animals (from localStorage or API)
 export function getAnimals() {
     return new Promise((resolve, reject) => {
