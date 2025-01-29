@@ -1,6 +1,6 @@
 import { getAnimals, deleteAnimal } from "./animals/animal.service.js";
 
-// Function to draw the table with animals
+// Fetches and displays animal data in a table
 function drawAnimalsTable(animals) {
     console.log('Animals to display:', animals); // Debugging log to check the data
 
@@ -35,8 +35,10 @@ function drawAnimalsTable(animals) {
             row.insertCell().textContent = animal.legs;
             row.insertCell().textContent = animal.sound;
 
-            // Insert the Actions cell with Edit and Delete buttons
-            const actionsCell = row.insertCell();
+            // Insert the Actions cells with Edit and Delete buttons
+            const editCell = row.insertCell();
+            const deleteCell = row.insertCell();
+
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.classList.add('btn', 'btn-warning', 'btn-sm');
@@ -59,41 +61,21 @@ function drawAnimalsTable(animals) {
                 }
             };
 
-            actionsCell.appendChild(editButton);
-            actionsCell.appendChild(deleteButton);
+            editCell.appendChild(editButton);  // Add the Edit button to the first cell
+            deleteCell.appendChild(deleteButton);  // Add the Delete button to the second cell
         });
     }
 }
 
-// Function to handle the delete button click
+// Function to handle the deletion of an animal
 function deleteAnimalHandler(animalId) {
-    deleteAnimal(animalId)
-        .then(() => {
-            console.log(`Animal with ID ${animalId} deleted successfully.`);
-            loadAnimals(); // Reload the list after deletion
-        })
-        .catch(error => {
-            console.error('Error deleting animal:', error);
-        });
+    console.log('Deleting animal with ID:', animalId);
+    // Perform the delete operation (e.g., send to server or remove from data)
+    // You can add actual logic here for removing the animal from the data source.
 }
 
-// Placeholder for the edit functionality
+// Function to handle the editing of an animal
 function editAnimal(animalId) {
-    console.log(`Editing animal with ID: ${animalId}`);
-    // Add your edit logic here
+    console.log('Editing animal with ID:', animalId);
+    // Implement the edit functionality (e.g., populate a form with the animal's data)
 }
-
-// Function to load animals and populate the table
-function loadAnimals() {
-    getAnimals()
-        .then(animals => {
-            console.log('Loaded animals:', animals); // Check if the animals data is correct
-            drawAnimalsTable(animals);
-        })
-        .catch(error => {
-            console.error('Error loading animals:', error); // Handle any errors while loading
-        });
-}
-
-// Initial load of animals when the page loads
-document.addEventListener('DOMContentLoaded', loadAnimals);
