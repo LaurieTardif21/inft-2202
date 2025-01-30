@@ -107,3 +107,62 @@ export function deleteAnimal(animalId) {
         }
     });
 }
+
+const API_URL = '/api/animals'; // Update with actual API URL
+
+// Function to find an animal by ID (Checks Local Storage first, then API)
+export function findAnimal(animalId) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Check Local Storage
+            const animals = JSON.parse(localStorage.getItem('animals')) || [];
+            const animal = animals.find(a => a.id === animalId);
+
+            if (animal) {
+                resolve(animal); // Found in local storage
+            } else {
+                // Fetch from API if not found in localStorage
+                fetch(`${API_URL}/${animalId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Animal not found in API');
+                        return response.json();
+                    })
+                    .then(apiAnimal => resolve(apiAnimal))
+                    .catch(error => reject(`Error finding animal: ${error.message}`));
+            }
+        } catch (error) {
+            reject(`Error finding animal: ${error.message}`);
+        }
+    });
+}
+
+// Function to update an animal (Updates Local Storage first, then API)
+export function updateAnimal(updatedAnimal) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Update Local Storage
+            const animals = JSON.parse(localStorage.getItem('animals')) || [];
+            const index = animals.findIndex(a => a.id === updatedAnimal.id);
+
+            if (index !== -1) {
+                animals[index] = updatedAnimal;
+                localStorage.setItem('animals', JSON.stringify(animals));
+            }
+
+            // Update API as well
+            fetch(`${API_URL}/${updatedAnimal.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedAnimal)
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to update animal in API');
+                    return response.json();
+                })
+                .then(() => resolve('Animal updated in both local storage and API'))
+                .catch(error => reject(`Error updating animal in API: ${error.message}`));
+        } catch (error) {
+            reject(`Error updating animal: ${error.message}`);
+        }
+    });
+}
