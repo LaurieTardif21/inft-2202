@@ -1,109 +1,122 @@
-import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
+import { addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
+/*
+    Name: Laurie Tardif
+    Filename: add.js
+    Course: INFT 2202
+    Date: January 10, 2025
+    Description: This is the general application script. Functions that are required on the add page live here.
+*/
 
-function animal() {
-    const form = document.createElement('form');
-    const description = 'Manage Animals';
+// Validate the animal form
+function validateAnimalForm(form) {
+    let isValid = true;
 
-    // Container for animals list (if required)
-    const animalList = document.createElement('ul');
-    animalList.id = 'animalList';
+    // Define the maximum limits
+    const maxEyes = 10;
+    const maxLegs = 8;
 
-    function createContent() {
-        const container = document.createElement('div');
-        container.classList.add('mb-2');
+    // List of fields to validate
+    const fields = [
+        { name: 'animalName', message: 'Animal name is required.' },
+        { name: 'animalBreed', message: 'Breed is required.' },
+        { name: 'animalEyes', message: `Number of eyes is required, must be a positive number and less than or equal to ${maxEyes}.`, isNumber: true, max: maxEyes },
+        { name: 'animalLegs', message: `Number of legs is required, must be a positive number and less than or equal to ${maxLegs}.`, isNumber: true, max: maxLegs },
+        { name: 'animalSound', message: 'Sound is required.' },
+    ];
 
-        const nameLabel = document.createElement('label');
-        nameLabel.textContent = 'Animal Name:';
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.name = 'name';
-        nameInput.id = 'animalName';
-        nameInput.classList.add('form-control');
-        nameInput.required = true;
+    // Validate each field
+    fields.forEach(field => {
+        const input = form[field.name];
+        const value = input.value.trim();
+        const errorField = input.nextElementSibling;
 
-        const breedLabel = document.createElement('label');
-        breedLabel.textContent = 'Breed:';
-        const breedInput = document.createElement('input');
-        breedInput.type = 'text';
-        breedInput.name = 'breed';
-        breedInput.id = 'animalBreed';
-        breedInput.classList.add('form-control');
-        breedInput.required = true;
-
-        const eyesLabel = document.createElement('label');
-        eyesLabel.textContent = 'Number of Eyes:';
-        const eyesInput = document.createElement('input');
-        eyesInput.type = 'number';
-        eyesInput.name = 'eyes';
-        eyesInput.id = 'animalEyes';
-        eyesInput.classList.add('form-control');
-        eyesInput.required = true;
-        eyesInput.min = 0;
-
-        const legsLabel = document.createElement('label');
-        legsLabel.textContent = 'Legs:';
-        const legsInput = document.createElement('input');
-        legsInput.type = 'number';
-        legsInput.name = 'legs';
-        legsInput.id = 'animalLegs';
-        legsInput.classList.add('form-control');
-        legsInput.required = true;
-
-        const soundLabel = document.createElement('label');
-        soundLabel.textContent = 'Sound:';
-        const soundInput = document.createElement('input');
-        soundInput.type = 'text';
-        soundInput.name = 'sound';
-        soundInput.id = 'animalSound';
-        soundInput.classList.add('form-control');
-        soundInput.required = true;
-
-        const submitBtn = document.createElement('button');
-        submitBtn.textContent = 'Add Animal';
-        submitBtn.type = 'submit';
-        submitBtn.classList.add('btn', 'btn-primary');
-
-        container.appendChild(nameLabel);
-        container.appendChild(nameInput);
-        container.appendChild(breedLabel);
-        container.appendChild(breedInput);
-        container.appendChild(eyesLabel);
-        container.appendChild(eyesInput);
-        container.appendChild(legsLabel);
-        container.appendChild(legsInput);
-        container.appendChild(soundLabel);
-        container.appendChild(soundInput);
-        container.appendChild(submitBtn);
-
-        form.appendChild(container);
-    }
-
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        const animalData = {
-            name: form.animalName.value,
-            breed: form.animalBreed.value,
-            eyes: parseInt(form.animalEyes.value, 10),
-            legs: parseInt(form.animalLegs.value, 10),
-            sound: form.animalSound.value,
-        };
-
-        addAnimal(animalData)
-            .then(() => {
-                form.reset();
-                // Optionally, you can call a function here to update the animal list
-            })
-            .catch(error => {
-                console.error('Error adding animal:', error);
-            });
+        if (field.isNumber) {
+            const numberValue = Number(value);
+            if (!value || isNaN(numberValue) || numberValue < 0 || numberValue > field.max) {
+                errorField.textContent = field.message;
+                errorField.classList.remove('d-none');
+                input.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                errorField.textContent = '';
+                errorField.classList.add('d-none');
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            }
+        } else {
+            if (!value) {
+                errorField.textContent = field.message;
+                errorField.classList.remove('d-none');
+                input.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                errorField.textContent = '';
+                errorField.classList.add('d-none');
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            }
+        }
     });
 
-    createContent();
-
-    return {
-        element: form,
-        description, // Optional: For debugging or future use
-    };
+    return isValid;
 }
+
+// Add the animal to local storage
+function putAnimalInStorage(animal) {
+    let animals = JSON.parse(localStorage.getItem('animals')) || [];
+
+    // Check if the animal already exists
+    if (animals.some(existingAnimal => existingAnimal.name.toLowerCase() === animal.name.toLowerCase())) {
+        throw new Error('That animal already exists!');
+    }
+
+    // Add the new animal and update local storage
+    animals.push(animal);
+    localStorage.setItem('animals', JSON.stringify(animals));
+}
+
+// Handle form submission
+function submitAnimalForm(event) {
+    event.preventDefault(); // Prevent the form from submitting the default way.
+
+    const form = event.target;
+
+    // Validate the form
+    if (validateAnimalForm(form)) {
+        const animal = {
+            name: form.animalName.value.trim(),
+            breed: form.animalBreed.value.trim(),
+            eyes: Number(form.animalEyes.value.trim()),
+            legs: Number(form.animalLegs.value.trim()),
+            sound: form.animalSound.value.trim(),
+        };
+
+        try {
+            // Attempt to add the animal to local storage
+            putAnimalInStorage(animal);
+
+            // If successful, redirect to list.html
+            window.location.href = './list.html';
+        } catch (error) {
+            // Display the error message in the name's error field
+            const errorField = form.animalName.nextElementSibling;
+            errorField.textContent = error.message;
+            errorField.classList.remove('d-none');
+        }
+    }
+}
+
+// Clear error message when the user starts typing a new name
+document.getElementById('animalName').addEventListener('input', () => {
+    const errorField = document.getElementById('animalName').nextElementSibling;
+    if (errorField) {
+        errorField.textContent = '';
+        errorField.classList.add('d-none');
+    }
+});
+
+// Attach the event listener to the form
+document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
+
 
 export default animal;
