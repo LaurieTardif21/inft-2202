@@ -53,7 +53,8 @@ function drawAnimalsTable(animals) {
             deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
             deleteButton.onclick = () => {
                 if (animal.id) {
-                    deleteAnimalHandler(animal.id); // Proceed if ID is defined
+                    
+                    (animal.id); // Proceed if ID is defined
                 } else {
                     console.error('Animal ID is undefined.');
                 }

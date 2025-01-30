@@ -1,4 +1,4 @@
-import {addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
+import { addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
 /*
     Name: Laurie Tardif
     Filename: add.js
@@ -6,6 +6,7 @@ import {addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/an
     Date: January 10, 2025
     Description: This is the general application script. Functions that are required on the add page live here.
 */
+
 // Validate the animal form
 function validateAnimalForm(form) {
     let isValid = true;
@@ -63,6 +64,10 @@ function validateAnimalForm(form) {
 // Add the animal to local storage
 function putAnimalInStorage(animal) {
     let animals = JSON.parse(localStorage.getItem('animals')) || [];
+    
+    // Create a unique id for the animal if it doesn't already exist
+    const id = Date.now(); // Using timestamp as a unique id
+    animal.id = id;
 
     // Check if the animal already exists
     if (animals.some(existingAnimal => existingAnimal.name.toLowerCase() === animal.name.toLowerCase())) {
@@ -105,16 +110,43 @@ function submitAnimalForm(event) {
     }
 }
 
-//delete function handleDelete(animalId) {
+// Handle animal deletion
+function handleDelete(animalId) {
     deleteAnimal(animalId)
-    .then(() => {
-        console.log('Animal deleted successfully');
-        // Refresh the list
-        loadAnimals();
-    })
-    .catch(error => {
-        console.error(error);
+        .then(() => {
+            console.log('Animal deleted successfully');
+            // Refresh the list
+            loadAnimals();
+        })
+        .catch(error => {
+            console.error('Error deleting animal:', error);
+        });
+}
+
+// Load animals from localStorage
+function loadAnimals() {
+    const animals = JSON.parse(localStorage.getItem('animals')) || [];
+    const listContainer = document.getElementById('animalList'); // Assuming you have a container for the list
+    
+    // Clear the list before repopulating
+    listContainer.innerHTML = '';
+
+    animals.forEach(animal => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${animal.name} - ${animal.breed}`;
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        
+        // Pass animal.id to the delete handler
+        deleteButton.onclick = function() {
+            handleDelete(animal.id);
+        };
+        
+        listItem.appendChild(deleteButton);
+        listContainer.appendChild(listItem);
     });
+}
 
 // Clear error message when the user starts typing a new name
 document.getElementById('animalName').addEventListener('input', () => {
@@ -127,3 +159,6 @@ document.getElementById('animalName').addEventListener('input', () => {
 
 // Attach the event listener to the form
 document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
+
+// Call loadAnimals to display the list on page load
+loadAnimals();
