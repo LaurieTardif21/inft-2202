@@ -1,4 +1,5 @@
 import { addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
+
 /*
     Name: Laurie Tardif
     Filename: add.js
@@ -11,20 +12,17 @@ import { addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/a
 function validateAnimalForm(form) {
     let isValid = true;
 
-    // Define the maximum limits
     const maxEyes = 10;
     const maxLegs = 8;
 
-    // List of fields to validate
     const fields = [
         { name: 'animalName', message: 'Animal name is required.' },
         { name: 'animalBreed', message: 'Breed is required.' },
-        { name: 'animalEyes', message: `Number of eyes is required, must be a positive number and less than or equal to ${maxEyes}.`, isNumber: true, max: maxEyes },
-        { name: 'animalLegs', message: `Number of legs is required, must be a positive number and less than or equal to ${maxLegs}.`, isNumber: true, max: maxLegs },
+        { name: 'animalEyes', message: `Number of eyes is required, must be a positive number and ≤ ${maxEyes}.`, isNumber: true, max: maxEyes },
+        { name: 'animalLegs', message: `Number of legs is required, must be a positive number and ≤ ${maxLegs}.`, isNumber: true, max: maxLegs },
         { name: 'animalSound', message: 'Sound is required.' },
     ];
 
-    // Validate each field
     fields.forEach(field => {
         const input = form[field.name];
         const value = input.value.trim();
@@ -61,33 +59,14 @@ function validateAnimalForm(form) {
     return isValid;
 }
 
-// Add the animal to local storage
-function putAnimalInStorage(animal) {
-    let animals = JSON.parse(localStorage.getItem('animals')) || [];
-    
-    // Create a unique id for the animal if it doesn't already exist
-    const id = Date.now(); // Using timestamp as a unique id
-    animal.id = id;
-
-    // Check if the animal already exists
-    if (animals.some(existingAnimal => existingAnimal.name.toLowerCase() === animal.name.toLowerCase())) {
-        throw new Error('That animal already exists!');
-    }
-
-    // Add the new animal and update local storage
-    animals.push(animal);
-    localStorage.setItem('animals', JSON.stringify(animals));
-}
-
 // Handle form submission
 function submitAnimalForm(event) {
-    event.preventDefault(); // Prevent the form from submitting the default way.
-
+    event.preventDefault();
     const form = event.target;
 
-    // Validate the form
     if (validateAnimalForm(form)) {
         const animal = {
+            id: '', // Will be assigned in service
             name: form.animalName.value.trim(),
             breed: form.animalBreed.value.trim(),
             eyes: Number(form.animalEyes.value.trim()),
@@ -95,82 +74,55 @@ function submitAnimalForm(event) {
             sound: form.animalSound.value.trim(),
         };
 
-        try {
-            // Attempt to add the animal to local storage
-            putAnimalInStorage(animal);
-
-            // If successful, redirect to list.html
-            window.location.href = './list.html';
-        } catch (error) {
-            // Display the error message in the name's error field
-            const errorField = form.animalName.nextElementSibling;
-            errorField.textContent = error.message;
-            errorField.classList.remove('d-none');
-        }
+        addAnimal(animal)
+            .then(() => {
+                window.location.href = './list.html';
+            })
+            .catch(error => {
+                const errorField = form.animalName.nextElementSibling;
+                errorField.textContent = error.message;
+                errorField.classList.remove('d-none');
+            });
     }
+}
+
+// Display the list of animals and add delete buttons
+function displayAnimals() {
+    getAnimals().then(animals => {
+        const animalList = document.getElementById('animalList');
+        animalList.innerHTML = ''; // Clear the list
+
+        animals.forEach(animal => {
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.innerHTML = `
+                <span>${animal.name} (${animal.breed}) - ${animal.eyes} eyes, ${animal.legs} legs</span>
+                <button class="btn btn-danger btn-sm delete-btn" data-id="${animal.id}">Delete</button>
+            `;
+            animalList.appendChild(listItem);
+        });
+
+        // Attach event listeners to delete buttons
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const animalId = this.getAttribute('data-id');
+                handleDelete(animalId);
+            });
+        });
+    }).catch(error => console.error('Error fetching animals:', error));
 }
 
 // Handle animal deletion
 function handleDelete(animalId) {
-    deleteAnimal(animalId)
-        .then(() => {
-            console.log('Animal deleted successfully');
-            // Refresh the list
-            loadAnimals();
-        })
-        .catch(error => {
-            console.error('Error deleting animal:', error);
-        });
+    if (confirm('Are you sure you want to delete this animal?')) {
+        deleteAnimal(animalId)
+            .then(() => {
+                displayAnimals(); // Refresh the list after deletion
+            })
+            .catch(error => console.error('Error deleting animal:', error));
+    }
 }
 
-// Load animals from localStorage
-// Load animals from localStorage
-function loadAnimals() {
-    const animals = JSON.parse(localStorage.getItem('animals')) || [];
-    const listContainer = document.getElementById('animalList'); // Assuming you have a container for the list
-    
-    // Ensure the listContainer is not null before accessing its properties
-    if (!listContainer) {
-        console.error('Animal list container not found!');
-        return;
-    }
-
-    // Clear the list before repopulating
-    listContainer.innerHTML = '';
-
-    animals.forEach(animal => {
-        const listItem = document.createElement('li');
-        listItem.textContent = `${animal.name} - ${animal.breed}`;
-        
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        
-        // Pass animal.id to the delete handler
-        deleteButton.onclick = function() {
-            handleDelete(animal.id);
-        };
-        
-        listItem.appendChild(deleteButton);
-        listContainer.appendChild(listItem);
-    });
-}
-
-// Ensure the DOM is fully loaded before running the code
-document.addEventListener('DOMContentLoaded', () => {
-    loadAnimals(); // Call this after the page is fully loaded
-});
-
-// Clear error message when the user starts typing a new name
-document.getElementById('animalName').addEventListener('input', () => {
-    const errorField = document.getElementById('animalName').nextElementSibling;
-    if (errorField) {
-        errorField.textContent = '';
-        errorField.classList.add('d-none');
-    }
-});
-
-// Attach the event listener to the form
+// Initialize page
+document.addEventListener('DOMContentLoaded', displayAnimals);
 document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
-
-// Call loadAnimals to display the list on page load
-loadAnimals();
