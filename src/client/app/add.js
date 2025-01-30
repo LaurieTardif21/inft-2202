@@ -117,5 +117,3 @@ document.getElementById('animalName').addEventListener('input', () => {
 // Attach the event listener to the form
 document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
 
-
-export default animal;
