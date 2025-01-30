@@ -1,4 +1,4 @@
-import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
+import { addAnimal, getAnimals, deleteAnimal } from './animals/animal.service.js';
 /*
     Name: Laurie Tardif
     Filename: add.js
