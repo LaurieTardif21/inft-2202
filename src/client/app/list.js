@@ -1,4 +1,4 @@
-import { getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
+import { getAnimals, findAnimal, updateAnimal, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
 
 // Function to draw the table with animals
 function drawAnimalsTable(animals) {
@@ -77,10 +77,56 @@ function deleteAnimalHandler(animalId) {
         });
 }
 
-// Placeholder for the edit functionality
+// Function to handle the edit button click
 function editAnimal(animalId) {
     console.log(`Editing animal with ID: ${animalId}`);
-    // Add your edit logic here
+
+    findAnimal(animalId)
+        .then(animal => {
+            if (!animal) {
+                console.error("Animal not found!");
+                return;
+            }
+
+            // Populate the form with animal data
+            document.getElementById("edit-animal-id").value = animal.id;
+            document.getElementById("edit-name").value = animal.name;
+            document.getElementById("edit-breed").value = animal.breed;
+            document.getElementById("edit-eyes").value = animal.eyes;
+            document.getElementById("edit-legs").value = animal.legs;
+            document.getElementById("edit-sound").value = animal.sound;
+
+            // Show the form
+            document.getElementById("edit-animal-form").classList.remove("d-none");
+        })
+        .catch(error => console.error("Error fetching animal for editing:", error));
+}
+
+// Handle form submission for saving edited animal
+document.getElementById("animal-edit-form").addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent page refresh
+
+    const updatedAnimal = {
+        id: document.getElementById("edit-animal-id").value,
+        name: document.getElementById("edit-name").value,
+        breed: document.getElementById("edit-breed").value,
+        eyes: document.getElementById("edit-eyes").value,
+        legs: parseInt(document.getElementById("edit-legs").value, 10),
+        sound: document.getElementById("edit-sound").value,
+    };
+
+    updateAnimal(updatedAnimal)
+        .then(() => {
+            console.log("Animal updated successfully!");
+            document.getElementById("edit-animal-form").classList.add("d-none"); // Hide form
+            loadAnimals(); // Refresh the table
+        })
+        .catch(error => console.error("Error updating animal:", error));
+});
+
+// Cancel button for edit form
+function cancelEdit() {
+    document.getElementById("edit-animal-form").classList.add("d-none");
 }
 
 // Function to load animals and populate the table
