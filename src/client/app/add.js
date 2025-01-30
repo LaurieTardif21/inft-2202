@@ -116,32 +116,6 @@ function submitAnimalForm(event) {
         console.error(error);
     });
 
- // add animal
- function submitAnimalForm(event) {
-    event.preventDefault();
-    const form = event.target;
-
-    if (validateAnimalForm(form)) {
-        const animal = {
-            name: form.animalName.value.trim(),
-            breed: form.animalBreed.value.trim(),
-            eyes: Number(form.animalEyes.value.trim()),
-            legs: Number(form.animalLegs.value.trim()),
-            sound: form.animalSound.value.trim(),
-        };
-
-        addAnimal(animal)
-            .then(() => {
-                window.location.href = './list.html';
-            })
-            .catch(error => {
-                const errorField = form.animalName.nextElementSibling;
-                errorField.textContent = error;
-                errorField.classList.remove('d-none');
-            });
-    }
-}   
-
 // Clear error message when the user starts typing a new name
 document.getElementById('animalName').addEventListener('input', () => {
     const errorField = document.getElementById('animalName').nextElementSibling;
