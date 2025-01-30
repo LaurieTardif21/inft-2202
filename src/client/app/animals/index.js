@@ -63,6 +63,7 @@ function animal() {
         submitBtn.type = 'submit';
         submitBtn.classList.add('btn', 'btn-primary');
 
+
         container.appendChild(nameLabel);
         container.appendChild(nameInput);
         container.appendChild(breedLabel);
@@ -91,6 +92,7 @@ function animal() {
         addAnimal(animalData)
             .then(() => {
                 form.reset();
+                window.location.href = './list.html';
                 // Optionally, you can call a function here to update the animal list
             })
             .catch(error => {
