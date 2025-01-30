@@ -63,11 +63,9 @@ function validateAnimalForm(form) {
 // Add the animal to local storage
 function putAnimalInStorage(animal) {
     let animals = JSON.parse(localStorage.getItem('animals')) || [];
-
     // Create a unique id for the animal if it doesn't already exist
     const id = Date.now(); // Using timestamp as a unique id
     animal.id = id;
-
     // Check if the animal already exists
     if (animals.some(existingAnimal => existingAnimal.name.toLowerCase() === animal.name.toLowerCase())) {
         throw new Error('That animal already exists!');
@@ -98,8 +96,8 @@ function submitAnimalForm(event) {
             // Attempt to add the animal to local storage
             putAnimalInStorage(animal);
 
-            // If successful, display the animal on the page.
-            displayAnimals();
+            // If successful, redirect to list.html
+            window.location.href = './list.html';
         } catch (error) {
             // Display the error message in the name's error field
             const errorField = form.animalName.nextElementSibling;
@@ -109,62 +107,5 @@ function submitAnimalForm(event) {
     }
 }
 
-// Clear error message when the user starts typing a new name
-document.getElementById('animalName').addEventListener('input', () => {
-    const errorField = document.getElementById('animalName').nextElementSibling;
-    if (errorField) {
-        errorField.textContent = '';
-        errorField.classList.add('d-none');
-    }
-});
-
-// Handle animal deletion
-function handleDelete(animalId) {
-    if (confirm('Are you sure you want to delete this animal?')) {
-        // Get the animals from local storage
-        let animals = JSON.parse(localStorage.getItem('animals')) || [];
-
-        // Filter out the animal with the given ID
-        animals = animals.filter(animal => animal.id !== animalId);
-
-        // Update local storage
-        localStorage.setItem('animals', JSON.stringify(animals));
-
-        // Refresh the list
-        displayAnimals();
-    }
-}
-// Load animals from localStorage and display them
-function displayAnimals() {
-    const animals = JSON.parse(localStorage.getItem('animals')) || [];
-    const listContainer = document.getElementById('animalList'); // Assuming you have a container for the list
-
-    if (listContainer) {
-        // Clear the list before repopulating
-        listContainer.innerHTML = '';
-
-        animals.forEach(animal => {
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-            listItem.innerHTML = `
-                <span>${animal.name} (${animal.breed}) - ${animal.eyes} eyes, ${animal.legs} legs</span>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${animal.id}">Delete</button>
-            `;
-            listContainer.appendChild(listItem);
-
-             // Attach event listeners to delete buttons
-             document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const animalId = this.getAttribute('data-id');
-                    handleDelete(Number(animalId));
-                });
-            });
-        });
-    }
-}
-
 // Attach the event listener to the form
 document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
-
-// Call loadAnimals to display the list on page load
-displayAnimals();
