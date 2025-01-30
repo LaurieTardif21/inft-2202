@@ -124,10 +124,17 @@ function handleDelete(animalId) {
 }
 
 // Load animals from localStorage
+// Load animals from localStorage
 function loadAnimals() {
     const animals = JSON.parse(localStorage.getItem('animals')) || [];
     const listContainer = document.getElementById('animalList'); // Assuming you have a container for the list
     
+    // Ensure the listContainer is not null before accessing its properties
+    if (!listContainer) {
+        console.error('Animal list container not found!');
+        return;
+    }
+
     // Clear the list before repopulating
     listContainer.innerHTML = '';
 
@@ -147,6 +154,11 @@ function loadAnimals() {
         listContainer.appendChild(listItem);
     });
 }
+
+// Ensure the DOM is fully loaded before running the code
+document.addEventListener('DOMContentLoaded', () => {
+    loadAnimals(); // Call this after the page is fully loaded
+});
 
 // Clear error message when the user starts typing a new name
 document.getElementById('animalName').addEventListener('input', () => {
