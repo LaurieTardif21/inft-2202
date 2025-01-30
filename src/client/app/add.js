@@ -1,3 +1,4 @@
+import {addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
 /*
     Name: Laurie Tardif
     Filename: add.js
@@ -5,8 +6,6 @@
     Date: January 10, 2025
     Description: This is the general application script. Functions that are required on the add page live here.
 */
-//import from animal.service
-import {addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
 // Validate the animal form
 function validateAnimalForm(form) {
     let isValid = true;
