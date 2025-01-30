@@ -1,4 +1,4 @@
-import { addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
+import { addAnimal, getAnimals, deleteAnimal } from "./animals/animal.service.js";
 
 /*
     Name: Laurie Tardif
@@ -90,25 +90,29 @@ function submitAnimalForm(event) {
 function displayAnimals() {
     getAnimals().then(animals => {
         const animalList = document.getElementById('animalList');
-        animalList.innerHTML = ''; // Clear the list
-
-        animals.forEach(animal => {
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-            listItem.innerHTML = `
-                <span>${animal.name} (${animal.breed}) - ${animal.eyes} eyes, ${animal.legs} legs</span>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${animal.id}">Delete</button>
-            `;
-            animalList.appendChild(listItem);
-        });
-
-        // Attach event listeners to delete buttons
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const animalId = this.getAttribute('data-id');
-                handleDelete(animalId);
-            });
-        });
+        if (animalList) {
+                animalList.innerHTML = ''; // Clear the list
+                
+                animals.forEach(animal => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    listItem.innerHTML = `
+                        <span>${animal.name} (${animal.breed}) - ${animal.eyes} eyes, ${animal.legs} legs</span>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="${animal.id}">Delete</button>
+                    `;
+                    animalList.appendChild(listItem);
+                });
+                
+                // Attach event listeners to delete buttons
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const animalId = this.getAttribute('data-id');
+                        handleDelete(animalId);
+                    });
+                });
+            } else {
+            console.error("Error: animalList element not found");
+        }
     }).catch(error => console.error('Error fetching animals:', error));
 }
 
