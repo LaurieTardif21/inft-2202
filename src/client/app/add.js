@@ -1,3 +1,4 @@
+import { addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
 /*
     Name: Laurie Tardif
     Filename: add.js
@@ -63,9 +64,7 @@ function validateAnimalForm(form) {
 // Add the animal to local storage
 function putAnimalInStorage(animal) {
     let animals = JSON.parse(localStorage.getItem('animals')) || [];
-    // Create a unique id for the animal if it doesn't already exist
-    const id = Date.now(); // Using timestamp as a unique id
-    animal.id = id;
+
     // Check if the animal already exists
     if (animals.some(existingAnimal => existingAnimal.name.toLowerCase() === animal.name.toLowerCase())) {
         throw new Error('That animal already exists!');
@@ -107,5 +106,15 @@ function submitAnimalForm(event) {
     }
 }
 
+// Clear error message when the user starts typing a new name
+document.getElementById('animalName').addEventListener('input', () => {
+    const errorField = document.getElementById('animalName').nextElementSibling;
+    if (errorField) {
+        errorField.textContent = '';
+        errorField.classList.add('d-none');
+    }
+});
+
 // Attach the event listener to the form
 document.getElementById('animalForm').addEventListener('submit', submitAnimalForm);
+
