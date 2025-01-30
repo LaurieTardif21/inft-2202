@@ -1,4 +1,4 @@
-import { addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
+import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
 /*
     Name: Laurie Tardif
     Filename: add.js
