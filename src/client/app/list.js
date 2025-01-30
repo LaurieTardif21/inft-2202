@@ -55,7 +55,7 @@ function convertToEditMode(row, animal) {
         updateAnimal(updatedAnimal)
             .then(() => {
                 console.log('Animal updated successfully');
-                convertToViewMode(row, updatedAnimal);
+                initializePage(); // Refresh the page
             })
             .catch((error) => {
                 console.error('Error updating animal:', error);
