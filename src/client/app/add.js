@@ -5,7 +5,8 @@
     Date: January 10, 2025
     Description: This is the general application script. Functions that are required on the add page live here.
 */
-
+//import from animal.service
+import {addAnimal, getAnimals, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
 // Validate the animal form
 function validateAnimalForm(form) {
     let isValid = true;
@@ -104,6 +105,43 @@ function submitAnimalForm(event) {
         }
     }
 }
+
+//delete function handleDelete(animalId) {
+    deleteAnimal(animalId)
+    .then(() => {
+        console.log('Animal deleted successfully');
+        // Refresh the list
+        loadAnimals();
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+ // add animal
+ function submitAnimalForm(event) {
+    event.preventDefault();
+    const form = event.target;
+
+    if (validateAnimalForm(form)) {
+        const animal = {
+            name: form.animalName.value.trim(),
+            breed: form.animalBreed.value.trim(),
+            eyes: Number(form.animalEyes.value.trim()),
+            legs: Number(form.animalLegs.value.trim()),
+            sound: form.animalSound.value.trim(),
+        };
+
+        addAnimal(animal)
+            .then(() => {
+                window.location.href = './list.html';
+            })
+            .catch(error => {
+                const errorField = form.animalName.nextElementSibling;
+                errorField.textContent = error;
+                errorField.classList.remove('d-none');
+            });
+    }
+}   
 
 // Clear error message when the user starts typing a new name
 document.getElementById('animalName').addEventListener('input', () => {
