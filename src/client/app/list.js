@@ -1,145 +1,207 @@
-import { getAnimals, findAnimal, updateAnimal, deleteAnimal } from "/inft-2202/src/client/app/animals/animal.service.js";
+import { getAnimals, deleteAnimal, updateAnimal } from './animals/animal.service.js';
 
-// Function to draw the table with animals
-function drawAnimalsTable(animals) {
-    console.log('Animals to display:', animals); // Debugging log to check the data
+// Helper function to create input fields
+function createInput(value, name, type = 'text') {
+    const input = document.createElement('input');
+    input.type = type;
+    input.name = name;
+    input.value = value;
+    input.classList.add('form-control', 'form-control-sm');
+    return input;
+}
 
+// Function to convert row to edit mode
+function convertToEditMode(row, animal) {
+    // Replace each cell with an input field
+    const nameCell = row.children[0];
+    nameCell.innerHTML = ''; // Clear existing content
+    nameCell.appendChild(createInput(animal.animalName, 'animalName'));
+
+    const breedCell = row.children[1];
+    breedCell.innerHTML = ''; // Clear existing content
+    breedCell.appendChild(createInput(animal.animalBreed, 'animalBreed'));
+
+    const eyesCell = row.children[2];
+    eyesCell.innerHTML = ''; // Clear existing content
+    eyesCell.appendChild(createInput(animal.animalEyes, 'animalEyes', 'number'));
+
+    const legsCell = row.children[3];
+    legsCell.innerHTML = ''; // Clear existing content
+    legsCell.appendChild(createInput(animal.animalLegs, 'animalLegs', 'number'));
+
+    const soundCell = row.children[4];
+    soundCell.innerHTML = ''; // Clear existing content
+    soundCell.appendChild(createInput(animal.animalSound, 'animalSound'));
+
+    // Remove the actions cell and add save and cancel button
+    const actionCell = row.children[5];
+    actionCell.innerHTML = '';
+
+    // Create save button
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save';
+    saveButton.classList.add('btn', 'btn-success', 'btn-sm', 'me-2');
+    saveButton.addEventListener('click', () => {
+        // Create the updatedAnimal object
+        const updatedAnimal = {
+            id: animal.id,
+            animalName: row.querySelector('[name="animalName"]').value,
+            animalBreed: row.querySelector('[name="animalBreed"]').value,
+            animalEyes: row.querySelector('[name="animalEyes"]').value,
+            animalLegs: row.querySelector('[name="animalLegs"]').value,
+            animalSound: row.querySelector('[name="animalSound"]').value,
+        };
+
+        updateAnimal(updatedAnimal)
+            .then(() => {
+                console.log('Animal updated successfully');
+                convertToViewMode(row, updatedAnimal);
+            })
+            .catch((error) => {
+                console.error('Error updating animal:', error);
+            });
+    });
+    actionCell.appendChild(saveButton);
+
+    // Create cancel button
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.classList.add('btn', 'btn-secondary', 'btn-sm');
+    cancelButton.addEventListener('click', () => {
+        convertToViewMode(row, animal);
+    });
+    actionCell.appendChild(cancelButton);
+}
+
+// Function to convert row back to view mode
+function convertToViewMode(row, animal) {
+    // Replace input fields with text content
+    row.children[0].textContent = animal.animalName;
+    row.children[1].textContent = animal.animalBreed;
+    row.children[2].textContent = animal.animalEyes;
+    row.children[3].textContent = animal.animalLegs;
+    row.children[4].textContent = animal.animalSound;
+
+    // Remove all children from the action cell
+    const actionCell = row.children[5];
+    actionCell.innerHTML = '';
+
+    // Add edit and delete buttons
+    const editButton = createEditButton(animal.id);
+    actionCell.appendChild(editButton);
+
+    const deleteButton = createDeleteButton(animal.id);
+    actionCell.appendChild(deleteButton);
+}
+
+function createEditButton(animalId) {
+    const button = document.createElement('button');
+    button.textContent = 'Edit';
+    button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
+    button.addEventListener('click', (event) => {
+        const row = event.target.closest('tr'); // Get the row element
+        const animal = {
+            id: animalId,
+            animalName: row.children[0].textContent,
+            animalBreed: row.children[1].textContent,
+            animalEyes: row.children[2].textContent,
+            animalLegs: row.children[3].textContent,
+            animalSound: row.children[4].textContent,
+        };
+
+        convertToEditMode(row, animal);
+    });
+    return button;
+}
+
+function createDeleteButton(animalId) {
+    const button = document.createElement('button');
+    button.textContent = 'Delete';
+    button.classList.add('btn', 'btn-danger', 'btn-sm');
+    button.addEventListener('click', () => {
+        deleteAnimal(animalId)
+            .then(() => {
+                // Remove the row from the table
+                const row = document.getElementById(`animal-${animalId}`);
+                row.remove();
+                // Update the empty list message if needed
+                checkIfListIsEmpty();
+            })
+            .catch((error) => {
+                console.error('Error deleting animal:', error);
+            });
+    });
+    return button;
+}
+
+function populateAnimalTable(animals) {
+    console.log('Animals from getAnimals:', animals); // Check the animals array
+
+    const tableBody = document.querySelector('#animals-list tbody');
+    tableBody.innerHTML = '';
+
+    animals.forEach((animal) => {
+        // ... other code to create the row
+        const row = document.createElement('tr');
+        row.id = `animal-${animal.id}`; // Assign an ID to the row for easy removal later
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = animal.animalName; // Accessing the 'animalName' property
+        row.appendChild(nameCell);
+
+        const breedCell = document.createElement('td');
+        breedCell.textContent = animal.animalBreed; // Accessing the 'animalBreed' property
+        row.appendChild(breedCell);
+
+        const eyesCell = document.createElement('td');
+        eyesCell.textContent = animal.animalEyes; // Accessing the 'animalEyes' property
+        row.appendChild(eyesCell);
+
+        const legsCell = document.createElement('td');
+        legsCell.textContent = animal.animalLegs; // Accessing the 'animalLegs' property
+        row.appendChild(legsCell);
+
+        const soundCell = document.createElement('td');
+        soundCell.textContent = animal.animalSound; // Accessing the 'animalSound' property
+        row.appendChild(soundCell);
+
+        const actionsCell = document.createElement('td');
+        const editButton = createEditButton(animal.id); // Pass the animal ID to the edit button
+        actionsCell.appendChild(editButton);
+        const deleteButton = createDeleteButton(animal.id); // Pass the animal ID to the delete button
+        actionsCell.appendChild(deleteButton);
+        row.appendChild(actionsCell);
+
+        tableBody.appendChild(row);
+        // ... add the button to the row
+    });
+    checkIfListIsEmpty();
+
+}
+
+function checkIfListIsEmpty() {
+    const tableBody = document.querySelector('#animals-list tbody');
     const messageBox = document.getElementById('message-box');
-    const table = document.getElementById('animals-list');
-    const tbody = table.querySelector('tbody');
+    const animalListTable = document.getElementById('animals-list');
 
-    // Clear the table body before adding new rows
-    tbody.innerHTML = '';
-
-    if (animals.length === 0) {
-        messageBox.classList.remove('d-none'); // Show message box if no animals
-        table.classList.add('d-none'); // Hide the table
+    if (tableBody.children.length === 0) {
+        animalListTable.classList.add('d-none');
+        messageBox.classList.remove('d-none');
     } else {
-        messageBox.classList.add('d-none'); // Hide message box if animals are present
-        table.classList.remove('d-none'); // Show the table
-
-        // Insert rows for each animal
-        animals.forEach(animal => {
-            console.log('Animal:', animal); // Log each animal to check the id
-
-            if (!animal.id) {
-                console.error('Missing ID for animal:', animal); // Log any animal missing an ID
-            }
-
-            const row = tbody.insertRow();
-
-            // Insert animal data into cells
-            row.insertCell().textContent = animal.name;
-            row.insertCell().textContent = animal.breed;
-            row.insertCell().textContent = animal.eyes;
-            row.insertCell().textContent = animal.legs;
-            row.insertCell().textContent = animal.sound;
-
-            // Insert the Actions cell with Edit and Delete buttons
-            const actionsCell = row.insertCell();
-            const editButton = document.createElement('button');
-            editButton.textContent = 'Edit';
-            editButton.classList.add('btn', 'btn-warning', 'btn-sm');
-            editButton.onclick = () => {
-                if (animal.id) {
-                    editAnimal(animal.id); // Proceed if ID is defined
-                } else {
-                    console.error('Animal ID is undefined.');
-                }
-            };
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
-            deleteButton.onclick = () => {
-                if (animal.id) {
-                    deleteAnimalHandler(animal.id); // Proceed if ID is defined
-                } else {
-                    console.error('Animal ID is undefined.');
-                }
-            };
-
-            actionsCell.appendChild(editButton);
-            actionsCell.appendChild(deleteButton);
-        });
+        animalListTable.classList.remove('d-none');
+        messageBox.classList.add('d-none');
     }
 }
 
-// Function to handle the delete button click
-function deleteAnimalHandler(animalId) {
-    deleteAnimal(animalId)
-        .then(() => {
-            console.log(`Animal with ID ${animalId} deleted successfully.`);
-            loadAnimals(); // Reload the list after deletion
-        })
-        .catch(error => {
-            console.error('Error deleting animal:', error);
-        });
-}
-
-// Function to handle the edit button click
-function editAnimal(animalId) {
-    console.log(`Editing animal with ID: ${animalId}`);
-
-    findAnimal(animalId)
-        .then(animal => {
-            if (!animal) {
-                console.error("Animal not found!");
-                return;
-            }
-
-            // Populate the form with animal data
-            document.getElementById("edit-animal-id").value = animal.id;
-            document.getElementById("edit-name").value = animal.name;
-            document.getElementById("edit-breed").value = animal.breed;
-            document.getElementById("edit-eyes").value = animal.eyes;
-            document.getElementById("edit-legs").value = animal.legs;
-            document.getElementById("edit-sound").value = animal.sound;
-
-            // Show the form
-            document.getElementById("edit-animal-form").classList.remove("d-none");
-        })
-        .catch(error => console.error("Error fetching animal for editing:", error));
-}
-
-// Handle form submission for saving edited animal
-document.getElementById("animal-edit-form").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent page refresh
-
-    const updatedAnimal = {
-        id: document.getElementById("edit-animal-id").value,
-        name: document.getElementById("edit-name").value,
-        breed: document.getElementById("edit-breed").value,
-        eyes: document.getElementById("edit-eyes").value,
-        legs: parseInt(document.getElementById("edit-legs").value, 10),
-        sound: document.getElementById("edit-sound").value,
-    };
-
-    updateAnimal(updatedAnimal)
-        .then(() => {
-            console.log("Animal updated successfully!");
-            document.getElementById("edit-animal-form").classList.add("d-none"); // Hide form
-            loadAnimals(); // Refresh the table
-        })
-        .catch(error => console.error("Error updating animal:", error));
-});
-
-// Cancel button for edit form
-function cancelEdit() {
-    document.getElementById("edit-animal-form").classList.add("d-none");
-}
-
-// Function to load animals and populate the table
-function loadAnimals() {
+function initializePage() {
     getAnimals()
         .then(animals => {
-            console.log('Loaded animals:', animals); // Check if the animals data is correct
-            drawAnimalsTable(animals);
+            populateAnimalTable(animals);
         })
         .catch(error => {
-            console.error('Error loading animals:', error); // Handle any errors while loading
+            console.error('Error fetching animals:', error);
         });
 }
 
-// Initial load of animals when the page loads
-document.addEventListener('DOMContentLoaded', loadAnimals);
+// Call initializePage when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializePage);
