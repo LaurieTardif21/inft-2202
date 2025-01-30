@@ -1,83 +1,81 @@
+ADD.HTML:
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Animal - Laurie Tardif</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 </head>
-
 <body>
 
-    <!-- Header -->
-    <header class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">Laurie Tardif</a>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="list.html">List</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="animal.html">Animal</a></li>
-                </ul>
-            </div>
+<!-- Header -->
+<header class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">Laurie Tardif</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="list.html">List</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                <li class="nav-item"><a class="nav-link active" href="animal.html">Animal</a></li>
+            </ul>
         </div>
-    </header>
+    </div>
+</header>
 
-    <!-- Main Content -->
-    <main class="container mt-5">
-        <h1 class="display-4 text-center">Add Animal</h1>
-        <form id="animalForm">
-            <div class="mb-3">
-                <label for="animalName" class="form-label">Animal Name</label>
-                <input type="text" class="form-control" id="animalName" name="animalName" required>
-                <div class="invalid-feedback"></div>
-            </div>
-            <div class="mb-3">
-                <label for="animalBreed" class="form-label">Breed</label>
-                <input type="text" class="form-control" id="animalBreed" name="animalBreed" required>
-                <div class="invalid-feedback"></div>
-            </div>
-            <div class="mb-3">
-                <label for="animalEyes" class="form-label">Number of Eyes</label>
-                <input type="number" class="form-control" id="animalEyes" name="animalEyes" required>
-                <div class="invalid-feedback"></div>
-            </div>
-            <div class="mb-3">
-                <label for="animalLegs" class="form-label">Number of Legs</label>
-                <input type="number" class="form-control" id="animalLegs" name="animalLegs" required>
-                <div class="invalid-feedback"></div>
-            </div>
-            <div class="mb-3">
-                <label for="animalSound" class="form-label">Sound</label>
-                <input type="text" class="form-control" id="animalSound" name="animalSound" required>
-                <div class="invalid-feedback"></div>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Animal</button>
-        </form>
-    </main>
+<!-- Main Content -->
+<main class="container mt-5">
+    <h1 class="display-4 text-center">Add Animal</h1>
+    <form id="animalForm">
+        <div class="mb-3">
+            <label for="animalName" class="form-label">Animal Name</label>
+            <input type="text" class="form-control" id="animalName" name="animalName" required>
+            <p class="text-danger d-none">Name is required and must be unique</p> <!-- Error message for Animal Name -->
+        </div>
+        <div class="mb-3">
+            <label for="animalBreed" class="form-label">Breed</label>
+            <input type="text" class="form-control" id="animalBreed" name="animalBreed" required>
+            <p class="text-danger d-none">Breed is required</p> <!-- Error message for Breed -->
+        </div>
+        <div class="mb-3">
+            <label for="animalEyes" class="form-label">Number of Eyes</label>
+            <input type="number" class="form-control" id="animalEyes" name="animalEyes" required>
+            <p class="text-danger d-none">Eyes are required</p> <!-- Error message for Eyes -->
+        </div>
+        <div class="mb-3">
+            <label for="animalLegs" class="form-label">Number of Legs</label>
+            <input type="number" class="form-control" id="animalLegs" name="animalLegs" required>
+            <p class="text-danger d-none">Animal legs are required</p> <!-- Error message for Legs -->
+        </div>
+        <div class="mb-3">
+            <label for="animalSound" class="form-label">Sound</label>
+            <input type="text" class="form-control" id="animalSound" name="animalSound" required>
+            <p class="text-danger d-none">Sound is reuired</p> <!-- Error message for Sound -->
+        </div>
+        <button type="submit" class="btn btn-primary">Add Animal</button>
+    </form>
+</main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p class="mb-0">&copy; <span id="currentYear"></span> Laurie Tardif</p>
-    </footer>
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <p class="mb-0">&copy; <span id="currentYear"></span> Laurie Tardif</p>
+</footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-    <!-- Script to dynamically update the footer year -->
-    <script>
-        // Set the current year dynamically in the footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-    </script>
+<!-- Script to dynamically update the footer year -->
+<script>
+    // Set the current year dynamically in the footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
 
-    <!-- Attach the updated add.js -->
-    <script type="module" src="app/add.js"></script>
+<!-- Attach the updated add.js -->
+<script type="module" src="app/add.js"></script>
 
 </body>
-
 </html>
+
+
