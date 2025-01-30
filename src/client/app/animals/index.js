@@ -48,6 +48,7 @@ function animal() {
         legsInput.id = 'animalLegs';
         legsInput.classList.add('form-control');
         legsInput.required = true;
+        legsInput.min = 0;
 
         const soundLabel = document.createElement('label');
         soundLabel.textContent = 'Sound:';
