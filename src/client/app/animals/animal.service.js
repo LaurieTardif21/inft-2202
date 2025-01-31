@@ -25,10 +25,22 @@ export function getAnimals() {
     });
 }
 
+// Helper function to validate animal data
+function validateAnimalData(animal) {
+    // Ensure 'legs' and 'eyes' are not negative
+    if (animal.legs < 0) {
+        animal.legs = 0;
+    }
+    if (animal.eyes < 0) {
+        animal.eyes = 0;
+    }
+}
+
 // Function to add a new animal to the list (to localStorage)
 export function addAnimal(animal) {
     return new Promise((resolve, reject) => {
         try {
+            validateAnimalData(animal); // Validate the animal data before adding
             // Add to localStorage
             const animals = JSON.parse(localStorage.getItem('animals')) || [];
             animal.id = generateId(); // Ensure unique ID for each animal
@@ -79,6 +91,7 @@ export function findAnimal(animalId) {
 export function updateAnimal(updatedAnimal) {
     return new Promise((resolve, reject) => {
         try {
+            validateAnimalData(updatedAnimal);// Validate the updated animal data
             // Update Local Storage
             const animals = JSON.parse(localStorage.getItem('animals')) || [];
             const index = animals.findIndex(a => a.id === updatedAnimal.id);
