@@ -18,13 +18,19 @@ function savePinnedMoviesToStorage(pinnedMovies) {
 
 // Function to populate a movie table
 function insertMoviesIntoTable(tableElement, moviesList, isPinned = false, pinnedMovies = []) {
+    //check if the table is empty
     if (moviesList.length === 0) {
+        //Hide the table
+        tableElement.classList.add("d-none");
+        //Show the alert
         tableElement.previousElementSibling.classList.remove("d-none"); // Show alert
         return;
     } else {
+        //Hide the alert
         tableElement.previousElementSibling.classList.add("d-none"); // Hide alert
     }
 
+    //show the table
     tableElement.classList.remove("d-none");
     const tbody = tableElement.querySelector("tbody");
     tbody.innerHTML = ""; // Clear existing rows
@@ -76,16 +82,20 @@ function insertMoviesIntoTable(tableElement, moviesList, isPinned = false, pinne
 }
 
 function updateTables(pinnedMovies) {
+    //Check if there are no pinned movies
+    if (pinnedMovies.length == 0) {
+        //Show the alert
+        pinnedMoviesAlert.classList.remove("d-none");
+        //Hide the table
+        pinnedMoviesTable.classList.add("d-none");
+        //Remove the rows from the table
+        pinnedMoviesTable.querySelector("tbody").innerHTML = "";
+    }
     // Update all movies table
     insertMoviesIntoTable(allMoviesTable, movies, false, pinnedMovies);
 
     // Update pinned movies table
     insertMoviesIntoTable(pinnedMoviesTable, pinnedMovies, true, pinnedMovies);
-
-    //Show pinned movie alert
-    if(pinnedMovies.length == 0){
-        pinnedMoviesAlert.classList.remove("d-none");
-    }
 }
 
 // Load pinned movies
