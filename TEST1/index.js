@@ -1,3 +1,11 @@
+/*
+Name: Laurie Tardif
+Date: 01/31/2025
+Course: Web Dev
+Description: Show two lists of movies.  One of all movies, and one of just your favourites.
+*/
+
+
 import { movies } from "./movies.js";
 
 console.log(movies);
