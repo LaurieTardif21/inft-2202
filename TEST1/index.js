@@ -1,4 +1,4 @@
-import { movies } from "/inft-2202/TEST1/movies.js";
+import { movies } from ".movies.js";
 
 // Get references to elements
 const pinnedMoviesTable = document.querySelector("#pinned-movies-container table");
