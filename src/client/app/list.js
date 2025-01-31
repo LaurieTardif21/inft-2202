@@ -1,4 +1,4 @@
-import { getAnimals, deleteAnimal, updateAnimal } from './animals/animal.service.js';
+import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 // Helper function to create input fields
 function createInput(value, name, type = 'text') {
@@ -8,69 +8,6 @@ function createInput(value, name, type = 'text') {
     input.value = value;
     input.classList.add('form-control', 'form-control-sm');
     return input;
-}
-
-// Function to convert row to edit mode
-function convertToEditMode(row, animal) {
-    // Replace each cell with an input field
-    const nameCell = row.children[0];
-    nameCell.innerHTML = ''; // Clear existing content
-    nameCell.appendChild(createInput(animal.name, 'name'));
-
-    const breedCell = row.children[1];
-    breedCell.innerHTML = ''; // Clear existing content
-    breedCell.appendChild(createInput(animal.breed, 'breed'));
-
-    const eyesCell = row.children[2];
-    eyesCell.innerHTML = ''; // Clear existing content
-    eyesCell.appendChild(createInput(animal.eyes, 'eyes', 'number'));
-
-    const legsCell = row.children[3];
-    legsCell.innerHTML = ''; // Clear existing content
-    legsCell.appendChild(createInput(animal.legs, 'legs', 'number'));
-
-    const soundCell = row.children[4];
-    soundCell.innerHTML = ''; // Clear existing content
-    soundCell.appendChild(createInput(animal.sound, 'sound'));
-
-    // Remove the actions cell and add save and cancel button
-    const actionCell = row.children[5];
-    actionCell.innerHTML = '';
-
-    // Create save button
-    const saveButton = document.createElement('button');
-    saveButton.textContent = 'Save';
-    saveButton.classList.add('btn', 'btn-success', 'btn-sm', 'me-2');
-    saveButton.addEventListener('click', () => {
-        // Create the updatedAnimal object
-        const updatedAnimal = {
-            id: animal.id,
-            name: row.querySelector('[name="name"]').value,
-            breed: row.querySelector('[name="breed"]').value,
-            eyes: row.querySelector('[name="eyes"]').value,
-            legs: row.querySelector('[name="legs"]').value,
-            sound: row.querySelector('[name="sound"]').value,
-        };
-
-        updateAnimal(updatedAnimal)
-            .then(() => {
-                console.log('Animal updated successfully');
-                initializePage(); // Refresh the page
-            })
-            .catch((error) => {
-                console.error('Error updating animal:', error);
-            });
-    });
-    actionCell.appendChild(saveButton);
-
-    // Create cancel button
-    const cancelButton = document.createElement('button');
-    cancelButton.textContent = 'Cancel';
-    cancelButton.classList.add('btn', 'btn-secondary', 'btn-sm');
-    cancelButton.addEventListener('click', () => {
-        convertToViewMode(row, animal);
-    });
-    actionCell.appendChild(cancelButton);
 }
 
 // Function to convert row back to view mode
@@ -98,18 +35,9 @@ function createEditButton(animalId) {
     const button = document.createElement('button');
     button.textContent = 'Edit';
     button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
-    button.addEventListener('click', (event) => {
-        const row = event.target.closest('tr'); // Get the row element
-        const animal = {
-            id: animalId,
-            name: row.children[0].textContent,
-            breed: row.children[1].textContent,
-            eyes: row.children[2].textContent,
-            legs: row.children[3].textContent,
-            sound: row.children[4].textContent,
-        };
-
-        convertToEditMode(row, animal);
+    button.addEventListener('click', () => {
+        // Redirect to animal.html with the animalId as a query parameter
+        window.location.href = `animal.html?id=${animalId}`;
     });
     return button;
 }
