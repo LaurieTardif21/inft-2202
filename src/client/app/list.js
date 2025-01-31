@@ -1,36 +1,5 @@
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
-// Helper function to create input fields
-function createInput(value, name, type = 'text') {
-    const input = document.createElement('input');
-    input.type = type;
-    input.name = name;
-    input.value = value;
-    input.classList.add('form-control', 'form-control-sm');
-    return input;
-}
-
-// Function to convert row back to view mode
-function convertToViewMode(row, animal) {
-    // Replace input fields with text content
-    row.children[0].textContent = animal.name;
-    row.children[1].textContent = animal.breed;
-    row.children[2].textContent = animal.eyes;
-    row.children[3].textContent = animal.legs;
-    row.children[4].textContent = animal.sound;
-
-    // Remove all children from the action cell
-    const actionCell = row.children[5];
-    actionCell.innerHTML = '';
-
-    // Add edit and delete buttons
-    const editButton = createEditButton(animal.id);
-    actionCell.appendChild(editButton);
-
-    const deleteButton = createDeleteButton(animal.id);
-    actionCell.appendChild(deleteButton);
-}
-
 function createEditButton(animalId) {
     const button = document.createElement('button');
     button.textContent = 'Edit';
@@ -63,7 +32,6 @@ function createDeleteButton(animalId) {
 }
 
 function populateAnimalTable(animals) {
-    console.log('Animals from getAnimals:', animals); // Check the animals array
 
     const tableBody = document.querySelector('#animals-list tbody');
     tableBody.innerHTML = '';
