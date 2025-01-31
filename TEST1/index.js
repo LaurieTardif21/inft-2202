@@ -1,5 +1,7 @@
 import { movies } from "./movies.js";
 
+console.log(movies);
+
 // Get references to elements
 const pinnedMoviesTable = document.querySelector("#pinned-movies-container table");
 const pinnedMoviesAlert = document.querySelector("#pinned-movies-container .alert");
@@ -17,7 +19,7 @@ function savePinnedMoviesToStorage(pinnedMovies) {
 }
 
 // Function to populate a movie table
-function insertMoviesIntoTable(tableElement, moviesList, isPinned = false, pinnedMovies = []) {
+function insertMoviesIntoTable(tableElement, moviesList) {
     //check if the table is empty
     if (moviesList.length === 0) {
         //Hide the table
@@ -34,7 +36,8 @@ function insertMoviesIntoTable(tableElement, moviesList, isPinned = false, pinne
     tableElement.classList.remove("d-none");
     const tbody = tableElement.querySelector("tbody");
     tbody.innerHTML = ""; // Clear existing rows
-
+    // Load pinned movies from local storage
+    const pinnedMovies = getPinnedMoviesFromStorage();
     moviesList
         .filter((movie) => movie.genre !== "Drama") // Exclude dramas
         .sort((a, b) => b.rating - a.rating) // Sort by rating
@@ -92,17 +95,18 @@ function updateTables(pinnedMovies) {
         pinnedMoviesTable.querySelector("tbody").innerHTML = "";
     }
     // Update all movies table
-    insertMoviesIntoTable(allMoviesTable, movies, false, pinnedMovies);
+    insertMoviesIntoTable(allMoviesTable, movies);
 
     // Update pinned movies table
-    insertMoviesIntoTable(pinnedMoviesTable, pinnedMovies, true, pinnedMovies);
+    insertMoviesIntoTable(pinnedMoviesTable, pinnedMovies);
 }
 
 // Load pinned movies
 const pinnedMovies = getPinnedMoviesFromStorage();
+console.log(pinnedMovies)
 
 // Load all movies
-insertMoviesIntoTable(allMoviesTable, movies, false, pinnedMovies);
+insertMoviesIntoTable(allMoviesTable, movies);
 
 // Load pinned movies
 updateTables(pinnedMovies);
