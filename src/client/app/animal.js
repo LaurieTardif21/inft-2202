@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Call updateAnimal
             updateAnimal(animal)
                 .then(() => {
-                    console.log('Animal updated successfully');
                     window.location.href = 'list.html'; // Redirect to list page
                 })
                 .catch((error) => {
@@ -64,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // If adding, call addAnimal
             addAnimal(animal)
                 .then(() => {
-                    console.log('Animal added successfully');
                     window.location.href = 'list.html'; // Redirect to list page
                 })
                 .catch((error) => {
