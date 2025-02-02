@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (animalId) {
         // Editing an animal
         saveButton.textContent = 'Save Animal'; // Change button text
+        nameInput.disabled = true; // Disable name input in edit mode
+
         findAnimal(animalId)
             .then((animal) => {
                 // Pre-fill the form
@@ -51,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         // Adding a new animal
         saveButton.textContent = 'Add Animal'; //Change button text
+        nameInput.disabled = false; // Enable name input in add mode (optional)
     }
 
     form.addEventListener('submit', (event) => {
