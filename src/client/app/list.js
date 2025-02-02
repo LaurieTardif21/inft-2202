@@ -2,8 +2,11 @@ import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
-    button.textContent = 'Edit';
     button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
+    // Add icon
+    const icon = document.createElement('i');
+    icon.classList.add('fas', 'fa-pen-to-square'); // Edit icon
+    button.appendChild(icon);
     button.addEventListener('click', () => {
         // Redirect to animal.html with the animalId as a query parameter
         window.location.href = `animal.html?id=${animalId}`;
@@ -13,8 +16,11 @@ function createEditButton(animalId) {
 
 function createDeleteButton(animalId) {
     const button = document.createElement('button');
-    button.textContent = 'Delete';
     button.classList.add('btn', 'btn-danger', 'btn-sm');
+    // Add icon
+    const icon = document.createElement('i');
+    icon.classList.add('fas', 'fa-trash-alt'); // Delete icon
+    button.appendChild(icon);
     button.addEventListener('click', () => {
         deleteAnimal(animalId)
             .then(() => {
