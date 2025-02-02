@@ -1,5 +1,8 @@
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
+// Global variable to store the animalId to delete
+let animalIdToDelete = null;
+
 function createEditButton(animalId) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
@@ -28,17 +31,11 @@ function createDeleteButton(animalId) {
     icon.classList.add('fas', 'fa-trash-alt'); // Delete icon
     button.appendChild(icon);
     button.addEventListener('click', () => {
-        deleteAnimal(animalId)
-            .then(() => {
-                // Remove the row from the table
-                const row = document.getElementById(`animal-${animalId}`);
-                row.remove();
-                // Update the empty list message if needed
-                checkIfListIsEmpty();
-            })
-            .catch((error) => {
-                console.error('Error deleting animal:', error);
-            });
+        // Set the animal ID to delete in the global variable
+        animalIdToDelete = animalId;
+        // Show the confirmation modal
+        const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+        deleteConfirmationModal.show();
     });
     return button;
 }
@@ -116,5 +113,30 @@ function initializePage() {
         });
 }
 
-// Call initializePage when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', initializePage);
+// Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    confirmDeleteButton.addEventListener('click', () => {
+        // Check if the animalIdToDelete is defined
+        if (animalIdToDelete !== null) {
+            // Perform the deletion using the animalIdToDelete
+            deleteAnimal(animalIdToDelete)
+                .then(() => {
+                    // Remove the row from the table
+                    const row = document.getElementById(`animal-${animalIdToDelete}`);
+                    row.remove();
+                    // Update the empty list message if needed
+                    checkIfListIsEmpty();
+                    // Close the modal
+                    const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
+                    deleteConfirmationModal.hide();
+                    // Reset the animalIdToDelete
+                    animalIdToDelete = null;
+                })
+                .catch((error) => {
+                    console.error('Error deleting animal:', error);
+                });
+        }
+    });
+    initializePage();
+});
