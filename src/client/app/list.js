@@ -2,6 +2,12 @@ import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 // Global variable to store the animalId to delete
 let animalIdToDelete = null;
+// global variable for the current page
+let currentPage = 1;
+// Global variable for the number of entries per page
+const perPage = 5;
+// Global varible for the array of animals
+let animalsArray = [];
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
@@ -41,7 +47,6 @@ function createDeleteButton(animalId) {
 }
 
 function populateAnimalTable(animals) {
-
     const tableBody = document.querySelector('#animals-list tbody');
     tableBody.innerHTML = '';
 
@@ -102,17 +107,96 @@ function checkIfListIsEmpty() {
         messageBox.classList.add('d-none');
     }
 }
+// Function to create and manage the pagination
+function managePagination() {
+    // Get the container and the ul
+    const paginationContainer = document.getElementById('paginationContainer');
+    const paginationUl = document.getElementById('pagination');
+    //get the previous and next li
+    const previousPageLi = document.getElementById('previousPage');
+    const nextPageLi = document.getElementById('nextPage');
+    // Remove previous page link
+    paginationUl.querySelectorAll('.page-number').forEach(li => li.remove());
+
+    //check if there is more than 5 animals
+    if (animalsArray.length > perPage) {
+        paginationContainer.classList.remove('d-none');
+    } else {
+        paginationContainer.classList.add('d-none');
+        return;
+    }
+    // Calculate the number of pages
+    const numberOfPages = Math.ceil(animalsArray.length / perPage);
+
+    // Create the page number
+    for (let i = 1; i <= numberOfPages; i++) {
+        //create the li
+        const pageNumberLi = document.createElement('li');
+        pageNumberLi.classList.add('page-item', 'page-number');
+        if (i === currentPage) {
+            pageNumberLi.classList.add('active');
+        }
+        //create the link
+        const pageNumberLink = document.createElement('a');
+        pageNumberLink.classList.add('page-link');
+        pageNumberLink.href = '#';
+        pageNumberLink.textContent = i;
+
+        //manage the click event
+        pageNumberLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            currentPage = i;
+            managePagination(); // Update the pagination
+            populateAnimalTable(getCurrentPageAnimals());
+        });
+
+        //append the elements
+        pageNumberLi.appendChild(pageNumberLink);
+        paginationUl.insertBefore(pageNumberLi, nextPageLi);
+    }
+
+    //Manage the previous button
+    previousPageLi.classList.toggle('disabled', currentPage === 1);
+    //add the event if is not disabled
+    if (currentPage !== 1) {
+        previousPageLi.querySelector('a').addEventListener('click', (event) => {
+            event.preventDefault();
+            currentPage--;
+            managePagination();
+            populateAnimalTable(getCurrentPageAnimals());
+        }, { once: true });
+    }
+
+    //Manage the next button
+    nextPageLi.classList.toggle('disabled', currentPage === numberOfPages);
+    //add the event if is not disabled
+    if (currentPage !== numberOfPages) {
+        nextPageLi.querySelector('a').addEventListener('click', (event) => {
+            event.preventDefault();
+            currentPage++;
+            managePagination();
+            populateAnimalTable(getCurrentPageAnimals());
+        }, { once: true });
+    }
+}
 
 function initializePage() {
     getAnimals()
         .then(animals => {
-            populateAnimalTable(animals);
+            animalsArray = animals;
+            managePagination();
+            populateAnimalTable(getCurrentPageAnimals());
         })
         .catch(error => {
             console.error('Error fetching animals:', error);
         });
 }
-
+// Function to get the animals for the current page
+function getCurrentPageAnimals() {
+    const startIndex = (currentPage - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    return animalsArray.slice(startIndex, endIndex);
+}
 // Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
@@ -122,11 +206,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // Perform the deletion using the animalIdToDelete
             deleteAnimal(animalIdToDelete)
                 .then(() => {
+                    // Remove the animal in the global array
+                    const index = animalsArray.findIndex(animal => animal.id === animalIdToDelete);
+                    if (index !== -1) {
+                        animalsArray.splice(index, 1);
+                    }
                     // Remove the row from the table
                     const row = document.getElementById(`animal-${animalIdToDelete}`);
                     row.remove();
                     // Update the empty list message if needed
                     checkIfListIsEmpty();
+                    // Update the pagination
+                    managePagination();
+                    // Update the table
+                    populateAnimalTable(getCurrentPageAnimals());
                     // Close the modal
                     const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
                     deleteConfirmationModal.hide();
