@@ -3,6 +3,9 @@ import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 function createEditButton(animalId) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
+    button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
+    button.setAttribute('data-bs-placement', 'top'); // Set tooltip placement
+    button.setAttribute('title', 'Edit Animal'); // Set tooltip text
     // Add icon
     const icon = document.createElement('i');
     icon.classList.add('fas', 'fa-pen-to-square'); // Edit icon
@@ -17,6 +20,9 @@ function createEditButton(animalId) {
 function createDeleteButton(animalId) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-danger', 'btn-sm');
+    button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
+    button.setAttribute('data-bs-placement', 'top'); // Set tooltip placement
+    button.setAttribute('title', 'Delete Animal'); // Set tooltip text
     // Add icon
     const icon = document.createElement('i');
     icon.classList.add('fas', 'fa-trash-alt'); // Delete icon
@@ -77,6 +83,11 @@ function populateAnimalTable(animals) {
         tableBody.appendChild(row);
         // ... add the button to the row
     });
+    // Initialize Bootstrap tooltips after the table is populated
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
     checkIfListIsEmpty();
 
 }
