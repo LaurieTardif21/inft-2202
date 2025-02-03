@@ -20,7 +20,7 @@ export function getAnimals() {
 
             resolve(animals);
         } catch (error) {
-            reject('Error getting animals: ' + error);
+            reject(new Error(`Error getting animals: ${error.message}`));
         }
     });
 }
@@ -36,7 +36,7 @@ export function addAnimal(animal) {
             localStorage.setItem('animals', JSON.stringify(animals)); // Save to localStorage
             resolve();
         } catch (error) {
-            reject('Error adding animal: ' + error);
+            reject(new Error(`Error adding animal: ${error.message}`));
         }
     });
 }
@@ -51,7 +51,7 @@ export function deleteAnimal(animalId) {
             localStorage.setItem('animals', JSON.stringify(updatedAnimals)); // Save to localStorage
             resolve();
         } catch (error) {
-            reject('Error deleting animal: ' + error);
+            reject(new Error(`Error deleting animal: ${error.message}`));
         }
     });
 }
@@ -67,10 +67,10 @@ export function findAnimal(animalId) {
             if (animal) {
                 resolve(animal); // Found in local storage
             } else {
-                reject(`Error finding animal: animal not found`);
+                reject(new Error(`Error finding animal: animal not found`));
             }
         } catch (error) {
-            reject(`Error finding animal: ${error.message}`);
+            reject(new Error(`Error finding animal: ${error.message}`));
         }
     });
 }
@@ -88,11 +88,10 @@ export function updateAnimal(updatedAnimal) {
                 localStorage.setItem('animals', JSON.stringify(animals));
                 resolve();
             } else {
-              reject('Animal not found in local storage'); //correct line
+              reject(new Error('Animal not found in local storage')); //correct line
             }
         } catch (error) {
-            reject(`Error updating animal: ${error.message}`);
+            reject(new Error(`Error updating animal: ${error.message}`));
         }
     });
 }
-
