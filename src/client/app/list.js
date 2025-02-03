@@ -8,6 +8,8 @@ let currentPage = 1;
 const perPage = 5;
 // Global varible for the array of animals
 let animalsArray = [];
+// Simulate API delay for 2 seconds
+const API_DELAY = 2000;
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
@@ -179,15 +181,29 @@ function managePagination() {
         }, { once: true });
     }
 }
+async function getAnimalsWithDelay() {
+        return new Promise((resolve) => {
+            setTimeout(async () => {
+                 const animals = await getAnimals();
+                 resolve(animals)
+               }, API_DELAY);
+        })
+}
 
 async function initializePage() {
+    // Show loading message
+    const loadingMessageBox = document.getElementById('loading-message-box');
+    loadingMessageBox.classList.remove('d-none');
     try {
-        const animals = await getAnimals();
+        const animals = await getAnimalsWithDelay();
         animalsArray = animals;
         managePagination();
         populateAnimalTable(getCurrentPageAnimals());
     } catch (error) {
         console.error('Error fetching animals:', error);
+    }finally{
+        // hide loading message
+        loadingMessageBox.classList.add('d-none');
     }
 }
 // Function to get the animals for the current page
