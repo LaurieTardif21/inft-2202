@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Web Shop</a>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                <li class="nav-item active"><a class="nav-link" href="add.html">Add Product</a></li>
+                <li class="nav-item"><a class="nav-link" href="list.html">Product List</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        <h1>Add a New Product</h1>
+        <form id="add-product-form">
+            <div class="form-group">
+                <label for="product-name">Product Name</label>
+                <input type="text" class="form-control" id="product-name" required>
+            </div>
+            <div class="form-group">
+                <label for="product-price">Product Price</label>
+                <input type="number" step="0.01" min="0" class="form-control" id="product-price" required>
+            </div>
+            <div class="form-group">
+                <label for="product-stock">Stock Quantity</label>
+                <input type="number" min="0" class="form-control" id="product-stock" required>
+            </div>
+            <div class="form-group">
+                <label for="product-description">Product Description</label>
+                <textarea class="form-control" id="product-description" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submit-button">Add Product</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; <span id="year"></span> Laurie Tardif</p>
+        <script src="js/footer.js"></script>
+        <script src="js/product.service.js"></script> 
+        <script src="js/add.js"></script>
+    </footer>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("add-product-form");
+        var submitButton = document.getElementById("submit-button");
+        var products = JSON.parse(localStorage.getItem("products")) || [];
+        var editIndex = sessionStorage.getItem("editIndex") ? parseInt(sessionStorage.getItem("editIndex")) : -1;
+
+        function populateFormFields() {
+            if (editIndex !== -1 && editIndex < products.length) {
+                var product = products[editIndex];
+                document.getElementById("product-name").value = product.name;
+                document.getElementById("product-description").value = product.description;
+                document.getElementById("product-price").value = product.price;
+                document.getElementById("product-stock").value = product.stock;
+                submitButton.textContent = "Update Product";
+            }
+        }
+
+        populateFormFields();
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var name = document.getElementById("product-name").value;
+            var price = document.getElementById("product-price").value;
+            var stock = document.getElementById("product-stock").value;
+            var description = document.getElementById("product-description").value;
+
+            if (!name || !price || !stock || !description) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            price = parseFloat(price);
+            stock = parseInt(stock);
+
+            if (isNaN(price) || price < 0) {
+                alert("Please enter a valid non-negative number for price.");
+                return;
+            }
+
+            if (isNaN(stock) || stock < 0) {
+                alert("Please enter a valid non-negative number for stock.");
+                return;
+            }
+
+            var product = {
+                name: name,
+                price: price.toFixed(2),
+                stock: stock,
+                description: description
+            };
+
+            if (editIndex === -1) {
+                products.push(product);
+            } else {
+                products.splice(editIndex, 1); // Remove the old product
+                products.push(product); // Add the updated product
+                editIndex = -1;
+                submitButton.textContent = "Add Product";
+            }
+
+            localStorage.setItem("products", JSON.stringify(products));
+            form.reset();
+            alert("Product saved successfully!");
+            sessionStorage.removeItem("editIndex");
+            window.location.href = "list.html"; // Redirect back to the list page after saving
+        });
+    });
+    </script>
+</body>
+</html>
