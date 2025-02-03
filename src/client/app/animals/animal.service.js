@@ -64,13 +64,12 @@ export function findAnimal(animalId) {
             const animals = JSON.parse(localStorage.getItem('animals')) || [];
             const animal = animals.find(a => a.id === animalId);
 
-            if (animal) {
-                resolve(animal); // Found in local storage
-            } else {
-                reject(new Error(`Error finding animal: animal not found`));
+            if (!animal) {
+                throw new Error(`Error finding animal: animal not found`);
             }
+            resolve(animal); // Found in local storage
         } catch (error) {
-            reject(new Error(`Error finding animal: ${error.message}`));
+            reject(error);
         }
     });
 }
@@ -83,15 +82,14 @@ export function updateAnimal(updatedAnimal) {
             const animals = JSON.parse(localStorage.getItem('animals')) || [];
             const index = animals.findIndex(a => a.id === updatedAnimal.id);
 
-            if (index !== -1) {
-                animals[index] = updatedAnimal;
-                localStorage.setItem('animals', JSON.stringify(animals));
-                resolve();
-            } else {
-              reject(new Error('Animal not found in local storage')); //correct line
+            if (index === -1) {
+                throw new Error('Animal not found in local storage');
             }
+            animals[index] = updatedAnimal;
+            localStorage.setItem('animals', JSON.stringify(animals));
+            resolve();
         } catch (error) {
-            reject(new Error(`Error updating animal: ${error.message}`));
+            reject(error);
         }
     });
 }
