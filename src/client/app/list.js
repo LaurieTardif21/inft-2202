@@ -163,7 +163,7 @@ function managePagination() {
         pageNumberLink.addEventListener('click', async (event) => {
             event.preventDefault();
             currentPage = i;
-             await loadPage();
+            await loadPage();
         });
 
         //append the elements
@@ -178,7 +178,7 @@ function managePagination() {
         previousPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             currentPage--;
-             await loadPage();
+            await loadPage();
         }, { once: true });
     }
 
@@ -189,7 +189,7 @@ function managePagination() {
         nextPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             currentPage++;
-             await loadPage();
+            await loadPage();
         }, { once: true });
     }
 }
@@ -227,13 +227,15 @@ function getCurrentPageAnimals() {
     return animalsArray.slice(startIndex, endIndex);
 }
 async function loadPage() {
-   if (animalListTable && loadingSpinner) {
+    if(animalListTable && loadingSpinner){
         // hide the animal list
         animalListTable.classList.add('d-none');
         // Show the loading spinner
         loadingSpinner.classList.remove('d-none');
         // Wait for populateAnimalTable to finish before continuing
+        // update the table
         await new Promise(resolve => {
+            animalsArray = (animalsArray)
             populateAnimalTable(getCurrentPageAnimals());
             resolve();
         });
@@ -266,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkIfListIsEmpty(false);
                 // Update the pagination
                 managePagination();
-                  await loadPage();
+                await loadPage();
                 // Close the modal
                 const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
                 deleteConfirmationModal.hide();
