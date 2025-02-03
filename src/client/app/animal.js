@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
-        return !isNaN(num) && num >= 0;
+        if (isNaN(num) || num < 0) {
+            throw new Error('Input must be a non-negative number.');
+        }
+        return true; // Indicate validation passed
     }
 
     // Helper function to clear all errors
@@ -31,32 +34,34 @@ document.addEventListener('DOMContentLoaded', () => {
         legsError.textContent = '';
         soundError.textContent = '';
     }
-
+    // Function to fill the form
+    async function fillForm(){
+          // Editing an animal
+          saveButton.textContent = 'Save Animal'; // Change button text
+          nameInput.disabled = true; // Disable name input in edit mode
+          try {
+            const animal = await findAnimal(animalId);
+             // Pre-fill the form
+             nameInput.value = animal.name;
+             breedInput.value = animal.breed;
+             eyesInput.value = animal.eyes;
+             legsInput.value = animal.legs;
+             soundInput.value = animal.sound;
+          } catch (error) {
+             console.error('Error fetching animal:', error);
+             alert('Failed to fetch animal data. Please try again.');
+          }
+    }
+    
     if (animalId) {
-        // Editing an animal
-        saveButton.textContent = 'Save Animal'; // Change button text
-        nameInput.disabled = true; // Disable name input in edit mode
-
-        findAnimal(animalId)
-            .then((animal) => {
-                // Pre-fill the form
-                nameInput.value = animal.name;
-                breedInput.value = animal.breed;
-                eyesInput.value = animal.eyes;
-                legsInput.value = animal.legs;
-                soundInput.value = animal.sound;
-            })
-            .catch((error) => {
-                console.error('Error fetching animal:', error);
-                alert('Failed to fetch animal data. Please try again.');
-            });
+       fillForm();
     } else {
         // Adding a new animal
         saveButton.textContent = 'Add Animal'; //Change button text
         nameInput.disabled = false; // Enable name input in add mode (optional)
     }
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Prevent the default form submission
         clearErrors();// Reset error messages
 
@@ -68,31 +73,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const sound = soundInput.value.trim();
 
         // Validation
-        let isValid = true; // Assume the form is valid initially
-        if (!breed) {
-            breedError.textContent = 'Breed is required.';
-            isValid = false;
-        }
-
-        if (!isValidNonNegativeNumber(eyes)) {
-            eyesError.textContent = 'Eyes must be a non-negative number.';
-            isValid = false;
-        }
-
-        if (!isValidNonNegativeNumber(legs)) {
-            legsError.textContent = 'Legs must be a non-negative number.';
-            isValid = false;
-        }
-        if (!sound) {
-            soundError.textContent = 'Sound is required.';
-            isValid = false;
-        }
-
-        // If any validation failed, stop the submission
-        if (!isValid) {
+        try {
+            if (!breed) {
+                throw new Error('Breed is required.');
+            }
+            isValidNonNegativeNumber(eyes);
+            isValidNonNegativeNumber(legs);
+            if (!sound) {
+                throw new Error('Sound is required.');
+            }
+        } catch (error) {
+            //Error handling
+            if (error.message === 'Breed is required.') {
+                breedError.textContent = error.message;
+            } else if (error.message === 'Input must be a non-negative number.') {
+                eyesError.textContent = (eyesError.textContent)?eyesError.textContent: error.message;
+                legsError.textContent = (legsError.textContent)?legsError.textContent: error.message;
+            }else if (error.message === 'Sound is required.') {
+                soundError.textContent = error.message;
+            }
             return;
         }
-
         // Create the animal object
         const animal = {
             name: name,
@@ -102,28 +103,20 @@ document.addEventListener('DOMContentLoaded', () => {
             sound: sound,
         };
 
-        if (animalId) {
-            // If editing, add the id to the animal object
-            animal.id = animalId;
-            // Call updateAnimal
-            updateAnimal(animal)
-                .then(() => {
-                    window.location.href = 'list.html'; // Redirect to list page
-                })
-                .catch((error) => {
-                    console.error('Error updating animal:', error);
-                    alert('Failed to update animal. Please try again.');
-                });
-        } else {
-            // If adding, call addAnimal
-            addAnimal(animal)
-                .then(() => {
-                    window.location.href = 'list.html'; // Redirect to list page
-                })
-                .catch((error) => {
-                    console.error('Error adding animal:', error);
-                    alert('Failed to add animal. Please try again.');
-                });
+        try{
+            if (animalId) {
+                // If editing, add the id to the animal object
+                animal.id = animalId;
+                 // Call updateAnimal
+                await updateAnimal(animal);
+            } else {
+                // If adding, call addAnimal
+                await addAnimal(animal);
+            }
+            window.location.href = 'list.html'; // Redirect to list page
+        }catch(error){
+            console.error('Error adding/updating animal:', error);
+            alert('Failed to add/update animal. Please try again.');
         }
     });
 });

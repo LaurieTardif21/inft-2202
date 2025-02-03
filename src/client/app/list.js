@@ -180,16 +180,15 @@ function managePagination() {
     }
 }
 
-function initializePage() {
-    getAnimals()
-        .then(animals => {
-            animalsArray = animals;
-            managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
-        })
-        .catch(error => {
-            console.error('Error fetching animals:', error);
-        });
+async function initializePage() {
+    try {
+        const animals = await getAnimals();
+        animalsArray = animals;
+        managePagination();
+        populateAnimalTable(getCurrentPageAnimals());
+    } catch (error) {
+        console.error('Error fetching animals:', error);
+    }
 }
 // Function to get the animals for the current page
 function getCurrentPageAnimals() {
@@ -200,35 +199,33 @@ function getCurrentPageAnimals() {
 // Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-    confirmDeleteButton.addEventListener('click', () => {
+    confirmDeleteButton.addEventListener('click', async () => {
         // Check if the animalIdToDelete is defined
         if (animalIdToDelete !== null) {
-            // Perform the deletion using the animalIdToDelete
-            deleteAnimal(animalIdToDelete)
-                .then(() => {
-                    // Remove the animal in the global array
-                    const index = animalsArray.findIndex(animal => animal.id === animalIdToDelete);
-                    if (index !== -1) {
-                        animalsArray.splice(index, 1);
-                    }
-                    // Remove the row from the table
-                    const row = document.getElementById(`animal-${animalIdToDelete}`);
-                    row.remove();
-                    // Update the empty list message if needed
-                    checkIfListIsEmpty();
-                    // Update the pagination
-                    managePagination();
-                    // Update the table
-                    populateAnimalTable(getCurrentPageAnimals());
-                    // Close the modal
-                    const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
-                    deleteConfirmationModal.hide();
-                    // Reset the animalIdToDelete
-                    animalIdToDelete = null;
-                })
-                .catch((error) => {
-                    console.error('Error deleting animal:', error);
-                });
+            try {
+                await deleteAnimal(animalIdToDelete);
+                // Remove the animal in the global array
+                const index = animalsArray.findIndex(animal => animal.id === animalIdToDelete);
+                if (index !== -1) {
+                    animalsArray.splice(index, 1);
+                }
+                // Remove the row from the table
+                const row = document.getElementById(`animal-${animalIdToDelete}`);
+                row.remove();
+                // Update the empty list message if needed
+                checkIfListIsEmpty();
+                // Update the pagination
+                managePagination();
+                // Update the table
+                populateAnimalTable(getCurrentPageAnimals());
+                // Close the modal
+                const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
+                deleteConfirmationModal.hide();
+                // Reset the animalIdToDelete
+                animalIdToDelete = null;
+            } catch (error) {
+                console.error('Error deleting animal:', error);
+            }
         }
     });
     initializePage();
