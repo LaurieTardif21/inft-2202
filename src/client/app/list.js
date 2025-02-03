@@ -93,23 +93,28 @@ function populateAnimalTable(animals) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
     checkIfListIsEmpty(false);
-
+     // Show the animal list
+     const animalListTable = document.getElementById('animals-list');
+     animalListTable.classList.remove('d-none');
+    // hide the spinner
+    const loadingSpinner = document.getElementById('loading-spinner');
+    loadingSpinner.classList.add('d-none');
 }
 
 function checkIfListIsEmpty(isLoading) {
     const tableBody = document.querySelector('#animals-list tbody');
     const messageBox = document.getElementById('message-box');
     const animalListTable = document.getElementById('animals-list');
-    if (isLoading){
-      messageBox.classList.add('d-none');
-    }else{
-      if (tableBody.children.length === 0) {
-          animalListTable.classList.add('d-none');
-          messageBox.classList.remove('d-none');
-      } else {
-          animalListTable.classList.remove('d-none');
-          messageBox.classList.add('d-none');
-      }
+    if (isLoading) {
+        messageBox.classList.add('d-none');
+    } else {
+        if (tableBody.children.length === 0) {
+            animalListTable.classList.add('d-none');
+            messageBox.classList.remove('d-none');
+        } else {
+            animalListTable.classList.remove('d-none');
+            messageBox.classList.add('d-none');
+        }
     }
 }
 // Function to create and manage the pagination
@@ -148,11 +153,10 @@ function managePagination() {
         pageNumberLink.textContent = i;
 
         //manage the click event
-        pageNumberLink.addEventListener('click', (event) => {
+        pageNumberLink.addEventListener('click', async (event) => {
             event.preventDefault();
             currentPage = i;
-            managePagination(); // Update the pagination
-            populateAnimalTable(getCurrentPageAnimals());
+            await loadPage();
         });
 
         //append the elements
@@ -164,11 +168,10 @@ function managePagination() {
     previousPageLi.classList.toggle('disabled', currentPage === 1);
     //add the event if is not disabled
     if (currentPage !== 1) {
-        previousPageLi.querySelector('a').addEventListener('click', (event) => {
+        previousPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             currentPage--;
-            managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
+            await loadPage();
         }, { once: true });
     }
 
@@ -176,11 +179,10 @@ function managePagination() {
     nextPageLi.classList.toggle('disabled', currentPage === numberOfPages);
     //add the event if is not disabled
     if (currentPage !== numberOfPages) {
-        nextPageLi.querySelector('a').addEventListener('click', (event) => {
+        nextPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             currentPage++;
-            managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
+            await loadPage();
         }, { once: true });
     }
 }
@@ -192,6 +194,7 @@ async function getAnimalsWithDelay() {
         }, API_DELAY);
     })
 }
+
 async function initializePage() {
     try {
         //show that the list is loading
@@ -215,6 +218,16 @@ function getCurrentPageAnimals() {
     const startIndex = (currentPage - 1) * perPage;
     const endIndex = startIndex + perPage;
     return animalsArray.slice(startIndex, endIndex);
+}
+async function loadPage(){
+    // hide the animal list
+    const animalListTable = document.getElementById('animals-list');
+    animalListTable.classList.add('d-none');
+    // Show the loading spinner
+    const loadingSpinner = document.getElementById('loading-spinner');
+    loadingSpinner.classList.remove('d-none');
+    managePagination(); // Update the pagination
+    populateAnimalTable(getCurrentPageAnimals());
 }
 // Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
