@@ -10,6 +10,8 @@ const perPage = 5;
 let animalsArray = [];
 // Simulate API delay for 2 seconds
 const API_DELAY = 2000;
+let animalListTable;
+let loadingSpinner;
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
@@ -93,26 +95,31 @@ function populateAnimalTable(animals) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
     checkIfListIsEmpty(false);
-     // Show the animal list
-     const animalListTable = document.getElementById('animals-list');
-     animalListTable.classList.remove('d-none');
+    // Show the animal list
+    if (animalListTable) {
+        animalListTable.classList.remove('d-none');
+    }
     // hide the spinner
-    const loadingSpinner = document.getElementById('loading-spinner');
-    loadingSpinner.classList.add('d-none');
+    if (loadingSpinner) {
+        loadingSpinner.classList.add('d-none');
+    }
 }
 
 function checkIfListIsEmpty(isLoading) {
     const tableBody = document.querySelector('#animals-list tbody');
     const messageBox = document.getElementById('message-box');
-    const animalListTable = document.getElementById('animals-list');
     if (isLoading) {
         messageBox.classList.add('d-none');
     } else {
         if (tableBody.children.length === 0) {
-            animalListTable.classList.add('d-none');
+            if (animalListTable) {
+                animalListTable.classList.add('d-none');
+            }
             messageBox.classList.remove('d-none');
         } else {
-            animalListTable.classList.remove('d-none');
+            if (animalListTable) {
+                animalListTable.classList.remove('d-none');
+            }
             messageBox.classList.add('d-none');
         }
     }
@@ -219,15 +226,15 @@ function getCurrentPageAnimals() {
     const endIndex = startIndex + perPage;
     return animalsArray.slice(startIndex, endIndex);
 }
-async function loadPage(){
-    // hide the animal list
-    const animalListTable = document.getElementById('animals-list');
-    animalListTable.classList.add('d-none');
-    // Show the loading spinner
-    const loadingSpinner = document.getElementById('loading-spinner');
-    loadingSpinner.classList.remove('d-none');
-    managePagination(); // Update the pagination
-    populateAnimalTable(getCurrentPageAnimals());
+async function loadPage() {
+    if(animalListTable && loadingSpinner){
+        // hide the animal list
+        animalListTable.classList.add('d-none');
+        // Show the loading spinner
+        loadingSpinner.classList.remove('d-none');
+        managePagination(); // Update the pagination
+        populateAnimalTable(getCurrentPageAnimals());
+    }
 }
 // Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -236,6 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loadingMessageBox) {
         loadingMessageBox.classList.remove('d-none');
     }
+    animalListTable = document.getElementById('animals-list');
+    loadingSpinner = document.getElementById('loading-spinner');
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
     confirmDeleteButton.addEventListener('click', async () => {
         // Check if the animalIdToDelete is defined
