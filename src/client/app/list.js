@@ -8,6 +8,8 @@ let currentPage = 1;
 const perPage = 5;
 // Global varible for the array of animals
 let animalsArray = [];
+// Simulate API delay for 2 seconds
+const API_DELAY = 2000;
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
@@ -90,21 +92,24 @@ function populateAnimalTable(animals) {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-    checkIfListIsEmpty();
+    checkIfListIsEmpty(false);
 
 }
 
-function checkIfListIsEmpty() {
+function checkIfListIsEmpty(isLoading) {
     const tableBody = document.querySelector('#animals-list tbody');
     const messageBox = document.getElementById('message-box');
     const animalListTable = document.getElementById('animals-list');
-
-    if (tableBody.children.length === 0) {
-        animalListTable.classList.add('d-none');
-        messageBox.classList.remove('d-none');
-    } else {
-        animalListTable.classList.remove('d-none');
-        messageBox.classList.add('d-none');
+    if (isLoading){
+      messageBox.classList.add('d-none');
+    }else{
+      if (tableBody.children.length === 0) {
+          animalListTable.classList.add('d-none');
+          messageBox.classList.remove('d-none');
+      } else {
+          animalListTable.classList.remove('d-none');
+          messageBox.classList.add('d-none');
+      }
     }
 }
 // Function to create and manage the pagination
@@ -179,15 +184,30 @@ function managePagination() {
         }, { once: true });
     }
 }
-
+async function getAnimalsWithDelay() {
+    return new Promise((resolve) => {
+        setTimeout(async () => {
+            const animals = await getAnimals();
+            resolve(animals)
+        }, API_DELAY);
+    })
+}
 async function initializePage() {
     try {
-        const animals = await getAnimals();
+        //show that the list is loading
+        checkIfListIsEmpty(true);
+        const animals = await getAnimalsWithDelay();
         animalsArray = animals;
         managePagination();
         populateAnimalTable(getCurrentPageAnimals());
     } catch (error) {
         console.error('Error fetching animals:', error);
+    } finally {
+        // Hide loading message
+        const loadingMessageBox = document.getElementById('loading-message-box');
+        if (loadingMessageBox) {
+            loadingMessageBox.classList.add('d-none');
+        }
     }
 }
 // Function to get the animals for the current page
@@ -198,6 +218,11 @@ function getCurrentPageAnimals() {
 }
 // Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Show loading message
+    const loadingMessageBox = document.getElementById('loading-message-box');
+    if (loadingMessageBox) {
+        loadingMessageBox.classList.remove('d-none');
+    }
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
     confirmDeleteButton.addEventListener('click', async () => {
         // Check if the animalIdToDelete is defined
@@ -213,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const row = document.getElementById(`animal-${animalIdToDelete}`);
                 row.remove();
                 // Update the empty list message if needed
-                checkIfListIsEmpty();
+                checkIfListIsEmpty(false);
                 // Update the pagination
                 managePagination();
                 // Update the table
