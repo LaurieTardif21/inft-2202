@@ -42,11 +42,17 @@
         <i class="fa fa-spinner fa-5x fa-spin"></i>
         Loading animals list... Please wait.
     </div>
+    <!--loading-->
+    <div id="loading-pagination-message-box" class="alert alert-info text-center d-none" role="alert">
+        Loading...
+    </div>
 
- <!--loading-->
- <div id="loading-pagination-message-box" class="alert alert-info text-center d-none" role="alert">
-    Loading...
-</div>
+    <!--loading-->
+    <div id="loading-spinner" class="d-none text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
     <!-- Animal List Table -->
     <table id="animals-list" class="table table-striped d-none">
@@ -98,7 +104,7 @@
         </div>
     </div>
 </div>
-<script type="module" src="app/list.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const currentPath = window.location.pathname;
@@ -112,6 +118,6 @@
         });
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script type="module" src="app/list.js"></script>
 </body>
 </html>
