@@ -215,6 +215,10 @@ async function initializePage() {
         populateAnimalTable(getCurrentPageAnimals());
     } catch (error) {
         console.error('Error fetching animals:', error);
+         // Show error message
+         const errorMessagebox = document.getElementById('error-message-box');
+        errorMessagebox.textContent = "Error fetching animals, please try again later";
+        errorMessagebox.classList.remove('d-none');
     } finally {
         // Hide loading message
         const loadingMessageBox = document.getElementById('loading-message-box');
@@ -261,6 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteConfirmationModal.hide();
             } catch (error) {
                 console.error('Error deleting animal:', error);
+                 // Show error message
+                const errorMessagebox = document.getElementById('error-message-box');
+                errorMessagebox.textContent = "Error deleting the animal, please try again later";
+                errorMessagebox.classList.remove('d-none');
             }
         }
     });
