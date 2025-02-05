@@ -49,6 +49,7 @@ function createDeleteButton(animalId) {
 }
 
 async function populateAnimalTable(animals) {
+    manageNoServiceMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
@@ -101,12 +102,16 @@ function checkIfListIsEmpty(isLoading) {
     const tableBody = document.querySelector('#animals-list tbody');
     const messageBox = document.getElementById('message-box');
     const animalListTable = document.getElementById('animals-list');
+    const errorMessagebox = document.getElementById('error-message-box');
     if (isLoading) {
         messageBox.classList.add('d-none');
     } else {
         if (tableBody.children.length === 0) {
-            animalListTable.classList.add('d-none');
-            messageBox.classList.remove('d-none');
+            if (errorMessagebox.classList.contains('d-none')) {
+                animalListTable.classList.add('d-none');
+                messageBox.classList.remove('d-none');
+            }
+            
         } else {
             animalListTable.classList.remove('d-none');
             messageBox.classList.add('d-none');
@@ -154,6 +159,8 @@ function managePagination() {
             event.preventDefault();
             //show loading div
             manageLoadingPagination(true);
+             //hide no service message
+             manageNoServiceMessage(false);
             currentPage = i;
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
@@ -175,6 +182,8 @@ function managePagination() {
             event.preventDefault();
             //show loading div
             manageLoadingPagination(true);
+             //hide no service message
+             manageNoServiceMessage(false);
             currentPage--;
             tableBody.innerHTML = '';
             managePagination();
@@ -192,6 +201,8 @@ function managePagination() {
             event.preventDefault();
             //show loading div
             manageLoadingPagination(true);
+             //hide no service message
+             manageNoServiceMessage(false);
             currentPage++;
             tableBody.innerHTML = '';
             managePagination();
@@ -214,7 +225,6 @@ function manageNoServiceMessage(show) {
     const loadingMessageBox = document.getElementById('loading-message-box');
     const messageBox = document.getElementById('message-box');
     const errorMessagebox = document.getElementById('error-message-box');
-    const paginationContainer = document.getElementById('paginationContainer');
     if (show) {
         //show the no service message and hide everything else
         noServiceMessageBox.classList.remove('d-none');
@@ -258,6 +268,8 @@ async function initializePage() {
             errorMessagebox.textContent = "Error fetching animals, please try again later";
             errorMessagebox.classList.remove('d-none');
         }
+          // Show "no service" message if everything fails
+        manageNoServiceMessage(true);
     } finally {
         //re-enable the user interaction
         document.body.classList.remove('loading');
@@ -269,9 +281,7 @@ async function initializePage() {
         if (loadingMessageBox) {
             loadingMessageBox.classList.add('d-none');
         }
-        if (document.getElementById('animals-list').classList.contains('d-none') && document.getElementById('message-box').classList.contains('d-none') && document.getElementById('error-message-box').classList.contains('d-none')) {
-            manageNoServiceMessage(true); // Show "no service" message if everything fails
-        }
+
     }
 }
 // Function to get the animals for the current page
@@ -329,9 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 //enable the pagination
                 const paginationUl = document.getElementById('pagination');
                 paginationUl.classList.remove('disabled');
-                if (document.getElementById('animals-list').classList.contains('d-none') && document.getElementById('message-box').classList.contains('d-none') && document.getElementById('error-message-box').classList.contains('d-none')) {
-                    manageNoServiceMessage(true); // Show "no service" message if everything fails
-                }
+              
             }
         }
     });
