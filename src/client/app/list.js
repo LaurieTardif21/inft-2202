@@ -48,7 +48,8 @@ function createDeleteButton(animalId) {
     return button;
 }
 
-function populateAnimalTable(animals) {
+async function populateAnimalTable(animals) {
+    await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
 
@@ -92,8 +93,6 @@ function populateAnimalTable(animals) {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-   // const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
-   // loadingPaginationMessage.classList.add('d-none'); remove this
     checkIfListIsEmpty(false);
 
 }
@@ -134,7 +133,6 @@ function managePagination() {
     }
     // Calculate the number of pages
     const numberOfPages = Math.ceil(animalsArray.length / perPage);
-    //const loadingPaginationMessage = document.getElementById('loading-pagination-message-box'); remove this
     const tableBody = document.querySelector('#animals-list tbody');
 
     // Create the page number
@@ -154,10 +152,9 @@ function managePagination() {
         //manage the click event
         pageNumberLink.addEventListener('click', (event) => {
             event.preventDefault();
-             //show loading div
-             manageLoadingPagination(true);
+            //show loading div
+            manageLoadingPagination(true);
             currentPage = i;
-           // loadingPaginationMessage.classList.remove('d-none'); remove this
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
             populateAnimalTable(getCurrentPageAnimals());
@@ -176,10 +173,9 @@ function managePagination() {
         previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
         previousPageLi.querySelector('a').addEventListener('click', (event) => {
             event.preventDefault();
-             //show loading div
-             manageLoadingPagination(true);
+            //show loading div
+            manageLoadingPagination(true);
             currentPage--;
-            //loadingPaginationMessage.classList.remove('d-none'); remove this
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -194,10 +190,9 @@ function managePagination() {
         nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
         nextPageLi.querySelector('a').addEventListener('click', (event) => {
             event.preventDefault();
-             //show loading div
-             manageLoadingPagination(true);
+            //show loading div
+            manageLoadingPagination(true);
             currentPage++;
-            //loadingPaginationMessage.classList.remove('d-none'); remove this
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
