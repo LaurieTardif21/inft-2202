@@ -50,6 +50,7 @@ function createDeleteButton(animalId) {
 
 function populateAnimalTable(animals) {
     const tableBody = document.querySelector('#animals-list tbody');
+    manageLoadingPagination(false);
 
     animals.forEach((animal) => {
         // ... other code to create the row
@@ -91,8 +92,8 @@ function populateAnimalTable(animals) {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-    const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
-    loadingPaginationMessage.classList.add('d-none');
+   // const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
+   // loadingPaginationMessage.classList.add('d-none'); remove this
     checkIfListIsEmpty(false);
 
 }
@@ -133,7 +134,7 @@ function managePagination() {
     }
     // Calculate the number of pages
     const numberOfPages = Math.ceil(animalsArray.length / perPage);
-    const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
+    //const loadingPaginationMessage = document.getElementById('loading-pagination-message-box'); remove this
     const tableBody = document.querySelector('#animals-list tbody');
 
     // Create the page number
@@ -153,8 +154,10 @@ function managePagination() {
         //manage the click event
         pageNumberLink.addEventListener('click', (event) => {
             event.preventDefault();
+             //show loading div
+             manageLoadingPagination(true);
             currentPage = i;
-            loadingPaginationMessage.classList.remove('d-none');
+           // loadingPaginationMessage.classList.remove('d-none'); remove this
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
             populateAnimalTable(getCurrentPageAnimals());
@@ -173,8 +176,10 @@ function managePagination() {
         previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
         previousPageLi.querySelector('a').addEventListener('click', (event) => {
             event.preventDefault();
+             //show loading div
+             manageLoadingPagination(true);
             currentPage--;
-            loadingPaginationMessage.classList.remove('d-none');
+            //loadingPaginationMessage.classList.remove('d-none'); remove this
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -189,8 +194,10 @@ function managePagination() {
         nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
         nextPageLi.querySelector('a').addEventListener('click', (event) => {
             event.preventDefault();
+             //show loading div
+             manageLoadingPagination(true);
             currentPage++;
-            loadingPaginationMessage.classList.remove('d-none');
+            //loadingPaginationMessage.classList.remove('d-none'); remove this
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -226,6 +233,14 @@ function manageNoServiceMessage(show) {
         noServiceMessageBox.classList.add('d-none');
     }
 }
+function manageLoadingPagination(show) {
+    const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
+    if (show) {
+        loadingPaginationMessage.classList.remove('d-none');
+    } else {
+        loadingPaginationMessage.classList.add('d-none');
+    }
+}
 async function initializePage() {
     try {
         //disable the user interaction
@@ -244,10 +259,10 @@ async function initializePage() {
         console.error('Error fetching animals:', error);
         // Show error message
         const errorMessagebox = document.getElementById('error-message-box');
-         if(errorMessagebox){
+        if (errorMessagebox) {
             errorMessagebox.textContent = "Error fetching animals, please try again later";
             errorMessagebox.classList.remove('d-none');
-         }
+        }
     } finally {
         //re-enable the user interaction
         document.body.classList.remove('loading');
@@ -259,7 +274,7 @@ async function initializePage() {
         if (loadingMessageBox) {
             loadingMessageBox.classList.add('d-none');
         }
-         if (document.getElementById('animals-list').classList.contains('d-none') && document.getElementById('message-box').classList.contains('d-none') && document.getElementById('error-message-box').classList.contains('d-none')) {
+        if (document.getElementById('animals-list').classList.contains('d-none') && document.getElementById('message-box').classList.contains('d-none') && document.getElementById('error-message-box').classList.contains('d-none')) {
             manageNoServiceMessage(true); // Show "no service" message if everything fails
         }
     }
@@ -309,17 +324,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error deleting animal:', error);
                 // Show error message
                 const errorMessagebox = document.getElementById('error-message-box');
-                 if(errorMessagebox){
-                     errorMessagebox.textContent = "Error deleting the animal, please try again later";
+                if (errorMessagebox) {
+                    errorMessagebox.textContent = "Error deleting the animal, please try again later";
                     errorMessagebox.classList.remove('d-none');
-                 }
+                }
             } finally {
                 //re-enable the user interaction
                 document.body.classList.remove('loading');
                 //enable the pagination
                 const paginationUl = document.getElementById('pagination');
                 paginationUl.classList.remove('disabled');
-                  if (document.getElementById('animals-list').classList.contains('d-none') && document.getElementById('message-box').classList.contains('d-none') && document.getElementById('error-message-box').classList.contains('d-none')) {
+                if (document.getElementById('animals-list').classList.contains('d-none') && document.getElementById('message-box').classList.contains('d-none') && document.getElementById('error-message-box').classList.contains('d-none')) {
                     manageNoServiceMessage(true); // Show "no service" message if everything fails
                 }
             }
