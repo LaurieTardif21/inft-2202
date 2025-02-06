@@ -53,7 +53,7 @@ async function populateAnimalTable(animals) {
     manageNoServiceMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
-
+    tableBody.innerHTML = '';
     animals.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
@@ -164,11 +164,10 @@ function managePagination() {
             //hide no service message
             manageNoServiceMessage(false);
             currentPage = i;
-            tableBody.innerHTML = '';
-            managePagination(); // Update the pagination
-            populateAnimalTable(getCurrentPageAnimals());
-            // Hide the loading message after the browser has had a chance to render the table
-            requestAnimationFrame(() => {
+             // Update the pagination
+            managePagination();
+            populateAnimalTable(getCurrentPageAnimals()).then(() => {
+                // Hide the loading message after the table is rendered
                 manageLoadingPagination(false);
             });
         });
@@ -192,10 +191,9 @@ function managePagination() {
             //hide no service message
             manageNoServiceMessage(false);
             currentPage--;
-            tableBody.innerHTML = '';
-            managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
-            requestAnimationFrame(() => {
+              // Update the pagination
+              managePagination();
+            populateAnimalTable(getCurrentPageAnimals()).then(() => {
                 manageLoadingPagination(false);
             });
         });
@@ -215,10 +213,9 @@ function managePagination() {
             //hide no service message
             manageNoServiceMessage(false);
             currentPage++;
-            tableBody.innerHTML = '';
-            managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
-            requestAnimationFrame(() => {
+               // Update the pagination
+               managePagination();
+            populateAnimalTable(getCurrentPageAnimals()).then(() => {
                 manageLoadingPagination(false);
             });
         });
@@ -271,6 +268,7 @@ async function initializePage() {
     const loadingMessage = document.getElementById('loading-message-box');
     const animalListTable = document.getElementById('animals-list');
     const errorMessagebox = document.getElementById('error-message-box');
+    manageLoadingPagination(true);
     try {
         //show the loading
         loadingMessage.classList.remove('d-none');
@@ -284,7 +282,9 @@ async function initializePage() {
             checkIfListIsEmpty(true);
         } else {
             // Populate the table with the animals
-            populateAnimalTable(getCurrentPageAnimals());
+            populateAnimalTable(getCurrentPageAnimals()).then(() => {
+                manageLoadingPagination(false);
+            });
             //manage the pagination
             managePagination();
             //hide the error
