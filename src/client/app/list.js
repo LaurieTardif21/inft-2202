@@ -111,7 +111,7 @@ function checkIfListIsEmpty(isLoading) {
                 animalListTable.classList.add('d-none');
                 messageBox.classList.remove('d-none');
             }
-            
+
         } else {
             animalListTable.classList.remove('d-none');
             messageBox.classList.add('d-none');
@@ -161,12 +161,14 @@ function managePagination() {
             console.log(`Pagination link clicked: Page ${i}`);
             //show loading div
             manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
+            //hide no service message
+            manageNoServiceMessage(false);
             currentPage = i;
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
-            populateAnimalTable(getCurrentPageAnimals()).then(()=> {
+            populateAnimalTable(getCurrentPageAnimals());
+            // Hide the loading message after the browser has had a chance to render the table
+            requestAnimationFrame(() => {
                 manageLoadingPagination(false);
             });
         });
@@ -187,12 +189,13 @@ function managePagination() {
             console.log("Previous page link clicked");
             //show loading div
             manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
+            //hide no service message
+            manageNoServiceMessage(false);
             currentPage--;
             tableBody.innerHTML = '';
             managePagination();
-            populateAnimalTable(getCurrentPageAnimals()).then(()=> {
+            populateAnimalTable(getCurrentPageAnimals());
+            requestAnimationFrame(() => {
                 manageLoadingPagination(false);
             });
         });
@@ -209,18 +212,19 @@ function managePagination() {
             console.log("Next page link clicked");
             //show loading div
             manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
+            //hide no service message
+            manageNoServiceMessage(false);
             currentPage++;
             tableBody.innerHTML = '';
             managePagination();
-            populateAnimalTable(getCurrentPageAnimals()).then(()=> {
+            populateAnimalTable(getCurrentPageAnimals());
+            requestAnimationFrame(() => {
                 manageLoadingPagination(false);
             });
         });
     }
     console.log("managePagination: end");
-    
+
 }
 async function getAnimalsWithDelay() {
     return new Promise((resolve) => {
