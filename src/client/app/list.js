@@ -9,7 +9,7 @@ const perPage = 5;
 // Global varible for the array of animals
 let animalsArray = [];
 // Simulate API delay for 2 seconds
-const API_DELAY = 5000; // Increased delay for testing
+const API_DELAY = 2000;
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
@@ -49,11 +49,11 @@ function createDeleteButton(animalId) {
 }
 
 async function populateAnimalTable(animals) {
-    console.log("populateAnimalTable: start");
     manageNoServiceMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
-    tableBody.innerHTML = '';
+    manageLoadingPagination(false);
+
     animals.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
@@ -95,7 +95,7 @@ async function populateAnimalTable(animals) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
     checkIfListIsEmpty(false);
-    console.log("populateAnimalTable: end");
+
 }
 
 function checkIfListIsEmpty(isLoading) {
@@ -111,7 +111,7 @@ function checkIfListIsEmpty(isLoading) {
                 animalListTable.classList.add('d-none');
                 messageBox.classList.remove('d-none');
             }
-
+            
         } else {
             animalListTable.classList.remove('d-none');
             messageBox.classList.add('d-none');
@@ -120,7 +120,6 @@ function checkIfListIsEmpty(isLoading) {
 }
 // Function to create and manage the pagination
 function managePagination() {
-    console.log("managePagination: start");
     // Get the container and the ul
     const paginationContainer = document.getElementById('paginationContainer');
     const paginationUl = document.getElementById('pagination');
@@ -158,18 +157,14 @@ function managePagination() {
         //manage the click event
         pageNumberLink.addEventListener('click', (event) => {
             event.preventDefault();
-            console.log(`Pagination link clicked: Page ${i}`);
             //show loading div
             manageLoadingPagination(true);
-            //hide no service message
-            manageNoServiceMessage(false);
+             //hide no service message
+             manageNoServiceMessage(false);
             currentPage = i;
-             // Update the pagination
-            managePagination();
-            populateAnimalTable(getCurrentPageAnimals()).then(() => {
-                // Hide the loading message after the table is rendered
-                manageLoadingPagination(false);
-            });
+            tableBody.innerHTML = '';
+            managePagination(); // Update the pagination
+            populateAnimalTable(getCurrentPageAnimals());
         });
 
         //append the elements
@@ -185,17 +180,14 @@ function managePagination() {
         previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
         previousPageLi.querySelector('a').addEventListener('click', (event) => {
             event.preventDefault();
-            console.log("Previous page link clicked");
             //show loading div
             manageLoadingPagination(true);
-            //hide no service message
-            manageNoServiceMessage(false);
+             //hide no service message
+             manageNoServiceMessage(false);
             currentPage--;
-              // Update the pagination
-              managePagination();
-            populateAnimalTable(getCurrentPageAnimals()).then(() => {
-                manageLoadingPagination(false);
-            });
+            tableBody.innerHTML = '';
+            managePagination();
+            populateAnimalTable(getCurrentPageAnimals());
         });
     }
 
@@ -207,21 +199,16 @@ function managePagination() {
         nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
         nextPageLi.querySelector('a').addEventListener('click', (event) => {
             event.preventDefault();
-            console.log("Next page link clicked");
             //show loading div
             manageLoadingPagination(true);
-            //hide no service message
-            manageNoServiceMessage(false);
+             //hide no service message
+             manageNoServiceMessage(false);
             currentPage++;
-               // Update the pagination
-               managePagination();
-            populateAnimalTable(getCurrentPageAnimals()).then(() => {
-                manageLoadingPagination(false);
-            });
+            tableBody.innerHTML = '';
+            managePagination();
+            populateAnimalTable(getCurrentPageAnimals());
         });
     }
-    console.log("managePagination: end");
-
 }
 async function getAnimalsWithDelay() {
     return new Promise((resolve) => {
@@ -238,8 +225,6 @@ function manageNoServiceMessage(show) {
     const loadingMessageBox = document.getElementById('loading-message-box');
     const messageBox = document.getElementById('message-box');
     const errorMessagebox = document.getElementById('error-message-box');
-    const paginationContainer = document.getElementById('paginationContainer');
-
     if (show) {
         //show the no service message and hide everything else
         noServiceMessageBox.classList.remove('d-none');
@@ -254,7 +239,6 @@ function manageNoServiceMessage(show) {
     }
 }
 function manageLoadingPagination(show) {
-    console.log(`manageLoadingPagination: ${show ? 'show' : 'hide'}`);
     const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
     if (show) {
         loadingPaginationMessage.classList.remove('d-none');
@@ -263,78 +247,101 @@ function manageLoadingPagination(show) {
     }
 }
 async function initializePage() {
-    console.log("initializePage: start");
-    //manage the loading message
-    const loadingMessage = document.getElementById('loading-message-box');
-    const animalListTable = document.getElementById('animals-list');
-    const errorMessagebox = document.getElementById('error-message-box');
-    manageLoadingPagination(true);
     try {
-        //show the loading
-        loadingMessage.classList.remove('d-none');
-        animalListTable.classList.add('d-none');
-        //get the animals
+        //disable the user interaction
+        document.body.classList.add('loading');
+        //disable the pagination
+        const paginationUl = document.getElementById('pagination');
+        paginationUl.classList.add('disabled');
+
+        //show that the list is loading
+        checkIfListIsEmpty(true);
         const animals = await getAnimalsWithDelay();
-        //save the array
         animalsArray = animals;
-        //check if there is animals
-        if (animals.length === 0) {
-            checkIfListIsEmpty(true);
-        } else {
-            // Populate the table with the animals
-            populateAnimalTable(getCurrentPageAnimals()).then(() => {
-                manageLoadingPagination(false);
-            });
-            //manage the pagination
-            managePagination();
-            //hide the error
-            errorMessagebox.classList.add('d-none');
+        managePagination();
+        populateAnimalTable(getCurrentPageAnimals());
+    } catch (error) {
+        console.error('Error fetching animals:', error);
+        // Show error message
+        const errorMessagebox = document.getElementById('error-message-box');
+        if (errorMessagebox) {
+            errorMessagebox.textContent = "Error fetching animals, please try again later";
+            errorMessagebox.classList.remove('d-none');
+        }
+          // Show "no service" message if everything fails
+        manageNoServiceMessage(true);
+    } finally {
+        //re-enable the user interaction
+        document.body.classList.remove('loading');
+        //enable the pagination
+        const paginationUl = document.getElementById('pagination');
+        paginationUl.classList.remove('disabled');
+        // Hide loading message
+        const loadingMessageBox = document.getElementById('loading-message-box');
+        if (loadingMessageBox) {
+            loadingMessageBox.classList.add('d-none');
         }
 
-    } catch (error) {
-        //hide the loading
-        loadingMessage.classList.add('d-none');
-        //show the error message
-        errorMessagebox.classList.remove('d-none');
-        errorMessagebox.textContent = "An error occurred while loading the animals. Please try again later.";
-        console.error("Error loading animals:", error);
-
-    } finally {
-        // Hide the loading message
-        loadingMessage.classList.add('d-none');
     }
-    console.log("initializePage: end");
 }
-
+// Function to get the animals for the current page
 function getCurrentPageAnimals() {
-    console.log("getCurrentPageAnimals");
     const startIndex = (currentPage - 1) * perPage;
     const endIndex = startIndex + perPage;
     return animalsArray.slice(startIndex, endIndex);
 }
-// Delete logic
-const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-if (confirmDeleteButton) {
+// Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Show loading message
+    const loadingMessageBox = document.getElementById('loading-message-box');
+    if (loadingMessageBox) {
+        loadingMessageBox.classList.remove('d-none');
+    }
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
     confirmDeleteButton.addEventListener('click', async () => {
-        // Hide the modal
-        const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
-        deleteConfirmationModal.hide();
-
-        if (animalIdToDelete) {
+        // Check if the animalIdToDelete is defined
+        //disable the user interaction
+        document.body.classList.add('loading');
+        //disable the pagination
+        const paginationUl = document.getElementById('pagination');
+        paginationUl.classList.add('disabled');
+        if (animalIdToDelete !== null) {
             try {
                 await deleteAnimal(animalIdToDelete);
-                // Remove the deleted animal from the UI
-                const rowToRemove = document.getElementById(`animal-${animalIdToDelete}`);
-                if (rowToRemove) {
-                    rowToRemove.remove();
+                // Remove the animal in the global array
+                const index = animalsArray.findIndex(animal => animal.id === animalIdToDelete);
+                if (index !== -1) {
+                    animalsArray.splice(index, 1);
                 }
-                //reset the animal to delete
-                animalIdToDelete = null;
+                // Remove the row from the table
+                const row = document.getElementById(`animal-${animalIdToDelete}`);
+                row.remove();
+                // Update the empty list message if needed
+                checkIfListIsEmpty(false);
+                // Update the pagination
+                managePagination();
+                // Update the table
+                populateAnimalTable(getCurrentPageAnimals());
+                // Close the modal
+                const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
+                deleteConfirmationModal.hide();
             } catch (error) {
-                console.error("Error deleting animal:", error);
+                console.error('Error deleting animal:', error);
+                // Show error message
+                const errorMessagebox = document.getElementById('error-message-box');
+                if (errorMessagebox) {
+                    errorMessagebox.textContent = "Error deleting the animal, please try again later";
+                    errorMessagebox.classList.remove('d-none');
+                }
+            } finally {
+                //re-enable the user interaction
+                document.body.classList.remove('loading');
+                //enable the pagination
+                const paginationUl = document.getElementById('pagination');
+                paginationUl.classList.remove('disabled');
+              
             }
         }
     });
-}
-//call the initialization of the page
-initializePage();
+    initializePage();
+});
