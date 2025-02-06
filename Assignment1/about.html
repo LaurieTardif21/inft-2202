@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Header with Navigation -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#">Web Shop</a>
@@ -22,15 +23,51 @@
             </div>
         </nav>
     </header>
-    <main class="container">
+
+    <!-- Main Content Section -->
+    <main class="container mt-5">
         <h1>About Us</h1>
-        <img src="../img/Laurie Selfie.jpg" alt="Your Photo" class="img-fluid">
-        <p>Hi, I'm Laurie from Canada. I am a student in college, When I graduate I will be looking for a programming job at a dynamic company.</p>
+        <!-- Profile Image -->
+        <img src="../img/Laurie Selfie.jpg" alt="Your Photo" class="img-fluid rounded-circle" style="max-width: 200px; margin-bottom: 20px;">
+        
+        <p>Hi, I'm Laurie from Canada. I am currently a student, and upon graduation, I am excited to find a programming job at a dynamic company that values creativity and innovation.</p>
+        
+        <!-- Accordion for More Information -->
+        <div id="accordion" class="mt-4">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            More About Me
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body">
+                        I have a deep interest in technology and development. I love to create innovative solutions through coding, and I am particularly interested in web development, software engineering, and mobile app creation. I am always eager to learn new technologies and improve my skills.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information Section -->
+        <div class="mt-4">
+            <h3>Contact Me</h3>
+            <p>If you would like to get in touch, feel free to reach out via email:</p>
+            <p><strong>Email:</strong> <a href="mailto:laurie@example.com">laurie@example.com</a></p>
+        </div>
     </main>
-    <footer>
-        <script src="js/footer.js"></script>
-        <script src="js/product.service.js"></script> <!-- Include ProductService -->
-        <script src="js/about.js"></script> <!-- Update to use ProductService -->
+
+    <!-- Footer Section -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 Web Shop. All Rights Reserved.</p>
+        </div>
     </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
