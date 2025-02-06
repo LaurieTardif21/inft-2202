@@ -92,11 +92,11 @@ function animal() {
         };
 
         try { // Added try here
-            await addAnimal(animalData); // Changed here
+            await addAnimal(animalData); // await here
             form.reset();
             window.location.href = './list.html';
-            // Optionally, you can call a function here to update the animal list
-        } catch (error) { // Added catch here
+            // might mod later for to update here
+        } catch (error) { // catch here
             console.error('Error adding animal:', error);
         }
     });
