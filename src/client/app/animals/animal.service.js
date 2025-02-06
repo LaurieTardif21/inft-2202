@@ -3,8 +3,8 @@ function generateId() {
     return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 }
 
-// Simulate API delay (adjust as needed)
-const API_DELAY = 1000; // 1 second
+// Simulate API delay (adjust to 2 seconds)
+const API_DELAY = 2000; // 2 second
 
 // Function to get the list of animals (from localStorage)
 export function getAnimals() {
