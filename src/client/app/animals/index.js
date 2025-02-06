@@ -6,7 +6,7 @@ function animal() {
 
     // Container for animals list (if required)
     const animalList = document.createElement('ul');
-    
+
     animalList.id = 'animalList';
 
     function createContent() {
@@ -81,7 +81,7 @@ function animal() {
         form.appendChild(container);
     }
 
-    form.addEventListener('submit', function (event) {
+    form.addEventListener('submit', async function (event) { // Changed here
         event.preventDefault();
         const animalData = {
             name: form.animalName.value,
@@ -91,15 +91,14 @@ function animal() {
             sound: form.animalSound.value,
         };
 
-        addAnimal(animalData)
-            .then(() => {
-                form.reset();
-                window.location.href = './list.html';
-                // Optionally, you can call a function here to update the animal list
-            })
-            .catch(error => {
-                console.error('Error adding animal:', error);
-            });
+        try { // Added try here
+            await addAnimal(animalData); // Changed here
+            form.reset();
+            window.location.href = './list.html';
+            // Optionally, you can call a function here to update the animal list
+        } catch (error) { // Added catch here
+            console.error('Error adding animal:', error);
+        }
     });
 
     createContent();
