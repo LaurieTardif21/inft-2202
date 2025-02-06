@@ -6,6 +6,7 @@ function animal() {
 
     // Container for animals list (if required)
     const animalList = document.createElement('ul');
+    
     animalList.id = 'animalList';
 
     function createContent() {
