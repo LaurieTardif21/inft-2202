@@ -96,8 +96,6 @@ async function populateAnimalTable(animals) {
     })
     checkIfListIsEmpty(false);
     console.log("populateAnimalTable: end");
-    manageLoadingPagination(false);
-
 }
 
 function checkIfListIsEmpty(isLoading) {
@@ -168,7 +166,9 @@ function managePagination() {
             currentPage = i;
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
-            populateAnimalTable(getCurrentPageAnimals());
+            populateAnimalTable(getCurrentPageAnimals()).then(()=> {
+                manageLoadingPagination(false);
+            });
         });
 
         //append the elements
@@ -192,7 +192,9 @@ function managePagination() {
             currentPage--;
             tableBody.innerHTML = '';
             managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
+            populateAnimalTable(getCurrentPageAnimals()).then(()=> {
+                manageLoadingPagination(false);
+            });
         });
     }
 
@@ -212,10 +214,13 @@ function managePagination() {
             currentPage++;
             tableBody.innerHTML = '';
             managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
+            populateAnimalTable(getCurrentPageAnimals()).then(()=> {
+                manageLoadingPagination(false);
+            });
         });
     }
     console.log("managePagination: end");
+    
 }
 async function getAnimalsWithDelay() {
     return new Promise((resolve) => {
