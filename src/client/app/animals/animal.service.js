@@ -75,7 +75,8 @@ export function findAnimal(animalId) {
                 const animal = animals.find(a => a.id === animalId);
 
                 if (!animal) {
-                    throw new Error(`Error finding animal: animal not found`);
+                    reject(new Error(`Error finding animal: animal not found`)); // Changed from throw to reject
+                    return; //stops the function
                 }
                 resolve(animal); // Found in local storage
             } catch (error) {
@@ -95,7 +96,8 @@ export function updateAnimal(updatedAnimal) {
                 const index = animals.findIndex(a => a.id === updatedAnimal.id);
 
                 if (index === -1) {
-                    throw new Error('Animal not found in local storage');
+                    reject(new Error('Animal not found in local storage')); // Changed from throw to reject
+                    return; //stops the function
                 }
                 animals[index] = updatedAnimal;
                 localStorage.setItem('animals', JSON.stringify(animals));

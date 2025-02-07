@@ -14,6 +14,7 @@ function CheckValidation (request, response, next)
     response.status(409).json({errors: result.array()});
 }
 
+
 const rules = checkSchema({
     page: {
     isNumeric: true,
