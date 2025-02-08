@@ -13,7 +13,7 @@ Description of file: product page
     <title>Web Shop - Add Product</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header with Navigation -->
@@ -31,7 +31,7 @@ Description of file: product page
             </div>
         </nav>
     </header>
-    
+
     <main class="container mt-5">
         <h1 class="text-center mb-4">Add a New Product</h1>
         <p class="text-center mb-5">Please fill in the details below to add a new product to the inventory.</p>
@@ -74,7 +74,7 @@ Description of file: product page
         document.addEventListener('DOMContentLoaded', () => {
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-    
+
             navLinks.forEach(link => {
                 if (link.getAttribute('href') === currentPath) {
                     link.classList.add('active');
