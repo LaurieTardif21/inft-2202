@@ -6,37 +6,33 @@
 
 import ProductService from './product.service.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const productForm = document.getElementById('productForm');
+// Helper function to validate if an input is a non-negative number
+function isValidNonNegativeNumber(value) {
+    const num = Number(value);
+    if (isNaN(num) || num < 0) {
+        throw new Error('Input must be a non-negative number.');
+    }
+    return true; // Indicate validation passed
+}
 
-    productForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevent default form submission
+ // Helper function to validate if an input is a non-negative number
+ function isValidPrice(value) {
+    const num = Number(value);
+    if (isNaN(num) || num < 0) {
+         throw new Error('Price must be a non-negative number.');
+    }
+    if (Math.round(num*100)/100!=num) {
+         throw new Error('Price has to have 2 decimal max.');
+    }
+    return true; // Indicate validation passed
+}
 
-        // Collect form data
-        const productName = document.getElementById('productName').value;
-        const productDescription = document.getElementById('productDescription').value;
-        const productStock = document.getElementById('productStock').value;
-        const productPrice = document.getElementById('productPrice').value;
-
-        // Create a product object
-        const product = {
-            name: productName,
-            description: productDescription,
-            stock: productStock,
-            price: productPrice,
-        };
-
-        // Use ProductService.addProduct()
-        ProductService.addProduct(product)
-            .then(() => {
-                console.log('Product added successfully');
-                window.location.href = 'list.html';// Redirect to list.html after successful product add
-            })
-            .catch((error) => {
-                console.error('Error adding product:', error);
-            });
-    });
-});
+ // Helper function to clear all errors
+ function clearErrors(descriptionError, stockError, priceError) {
+    descriptionError.textContent = '';
+    stockError.textContent = '';
+    priceError.textContent = '';
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('productForm');
@@ -50,68 +46,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const descriptionError = document.getElementById('descriptionError');
     const stockError = document.getElementById('stockError');
     const priceError = document.getElementById('priceError');
-
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    // Helper function to validate if an input is a non-negative number
-    function isValidNonNegativeNumber(value) {
-        const num = Number(value);
-        if (isNaN(num) || num < 0) {
-            throw new Error('Input must be a non-negative number.');
-        }
-        return true; // Indicate validation passed
-    }
-
-     // Helper function to validate if an input is a non-negative number
-     function isValidPrice(value) {
-        const num = Number(value);
-        if (isNaN(num) || num < 0) {
-            throw new Error('Price must be a non-negative number.');
-        }
-        if (Math.round(num*100)/100!=num) {
-             throw new Error('Price has to have 2 decimal max.');
-        }
-        return true; // Indicate validation passed
-    }
-
-    // Helper function to clear all errors
-    function clearErrors() {
-        descriptionError.textContent = '';
-        stockError.textContent = '';
-        priceError.textContent = '';
-    }
-
-    // Function to fill the form
-    async function fillForm(){
-          // Editing an product
-          saveButton.textContent = 'Save Product'; // Change button text
-          nameInput.disabled = true; // Disable name input in edit mode
-          try {
-            const product = await findProduct(productId);
-             // Pre-fill the form
-             nameInput.value = product.name;
-             descriptionInput.value = product.description;
-             stockInput.value = product.stock;
-             priceInput.value = product.price;
-          } catch (error) {
-             console.error('Error fetching product:', error);
-             alert('Failed to fetch product data. Please try again.');
-          }
-    }
-
-    if (productId) {
-       fillForm();
-    } else {
-        // Adding a new product
-        saveButton.textContent = 'Add Product'; //Change button text
-        nameInput.disabled = false; // Enable name input in add mode (optional)
-    }
+        // Function to fill the form
+        async function fillForm(){
+             // Editing an product
+             saveButton.textContent = 'Save Product'; // Change button text
+             nameInput.disabled = true; // Disable name input in edit mode
+             try {
+               const product = await ProductService.findProduct(productId);
+                // Pre-fill the form
+                nameInput.value = product.name;
+                descriptionInput.value = product.description;
+                stockInput.value = product.stock;
+                priceInput.value = product.price;
+             } catch (error) {
+                console.error('Error fetching product:', error);
+                alert('Failed to fetch product data. Please try again.');
+             }
+       }
+   
+       if (productId) {
+          fillForm();
+       } else {
+           // Adding a new product
+           saveButton.textContent = 'Add Product'; //Change button text
+           nameInput.disabled = false; // Enable name input in add mode (optional)
+       }
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Prevent the default form submission
-        clearErrors();// Reset error messages
+        clearErrors(descriptionError, stockError, priceError);// Reset error messages
 
         // Get the values from the form, and remove white spaces
         const name = nameInput.value.trim();
@@ -154,10 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // If editing, add the id to the product object
                 product.id = productId;
                  // Call updateProduct
-                await updateProduct(product);
+                await ProductService.updateProduct(product);
             } else {
                 // If adding, call addProduct
-                await addProduct(product);
+                await ProductService.addProduct(product);
             }
             window.location.href = 'list.html'; // Redirect to list page
         }catch(error){
