@@ -4,8 +4,6 @@
 // Section Number: 05
 // Description of file: mock service js
 
-// Simulate API delay (adjust to 2 seconds)
-const API_DELAY = 2000; // 2 second
 class ProductService {
     // Function to generate a unique ID without uuid
     static generateId() {
@@ -15,7 +13,6 @@ class ProductService {
     // Function to get the list of products (from localStorage)
     static getProducts() {
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
                 try {
                     // Fetch from localStorage
                     const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -32,14 +29,12 @@ class ProductService {
                 } catch (error) {
                     reject(new Error(`Error getting products: ${error.message}`));
                 }
-            }, API_DELAY);
         });
     }
 
     // Function to add a new product to the list (to localStorage)
     static addProduct(product) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
                 try {
                     // Add to localStorage
                     const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -50,14 +45,12 @@ class ProductService {
                 } catch (error) {
                     reject(new Error(`Error adding product: ${error.message}`));
                 }
-            }, API_DELAY);
         });
     }
 
     // Function to delete a product by ID (from localStorage)
     static deleteProduct(productId) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
                 try {
                     // Remove from localStorage
                     const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -67,14 +60,12 @@ class ProductService {
                 } catch (error) {
                     reject(new Error(`Error deleting product: ${error.message}`));
                 }
-            }, API_DELAY);
         });
     }
 
     // Function to find a product by ID (Checks Local Storage)
     static findProduct(productId) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
                 try {
                     // Check Local Storage
                     const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -88,14 +79,12 @@ class ProductService {
                 } catch (error) {
                     reject(error);
                 }
-            }, API_DELAY);
         });
     }
 
     // Function to update a product (Updates Local Storage)
     static updateProduct(updatedProduct) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
                 try {
                     // Update Local Storage
                     const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -111,7 +100,6 @@ class ProductService {
                 } catch (error) {
                     reject(error);
                 }
-            }, API_DELAY);
         });
     }
 }
