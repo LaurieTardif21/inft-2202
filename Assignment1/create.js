@@ -1,3 +1,8 @@
+// Name: Laurie Tardif
+// Date: 02/08/2025
+// Course Code: INFT 2202
+// Section Number: 05
+// Description of file: create js
 import { checkSchema, validationResult } from 'express-validator';
 export const handle = (request, response, next) => {
     response.end('create product')

@@ -1,3 +1,8 @@
+// Name: Laurie Tardif
+// Date: 02/08/2025
+// Course Code: INFT 2202
+// Section Number: 05
+// Description of file: mock service js
 class ProductService {
     // Function to generate a unique ID without uuid
     static generateId() {
