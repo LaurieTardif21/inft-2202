@@ -1,208 +1,136 @@
-// list.js
-import { deleteProduct, getAllProducts } from './product.service.js';
+// Name: Laurie Tardif
+// Date: 02/08/2025
+// Course Code: INFT 2202
+// Section Number: 05
+// Description: Handles adding a new product to local storage and redirecting to the list page.
 
-// Wait for the DOM to be fully loaded
+import { addProduct, findProduct, updateProduct } from './product.service.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-    const productsTableBody = document.querySelector('#products-list tbody');
-    const messageBox = document.getElementById('message-box');
-    const loadingMessageBox = document.getElementById('loading-message-box');
-    const errorMessagebox = document.getElementById('error-message-box');
-    const noServiceMessageBox = document.getElementById('no-service-message-box');
-    const paginationContainer = document.getElementById('paginationContainer');
-    const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const productsTable = document.getElementById('products-list');
-    const previousPageButton = document.getElementById('previousPage');
-    const nextPageButton = document.getElementById('nextPage');
-    const pagination = document.getElementById('pagination');
+    const form = document.getElementById('productForm');
+    const saveButton = form.querySelector('button[type="submit"]');
+    // Inputs
+    const nameInput = document.getElementById('productName');
+    const descriptionInput = document.getElementById('productDescription');
+    const stockInput = document.getElementById('productStock');
+    const priceInput = document.getElementById('productPrice');
+    // Errors
+    const descriptionError = document.getElementById('descriptionError');
+    const stockError = document.getElementById('stockError');
+    const priceError = document.getElementById('priceError');
 
-    let currentPage = 1; // Current page number
-    const perPage = 6;   // Number of products per page
+    // Check if we're editing or adding
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
 
-    // Function to display an error message
-    const displayError = (message) => {
-        errorMessagebox.textContent = message;
-        errorMessagebox.classList.remove('d-none'); // Show error box
-        loadingMessageBox.classList.add('d-none'); // Hide loading box
-        productsTable.classList.add('d-none');
-        paginationContainer.classList.add('d-none');
-        loadingSpinner.classList.add('d-none');
-        messageBox.classList.add('d-none');
-        noServiceMessageBox.classList.add('d-none');
-    };
-    // Function to display no service message
-    const displayNoServiceMessage = () => {
-        noServiceMessageBox.classList.remove('d-none'); // Show No Service box
-        errorMessagebox.classList.add('d-none'); // Hide error box
-        loadingMessageBox.classList.add('d-none'); // Hide loading box
-        productsTable.classList.add('d-none');
-        paginationContainer.classList.add('d-none');
-        loadingSpinner.classList.add('d-none');
-        messageBox.classList.add('d-none');
-    };
-
-    // Function to display the loading message and spinner
-    const showLoading = () => {
-        errorMessagebox.classList.add('d-none'); // Hide error box
-        noServiceMessageBox.classList.add('d-none'); // Hide No Service box
-        loadingMessageBox.classList.remove('d-none'); // Show loading box
-        productsTable.classList.add('d-none');
-        paginationContainer.classList.add('d-none');
-        loadingSpinner.classList.remove('d-none'); // Show the spinner
-        messageBox.classList.add('d-none');
-    };
-
-    // Function to display products in the table
-    const displayProducts = (products) => {
-        loadingMessageBox.classList.add('d-none'); // Hide loading message
-        loadingSpinner.classList.add('d-none'); // Hide the spinner
-        errorMessagebox.classList.add('d-none'); // Hide error message
-        noServiceMessageBox.classList.add('d-none');
-        productsTableBody.innerHTML = '';
-        if (products.length === 0) {
-            messageBox.classList.remove('d-none'); // Show no products message
-            productsTable.classList.add('d-none');
-            paginationContainer.classList.add('d-none');
-        } else {
-            messageBox.classList.add('d-none'); // Hide no products message
-            productsTable.classList.remove('d-none');
-            paginationContainer.classList.remove('d-none');
-            products.forEach(product => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${product.name}</td>
-                    <td>${product.description}</td>
-                    <td>${product.stock}</td>
-                    <td>$${product.price}</td>
-                    <td><button class="btn btn-danger delete-btn" data-product-id="${product.id}">Delete</button></td>
-                `;
-                productsTableBody.appendChild(row);
-            });
-            addDeleteEventListeners(); // Add event listeners to delete buttons
+    // Helper function to validate if an input is a non-negative number
+    function isValidNonNegativeNumber(value) {
+        const num = Number(value);
+        if (isNaN(num) || num < 0) {
+            throw new Error('Input must be a non-negative number.');
         }
-    };
-    // Function to add delete event listeners
-    const addDeleteEventListeners = () => {
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const productId = button.getAttribute('data-product-id');
-                const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-                document.getElementById('confirmDeleteButton').onclick = () => {
-                    deleteProductFromList(productId);
-                    modal.hide();
-                };
-                modal.show();
-            });
-        });
-    };
+        return true; // Indicate validation passed
+    }
 
-    // Function to delete a product from the list
-    const deleteProductFromList = (productId) => {
+     // Helper function to validate if an input is a non-negative number
+     function isValidPrice(value) {
+        const num = Number(value);
+        if (isNaN(num) || num < 0) {
+            throw new Error('Price must be a non-negative number.');
+        }
+        if (Math.round(num*100)/100!=num) {
+             throw new Error('Price has to have 2 decimal max.');
+        }
+        return true; // Indicate validation passed
+    }
+
+    // Helper function to clear all errors
+    function clearErrors() {
+        descriptionError.textContent = '';
+        stockError.textContent = '';
+        priceError.textContent = '';
+    }
+
+    // Function to fill the form
+    async function fillForm(){
+          // Editing an product
+          saveButton.textContent = 'Save Product'; // Change button text
+          nameInput.disabled = true; // Disable name input in edit mode
+          try {
+            const product = await findProduct(productId);
+             // Pre-fill the form
+             nameInput.value = product.name;
+             descriptionInput.value = product.description;
+             stockInput.value = product.stock;
+             priceInput.value = product.price;
+          } catch (error) {
+             console.error('Error fetching product:', error);
+             alert('Failed to fetch product data. Please try again.');
+          }
+    }
+
+    if (productId) {
+       fillForm();
+    } else {
+        // Adding a new product
+        saveButton.textContent = 'Add Product'; //Change button text
+        nameInput.disabled = false; // Enable name input in add mode (optional)
+    }
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+        clearErrors();// Reset error messages
+
+        // Get the values from the form, and remove white spaces
+        const name = nameInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const stock = stockInput.value.trim();
+        const price = priceInput.value.trim();
+
+        // Validation
         try {
-            deleteProduct(productId); // Delete the product using the service
-            fetchProducts(); // Refresh the product list
+            if (!description) {
+                throw new Error('Description is required.');
+            }
+            isValidNonNegativeNumber(stock);
+            isValidPrice(price);
+           
         } catch (error) {
-            displayError('Error deleting the product.');
-        }
-    };
-
-    // Function to fetch products with pagination
-    const fetchProducts = (page = 1) => {
-        showLoading();
-        try {
-            const products = getAllProducts();
-            // Calculate start and end indexes for pagination
-            const startIndex = (page - 1) * perPage;
-            const endIndex = startIndex + perPage;
-            // Get the paginated products
-            const paginatedProducts = products.slice(startIndex, endIndex);
-            displayProducts(paginatedProducts);
-            setupPagination(products.length, page);
-        } catch (error) {
-            console.error('Error loading products:', error);
-            displayError('An error occurred while loading the product list.');
-        }
-    };
-    // Function to setup pagination links
-    const setupPagination = (totalProducts, currentPage) => {
-        const totalPages = Math.ceil(totalProducts / perPage);
-        pagination.innerHTML = ""; // Clear existing pagination links
-
-        // Previous Page
-        const previousLi = document.createElement('li');
-        previousLi.classList.add('page-item');
-        const previousLink = document.createElement('a');
-        previousLink.classList.add('page-link');
-        previousLink.href = '#';
-        previousLink.textContent = 'Previous';
-        previousLi.appendChild(previousLink);
-        pagination.appendChild(previousLi);
-
-        previousLink.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                fetchProducts(currentPage);
+            //Error handling
+            if (error.message === 'Description is required.') {
+                descriptionError.textContent = error.message;
+            } else if (error.message === 'Input must be a non-negative number.') {
+                stockError.textContent = (stockError.textContent)?stockError.textContent: error.message;
+            } else if(error.message === 'Price must be a non-negative number.'){
+                priceError.textContent = error.message;
             }
-        });
-
-        // Page Numbers
-        for (let i = 1; i <= totalPages; i++) {
-            const li = document.createElement('li');
-            li.classList.add('page-item');
-            if (i === currentPage) {
-                li.classList.add('active');
+             else if(error.message === 'Price has to have 2 decimal max.'){
+                priceError.textContent = error.message;
             }
-            const a = document.createElement('a');
-            a.classList.add('page-link');
-            a.href = '#';
-            a.textContent = i;
-            a.addEventListener('click', () => {
-                currentPage = i;
-                fetchProducts(currentPage);
-            });
-            li.appendChild(a);
-            pagination.appendChild(li);
+            return;
         }
-        // Next Page
-        const nextLi = document.createElement('li');
-        nextLi.classList.add('page-item');
-        const nextLink = document.createElement('a');
-        nextLink.classList.add('page-link');
-        nextLink.href = '#';
-        nextLink.textContent = 'Next';
-        nextLi.appendChild(nextLink);
-        pagination.appendChild(nextLi);
+        // Create the product object
+        const product = {
+            name: name,
+            description: description,
+            stock: parseInt(stock), // convert to an int, this is a good practice
+            price: parseFloat(price), // convert to a float, this is a good practice
+        };
 
-        nextLink.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                fetchProducts(currentPage);
+        try{
+            if (productId) {
+                // If editing, add the id to the product object
+                product.id = productId;
+                 // Call updateProduct
+                await updateProduct(product);
+            } else {
+                // If adding, call addProduct
+                await addProduct(product);
             }
-        });
-        // Disable "Previous" button on first page
-        if (currentPage === 1) {
-            previousLink.classList.add('disabled');
-            previousLi.classList.add('disabled');
-        } else {
-            previousLink.classList.remove('disabled');
-            previousLi.classList.remove('disabled');
+            window.location.href = 'list.html'; // Redirect to list page
+        }catch(error){
+            console.error('Error adding/updating product:', error);
+            alert('Failed to add/update product. Please try again.');
         }
-
-        // Disable "Next" button on last page
-        if (currentPage === totalPages && currentPage!=0) {
-            nextLink.classList.add('disabled');
-            nextLi.classList.add('disabled');
-        } else {
-            nextLink.classList.remove('disabled');
-            nextLi.classList.remove('disabled');
-        }
-        if(totalPages == 0) {
-            nextLink.classList.add('disabled');
-            nextLi.classList.add('disabled');
-            previousLink.classList.add('disabled');
-            previousLi.classList.add('disabled');
-        }
-    };
-    fetchProducts();
+    });
 });

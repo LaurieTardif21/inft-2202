@@ -11,11 +11,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let currentPage = 1;
     const perPage = 6; // Number of products per page
+    let allProducts = []; // Store all products to handle pagination
 
     async function fetchProducts(page = 1) {
         try {
-            const response = await fetch(`https://fakestoreapi.com/products?limit=${perPage}&page=${page}`);
-            const products = await response.json();
+            // Load product from local storage
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            allProducts = products;
 
             if (!products.length) {
                 noProductsMessage.style.display = "block"; // Show "Shop Closed" message
@@ -26,8 +28,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 noProductsMessage.style.display = "none";
             }
 
-            renderProducts(products);
-            setupPagination(10, page); // Assume 10 total pages for now
+            // Get the products for the current page
+            const start = (page - 1) * perPage;
+            const end = start + perPage;
+            const paginatedProducts = allProducts.slice(start, end);
+            
+            renderProducts(paginatedProducts);
+            setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
         } catch (error) {
             console.error("Error fetching products:", error);
         }
