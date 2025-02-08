@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const productId = button.dataset.id;
 
                 // Show the modal
-                $(deleteConfirmationModal).modal('show');
+                $('#deleteConfirmationModal').modal('show');
 
                 // Handle the confirm delete button
                 confirmDeleteButton.onclick = () => {
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
             }, TIMEOUT_DURATION);
         }
-        $(deleteConfirmationModal).modal('hide');
+        $('#deleteConfirmationModal').modal('hide');
     }
 
     // Function to set up pagination
