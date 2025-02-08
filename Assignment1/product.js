@@ -4,7 +4,39 @@
 // Section Number: 05
 // Description: Handles adding a new product to local storage and redirecting to the list page.
 
-import { addProduct, findProduct, updateProduct } from './product.service.js';
+import ProductService from './product.service.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const productForm = document.getElementById('productForm');
+
+    productForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        // Collect form data
+        const productName = document.getElementById('productName').value;
+        const productDescription = document.getElementById('productDescription').value;
+        const productStock = document.getElementById('productStock').value;
+        const productPrice = document.getElementById('productPrice').value;
+
+        // Create a product object
+        const product = {
+            name: productName,
+            description: productDescription,
+            stock: productStock,
+            price: productPrice,
+        };
+
+        // Use ProductService.addProduct()
+        ProductService.addProduct(product)
+            .then(() => {
+                console.log('Product added successfully');
+                window.location.href = 'list.html';// Redirect to list.html after successful product add
+            })
+            .catch((error) => {
+                console.error('Error adding product:', error);
+            });
+    });
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('productForm');
