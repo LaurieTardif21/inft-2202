@@ -13,6 +13,7 @@ let currentPage = 1; // Track the current page
 let noServiceTimeout;
 // Simulate API delay for 2 seconds
 const API_DELAY = 2000;
+let isInitialLoad = true; // Flag to check if it's the initial load
 
 // Function to simulate API delay
 async function getProductsWithDelay() {
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const body = document.querySelector('body');
     const previousPage = document.getElementById('previousPage');
     const nextPage = document.getElementById('nextPage');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
 
     // Function to clear messages
@@ -64,14 +66,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showLoading() {
         clearMessages();
         body.classList.add('loading');
+        loadingSpinner.classList.remove('d-none');
         loadingMessageBox.classList.remove('d-none');
         productList.parentElement.classList.add('d-none');
         paginationContainer.parentElement.classList.add('d-none');
     }
+    function showLoadingPagination(){
+        paginationLoading.classList.remove('d-none');
+    }
 
     function hideLoading() {
         body.classList.remove('loading');
+        loadingSpinner.classList.add('d-none');
         loadingMessageBox.classList.add('d-none');
+        paginationLoading.classList.add('d-none');
     }
 
     // Function to handle errors
@@ -84,7 +92,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Function to fetch products
     async function fetchProducts(page = 1) {
         try {
-            showLoading();
+            if (isInitialLoad) {
+                showLoading();
+            } else {
+                 showLoadingPagination();
+            }
             currentPage = page;
             clearTimeout(noServiceTimeout);
             // Load product from local storage
@@ -109,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             renderProducts(paginatedProducts);
             setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
 
-
+            isInitialLoad = false; // Set to false after the first load
         } catch (error) {
             showError(error.message); // Display error message
             noServiceTimeout = setTimeout(() => {
@@ -201,7 +213,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Function to set up pagination
     function setupPagination(totalPages, page) {
-        paginationLoading.classList.remove('d-none');
         paginationContainer.innerHTML = "";
         previousPage.classList.remove("disabled");
         nextPage.classList.remove("disabled");
@@ -222,7 +233,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             paginationContainer.appendChild(li);
         }
-        paginationLoading.classList.add('d-none');
     }
     previousPage.addEventListener("click", () => {
         if (currentPage > 1) {
