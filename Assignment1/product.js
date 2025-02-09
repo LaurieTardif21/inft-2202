@@ -5,14 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveButton = form.querySelector('button[type="submit"]');
     // Inputs
     const nameInput = document.getElementById('product-name');
-    const breedInput = document.getElementById('product-description');
-    const eyesInput = document.getElementById('product-stock');
-    const legsInput = document.getElementById('product-price');
+    const descriptionInput = document.getElementById('product-description');
+    const stockInput = document.getElementById('product-stock');
+    const priceInput = document.getElementById('product-price');
     // Errors
     const descriptionError = document.getElementById('descriptionError');
     const stockError = document.getElementById('stockError');
     const priceError = document.getElementById('priceError');
-    
+
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
@@ -28,9 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper function to clear all errors
     function clearErrors() {
-        descriptionError.textContent = '';
-        stockError.textContent = '';
-        priceError.textContent = '';
+          if(descriptionError){
+            descriptionError.textContent = '';
+        }
+        if(stockError){
+            stockError.textContent = '';
+        }
+         if(priceError){
+            priceError.textContent = '';
+        }
     }
     // Function to fill the form
     async function fillForm(){
@@ -64,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Get the values from the form, and remove white spaces
         const name = nameInput.value.trim();
-        const description = description.value.trim();
-        const stock = stocInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const stock = stockInput.value.trim();
         const price = priceInput.value.trim();
 
         // Validation
@@ -78,10 +84,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             //Error handling
             if (error.message === 'Description is required.') {
-                descriptionError.textContent = error.message;
+                if(descriptionError){
+                    descriptionError.textContent = error.message;
+                }
             } else if (error.message === 'Input must be a non-negative number.') {
-                stockError.textContent = (stockError.textContent)?stockError.textContent: error.message;
-                priceError.textContent = (priceError.textContent)?priceError.textContent: error.message;
+                if(stockError){
+                      stockError.textContent = (stockError.textContent)?stockError.textContent: error.message;
+                }
+                if(priceError){
+                    priceError.textContent = (priceError.textContent)?priceError.textContent: error.message;
+                }
             }
             return;
         }
@@ -94,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try{
-            if (procudtId) {
+            if (productId) {
                 // If editing, add the id to the product object
                 product.id = productId;
                  // Call updateProduct
