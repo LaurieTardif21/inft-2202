@@ -1,23 +1,21 @@
-import { addAnimal, findAnimal, updateAnimal } from './product.service.js';
+import { addProduct, findProduct, updateProduct } from './product.service.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('animal-form');
+    const form = document.getElementById('product-form');
     const saveButton = form.querySelector('button[type="submit"]');
     // Inputs
-    const nameInput = document.getElementById('animal-name');
-    const breedInput = document.getElementById('animal-breed');
-    const eyesInput = document.getElementById('animal-eyes');
-    const legsInput = document.getElementById('animal-legs');
-    const soundInput = document.getElementById('animal-sound');
+    const nameInput = document.getElementById('product-name');
+    const breedInput = document.getElementById('product-description');
+    const eyesInput = document.getElementById('product-stock');
+    const legsInput = document.getElementById('product-price');
     // Errors
-    const breedError = document.getElementById('breedError');
-    const eyesError = document.getElementById('eyesError');
-    const legsError = document.getElementById('legsError');
-    const soundError = document.getElementById('soundError');
+    const descriptionError = document.getElementById('descriptionError');
+    const stockError = document.getElementById('stockError');
+    const priceError = document.getElementById('priceError');
     
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
-    const animalId = urlParams.get('id');
+    const productId = urlParams.get('id');
 
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
@@ -30,35 +28,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper function to clear all errors
     function clearErrors() {
-        breedError.textContent = '';
-        eyesError.textContent = '';
-        legsError.textContent = '';
-        soundError.textContent = '';
+        descriptionError.textContent = '';
+        stockError.textContent = '';
+        priceError.textContent = '';
     }
     // Function to fill the form
     async function fillForm(){
-          // Editing an animal
-          saveButton.textContent = 'Save Animal'; // Change button text
+          // Editing a product
+          saveButton.textContent = 'Save Product'; // Change button text
           nameInput.disabled = true; // Disable name input in edit mode
           try {
-            const animal = await findAnimal(animalId);
+            const product = await findProduct(productId);
              // Pre-fill the form
-             nameInput.value = animal.name;
-             breedInput.value = animal.breed;
-             eyesInput.value = animal.eyes;
-             legsInput.value = animal.legs;
-             soundInput.value = animal.sound;
+             nameInput.value = product.name;
+             descriptionInput.value = product.description;
+             stockInput.value = product.stock;
+             priceInput.value = product.price;
           } catch (error) {
-             console.error('Error fetching animal:', error);
-             alert('Failed to fetch animal data. Please try again.');
+             console.error('Error fetching product:', error);
+             alert('Failed to fetch product data. Please try again.');
           }
     }
     
-    if (animalId) {
+    if (productId) {
        fillForm();
     } else {
-        // Adding a new animal
-        saveButton.textContent = 'Add Animal'; //Change button text
+        // Adding a new product
+        saveButton.textContent = 'Add Product'; //Change button text
         nameInput.disabled = false; // Enable name input in add mode (optional)
     }
 
@@ -68,21 +64,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Get the values from the form, and remove white spaces
         const name = nameInput.value.trim();
-        const breed = breedInput.value.trim();
-        const eyes = eyesInput.value.trim();
-        const legs = legsInput.value.trim();
-        const sound = soundInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const stock = stocInput.value.trim();
+        const price = priceInput.value.trim();
 
         // Validation
         try {
-            if (!breed) {
-                throw new Error('Breed is required.');
+            if (!description) {
+                throw new Error('Description is required.');
             }
-            isValidNonNegativeNumber(eyes);
-            isValidNonNegativeNumber(legs);
-            if (!sound) {
-                throw new Error('Sound is required.');
-            }
+            isValidNonNegativeNumber(stock);
+            isValidNonNegativeNumber(price);
         } catch (error) {
             //Error handling
             if (error.message === 'Breed is required.') {
