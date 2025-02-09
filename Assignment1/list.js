@@ -40,7 +40,7 @@ function createDeleteButton(productId) {
     button.appendChild(icon);
     button.addEventListener('click', () => {
         // Set the product ID to delete in the global variable
-        productlIdToDelete = productId;
+        productIdToDelete = productId;
         // Show the confirmation modal
         const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
         deleteConfirmationModal.show();
