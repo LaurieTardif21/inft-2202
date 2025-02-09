@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
              setValid(priceInput);
           } catch (error) {
              console.error('Error fetching product:', error);
-             alert('Failed to fetch product data. Please try again.');
+            // alert('Failed to fetch product data. Please try again.');
           }
     }
     
