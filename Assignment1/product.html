@@ -35,24 +35,24 @@
         <h1 class="display-4 text-center">Product</h1>
         <p class="text-center">Enter the product details below:</p>
 
-        <!-- Animal Form -->
-        <form id="animal-form" class="col-md-6 offset-md-3">
+        <!-- Product Form -->
+        <form id="product-form" class="col-md-6 offset-md-3">
             <div class="mb-3">
-                <label for="animal-name" class="form-label">Name</label>
+                <label for="product-name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="product-name" name="name" required>
             </div>
             <div class="mb-3">
-                <label for="animal-breed" class="form-label">Description</label>
+                <label for="product-description" class="form-label">Description</label>
                 <textarea class="form-control" id="product-description" name="description" required></textarea>
                 <div id="breedError" class="error-message"></div>
             </div>
             <div class="mb-3">
-                <label for="animal-eyes" class="form-label">Stock</label>
+                <label for="product-stock" class="form-label">Stock</label>
                 <input type="number" class="form-control" id="product-stock" name="stock" min="0" required>
                 <div id="eyesError" class="error-message"></div>
             </div>
             <div class="mb-3">
-                <label for="animal-legs" class="form-label">Price</label>
+                <label for="product-price" class="form-label">Price</label>
                 <input type="number" class="form-control" id="product-price" name="price" min="0" step="0.01" required>
                 <div id="legsError" class="error-message"></div>
             </div>
