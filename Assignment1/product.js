@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Get the values from the form, and remove white spaces
         const name = nameInput.value.trim();
-        const description = descriptionInput.value.trim();
+        const description = description.value.trim();
         const stock = stocInput.value.trim();
         const price = priceInput.value.trim();
 
