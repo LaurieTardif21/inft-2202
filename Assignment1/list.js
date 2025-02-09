@@ -84,13 +84,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             renderProducts(paginatedProducts);
             setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
 
-            hideLoading();
+           
         } catch (error) {
             showError(error.message); // Display error message
              noServiceTimeout = setTimeout(() => {
                 clearMessages();
                 noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
+                hideLoading();
             }, TIMEOUT_DURATION);
+        } finally {
+            // Always hide loading, even if an error occurred
+            hideLoading();
         }
     }
 
@@ -164,6 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
              noServiceTimeout = setTimeout(() => {
                 clearMessages();
                 noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
+                 hideLoading();
             }, TIMEOUT_DURATION);
         }
         $('#deleteConfirmationModal').modal('hide');
