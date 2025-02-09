@@ -77,39 +77,36 @@ document.addEventListener('DOMContentLoaded', () => {
             isValidNonNegativeNumber(price);
         } catch (error) {
             //Error handling
-            if (error.message === 'Breed is required.') {
-                breedError.textContent = error.message;
+            if (error.message === 'Description is required.') {
+                descriptionError.textContent = error.message;
             } else if (error.message === 'Input must be a non-negative number.') {
-                eyesError.textContent = (eyesError.textContent)?eyesError.textContent: error.message;
-                legsError.textContent = (legsError.textContent)?legsError.textContent: error.message;
-            }else if (error.message === 'Sound is required.') {
-                soundError.textContent = error.message;
+                stockError.textContent = (stockError.textContent)?stockError.textContent: error.message;
+                priceError.textContent = (priceError.textContent)?priceError.textContent: error.message;
             }
             return;
         }
-        // Create the animal object
-        const animal = {
+        // Create the product object
+        const product = {
             name: name,
-            breed: breed,
-            eyes: parseInt(eyes), // convert to an int, this is a good practice
-            legs: parseInt(legs), // convert to an int, this is a good practice
-            sound: sound,
+            description: description,
+            stock: parseInt(stock), // convert to an int, this is a good practice
+            price: parseInt(price), // convert to an int, this is a good practice
         };
 
         try{
-            if (animalId) {
-                // If editing, add the id to the animal object
-                animal.id = animalId;
-                 // Call updateAnimal
-                await updateAnimal(animal);
+            if (procudtId) {
+                // If editing, add the id to the product object
+                product.id = productId;
+                 // Call updateProduct
+                await updateProduct(product);
             } else {
-                // If adding, call addAnimal
-                await addAnimal(animal);
+                // If adding, call addProduct
+                await addProduct(product);
             }
             window.location.href = 'list.html'; // Redirect to list page
         }catch(error){
-            console.error('Error adding/updating animal:', error);
-            alert('Failed to add/update animal. Please try again.');
+            console.error('Error adding/updating product:', error);
+            alert('Failed to add/update product. Please try again.');
         }
     });
 });
