@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const previousPage = document.getElementById('previousPage');
     const nextPage = document.getElementById('nextPage');
 
+
     // Function to clear messages
     function clearMessages() {
         noProductsMessage.classList.add('d-none');
@@ -107,6 +108,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             renderProducts(paginatedProducts);
             setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
+
+
         } catch (error) {
             showError(error.message); // Display error message
             noServiceTimeout = setTimeout(() => {
@@ -124,6 +127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderProducts(products) {
         productList.innerHTML = ""; // Clear existing products
         products.forEach(product => {
+            console.log('renderProduct product.id:', product.id);
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${product.name}</td>
@@ -147,9 +151,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", () => {
                 const productId = button.dataset.id;
+                console.log("setupDeleteButtons productId:", productId); // Check ID here
+                // Show the modal
                 $('#deleteConfirmationModal').modal('show');
-                confirmDeleteButton.onclick = async () => {
-                    await deleteProduct(productId);
+
+                // Handle the confirm delete button
+                confirmDeleteButton.onclick = () => {
+                    console.log("confirmDeleteButton productId:", productId);// Check ID here
+                    deleteProduct(productId);
                 };
             });
         });
@@ -166,17 +175,64 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function deleteProduct(productId) {
+        console.log("deleteProduct productId:", productId);// Check ID here
+        console.log("currentPage:", currentPage);
+        // delete the product from local storage
         try {
             await deleteProductWithDelay(productId);
+            console.log("product deleted in ProductService");
+
+            //update the pagination, if needed.
             if (allProducts.length % perPage === 1 && currentPage === Math.ceil(allProducts.length / perPage) && currentPage > 1) {
                 currentPage--;
             }
             await fetchProducts(currentPage);
+            console.log("page reload after delete");
         } catch (error) {
             showError(error.message);
+            noServiceTimeout = setTimeout(() => {
+                clearMessages();
+                noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
+                hideLoading();
+            }, TIMEOUT_DURATION);
         }
         $('#deleteConfirmationModal').modal('hide');
     }
 
+    // Function to set up pagination
+    function setupPagination(totalPages, page) {
+        paginationLoading.classList.remove('d-none');
+        paginationContainer.innerHTML = "";
+        previousPage.classList.remove("disabled");
+        nextPage.classList.remove("disabled");
+
+        if (page === 1) {
+            previousPage.classList.add("disabled");
+        }
+        if (page === totalPages) {
+            nextPage.classList.add("disabled");
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement("li");
+            li.className = `page-item ${i === page ? "active" : ""}`;
+            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            li.addEventListener("click", () => {
+                fetchProducts(i);
+            });
+            paginationContainer.appendChild(li);
+        }
+        paginationLoading.classList.add('d-none');
+    }
+    previousPage.addEventListener("click", () => {
+        if (currentPage > 1) {
+            fetchProducts(currentPage - 1);
+        }
+    });
+    nextPage.addEventListener("click", () => {
+        if (currentPage * perPage < allProducts.length) {
+            fetchProducts(currentPage + 1);
+        }
+    });
     fetchProducts(currentPage);
 });
