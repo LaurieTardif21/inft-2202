@@ -85,6 +85,7 @@
     color: #666;
   }
 
+  /*hide the loading message*/
   #static-loading-message-box{
     display:none;
 }
