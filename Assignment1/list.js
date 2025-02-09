@@ -108,15 +108,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (products.length === 0) {
                 clearMessages();
-                hideLoading();
                 noProductsMessage.classList.remove('d-none');
+                hideLoading(); //hide the loading spinner and message
                 productList.parentElement.classList.add('d-none');
                 paginationContainer.parentElement.classList.add('d-none');
 
                 return;
             }
             clearMessages();
-            noProductsMessage.classList.add('d-none');
             productList.parentElement.classList.remove('d-none');
             paginationContainer.parentElement.classList.remove('d-none');
             // Get the products for the current page
@@ -126,7 +125,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             renderProducts(paginatedProducts);
             setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
-            hideLoading();
+            hideLoading(); //hide loading after the product are display
 
         } catch (error) {
             showError(error.message); // Display error message
@@ -247,6 +246,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     fetchProducts(currentPage);
 });
-
-
 
