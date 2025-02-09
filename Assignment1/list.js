@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function hideLoading() {
         body.classList.remove('loading');
-        loadingMessageBox.classList.add('d-none');
+        loadingMessageBox.classList.remove('d-none');
     }
 
     // Function to handle errors
