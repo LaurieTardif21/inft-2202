@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const stockInput = document.getElementById('product-stock');
     const priceInput = document.getElementById('product-price');
     // Errors
-    const descriptionError = document.getElementById('descriptionError');
-    const stockError = document.getElementById('stockError');
-    const priceError = document.getElementById('priceError');
+    const descriptionError = document.getElementById('breedError'); //updated to match error location
+    const stockError = document.getElementById('eyesError'); //updated to match error location
+    const priceError = document.getElementById('legsError');//updated to match error location
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
@@ -21,22 +21,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
         if (isNaN(num) || num < 0) {
-            throw new Error('Input must be a non-negative number.');
+            return false;
         }
         return true; // Indicate validation passed
     }
-
-    // Helper function to clear all errors
+ // Helper function to clear all errors
     function clearErrors() {
-          if(descriptionError){
-            descriptionError.textContent = '';
-        }
-        if(stockError){
-            stockError.textContent = '';
-        }
-         if(priceError){
-            priceError.textContent = '';
-        }
+        const errorMessages = form.querySelectorAll('.error-message'); // Select all error messages
+        errorMessages.forEach(error => {
+            error.textContent = ''; // Clear the text content
+            error.style.display = 'none'; // Hide the error message
+        });
+         const inputs = form.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.classList.remove('is-invalid', 'is-valid');
+        });
+    }
+        function displayError(input, errorElement, message) {
+        input.classList.add('is-invalid');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    function setValid(input){
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        input.nextElementSibling.style.display = 'none';
     }
     // Function to fill the form
     async function fillForm(){
@@ -50,6 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
              descriptionInput.value = product.description;
              stockInput.value = product.stock;
              priceInput.value = product.price;
+             setValid(nameInput);
+             setValid(descriptionInput);
+             setValid(stockInput);
+             setValid(priceInput);
           } catch (error) {
              console.error('Error fetching product:', error);
              alert('Failed to fetch product data. Please try again.');
@@ -73,36 +87,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const description = descriptionInput.value.trim();
         const stock = stockInput.value.trim();
         const price = priceInput.value.trim();
-
+        let isValid = true;
         // Validation
-        try {
-            if (!description) {
-                throw new Error('Description is required.');
-            }
-            isValidNonNegativeNumber(stock);
-            isValidNonNegativeNumber(price);
-        } catch (error) {
-            //Error handling
-            if (error.message === 'Description is required.') {
-                if(descriptionError){
-                    descriptionError.textContent = error.message;
-                }
-            } else if (error.message === 'Input must be a non-negative number.') {
-                if(stockError){
-                      stockError.textContent = (stockError.textContent)?stockError.textContent: error.message;
-                }
-                if(priceError){
-                    priceError.textContent = (priceError.textContent)?priceError.textContent: error.message;
-                }
-            }
-            return;
+         // Validate Description
+        if (description === '') {
+            displayError(descriptionInput, descriptionError, 'Description is required.');
+            isValid = false;
+        } else {
+            setValid(descriptionInput)
+        }
+
+        // Validate Stock
+        if (!isValidNonNegativeNumber(stock)) {
+             displayError(stockInput, stockError, 'Stock must be a non-negative number.');
+            isValid = false;
+        } else {
+            setValid(stockInput)
+        }
+
+        // Validate Price
+        if (!isValidNonNegativeNumber(price)) {
+             displayError(priceInput, priceError, 'Price must be a non-negative number.');
+             isValid = false;
+        } else {
+            setValid(priceInput)
+        }
+        if(!isValid){
+            return
         }
         // Create the product object
         const product = {
             name: name,
             description: description,
             stock: parseInt(stock), // convert to an int, this is a good practice
-            price: parseInt(price), // convert to an int, this is a good practice
+            price: parseFloat(price), // convert to a float, this is a good practice
         };
 
         try{
