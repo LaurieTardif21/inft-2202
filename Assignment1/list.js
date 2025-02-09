@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     function showLoading() {
         clearMessages();
-        document.body.classList.add('loading'); // Add the class loading to the body.
+        document.body.classList.add('disable-scroll'); // Add the class disable-scroll to the body.
         loadingMessageBox.classList.remove('d-none');
         productList.parentElement.classList.add('d-none');
         paginationContainer.parentElement.classList.add('d-none');
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function hideLoading() {
-        document.body.classList.remove('loading');// remove the class loading.
+        document.body.classList.remove('disable-scroll');// remove the class disable-scroll.
         loadingMessageBox.classList.add('d-none');
     }
 
@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function initializePage() {
         try {
             //disable the user interaction
-            document.body.classList.add('loading');
+            document.body.classList.add('disable-scroll'); // Add the class disable-scroll to the body.
             //disable the pagination
             const paginationUl = document.getElementById('pagination');
             paginationUl.classList.add('disabled');
@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               manageNoServiceMessage(true);
         } finally {
             //re-enable the user interaction
-            document.body.classList.remove('loading');
+            document.body.classList.remove('disable-scroll'); //remove the class disable-scroll to the body
             //enable the pagination
             const paginationUl = document.getElementById('pagination');
             paginationUl.classList.remove('disabled');

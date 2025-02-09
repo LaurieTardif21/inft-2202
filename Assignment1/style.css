@@ -89,3 +89,7 @@
   #static-loading-message-box{
     display:none;
 }
+
+body.disable-scroll {
+  overflow: hidden; /* Hide the scrollbar */
+}
