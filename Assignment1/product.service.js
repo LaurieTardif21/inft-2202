@@ -24,7 +24,7 @@ export function getProducts() {
 
                 resolve(products);
             } catch (error) {
-                reject(new Error(`Error getting products: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
@@ -40,9 +40,9 @@ export function addProduct(product) {
                 product.id = generateId(); // Ensure unique ID for each product
                 products.push(product); // Add the new product to the array
                 localStorage.setItem('products', JSON.stringify(products)); // Save to localStorage
-                resolve();
+                resolve(product);
             } catch (error) {
-                reject(new Error(`Error adding product: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
@@ -59,7 +59,7 @@ export function deleteProduct(productId) {
                 localStorage.setItem('products', JSON.stringify(updatedProducts)); // Save to localStorage
                 resolve();
             } catch (error) {
-                reject(new Error(`Error deleting product: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
@@ -72,7 +72,7 @@ export function findProduct(productId) {
             try {
                 // Check Local Storage
                 const products = JSON.parse(localStorage.getItem('products')) || [];
-                const product = products.find(a => a.id === productId);
+                const product = products.find(p => p.id === productId);
 
                 if (!product) {
                     reject(new Error(`Error finding product: product not found`)); // Changed from throw to reject
@@ -87,13 +87,13 @@ export function findProduct(productId) {
 }
 
 // Function to update an product (Updates Local Storage)
-export function updateProduct(updatedProductl) {
+export function updateProduct(updatedProduct) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             try {
                 // Update Local Storage
                 const products = JSON.parse(localStorage.getItem('products')) || [];
-                const index = products.findIndex(a => a.id === updatedProduct.id);
+                const index = products.findIndex(p => p.id === updatedProduct.id);
 
                 if (index === -1) {
                     reject(new Error('Product not found in local storage')); // Changed from throw to reject
