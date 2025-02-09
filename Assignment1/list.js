@@ -53,7 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const nextPage = document.getElementById('nextPage');
     const loadingSpinner = document.getElementById('loading-spinner');
 
-
     // Function to clear messages
     function clearMessages() {
         noProductsMessage.classList.add('d-none');
@@ -73,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         paginationContainer.parentElement.classList.add('d-none');
     }
 
-     function showLoadingPagination(){
+    function showLoadingPagination() {
         isLoading = true; // Set the global loading state
         paginationLoading.classList.remove('d-none');
     }
@@ -97,8 +96,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function fetchProducts(page = 1) {
         try {
             if (page === 1 && currentPage === 1) {
-                 showLoading();
-            }else{
+                showLoading();
+            } else {
                 showLoadingPagination();
             }
             currentPage = page;
@@ -108,14 +107,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             allProducts = products; // Store all products to handle pagination
 
             if (products.length === 0) {
-                clearMessages(); //clear message
+                clearMessages();
                 hideLoading();
                 noProductsMessage.classList.remove('d-none');
                 productList.parentElement.classList.add('d-none');
                 paginationContainer.parentElement.classList.add('d-none');
+
                 return;
             }
-            clearMessages();//clear message
+            clearMessages();
             noProductsMessage.classList.add('d-none');
             productList.parentElement.classList.remove('d-none');
             paginationContainer.parentElement.classList.remove('d-none');
