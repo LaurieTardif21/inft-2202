@@ -64,7 +64,7 @@ async function populateProductTable(products) {
         row.appendChild(nameCell);
 
         const descriptionCell = document.createElement('td');
-        breedCell.textContent = product.description; // Accessing the 'productDescription' property
+        descriptionCell.textContent = product.description; // Accessing the 'productDescription' property
         row.appendChild(descriptionCell);
 
         const stockCell = document.createElement('td');
