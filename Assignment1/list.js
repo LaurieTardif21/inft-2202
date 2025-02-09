@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const previousPage = document.getElementById('previousPage');
     const nextPage = document.getElementById('nextPage');
     const loadingSpinner = document.getElementById('loading-spinner');
+    //get the static message
+    const staticLoadingMessageBox = document.getElementById("static-loading-message-box");
 
 
     // Function to clear messages
@@ -84,6 +86,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadingSpinner.classList.add('d-none');
         loadingMessageBox.classList.add('d-none');
         paginationLoading.classList.add('d-none');
+        //hide the static message
+        staticLoadingMessageBox.classList.add('d-none');
     }
 
     // Function to handle errors
