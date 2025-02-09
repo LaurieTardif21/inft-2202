@@ -98,6 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderProducts(products) {
         productList.innerHTML = ""; // Clear existing products
         products.forEach(product => {
+            console.log('renderProduct product.id:', product.id);
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${product.name}</td>
@@ -121,12 +122,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", () => {
                 const productId = button.dataset.id;
-
+                console.log("setupDeleteButtons productId:", productId); // Check ID here
                 // Show the modal
                 $('#deleteConfirmationModal').modal('show');
 
                 // Handle the confirm delete button
                 confirmDeleteButton.onclick = () => {
+                     console.log("confirmDeleteButton productId:", productId);// Check ID here
                     deleteProduct(productId);
                 };
             });
@@ -144,10 +146,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function deleteProduct(productId){
-         // delete the product from local storage
+         console.log("deleteProduct productId:", productId);// Check ID here
+         console.log("currentPage:", currentPage);
+        // delete the product from local storage
         try {
             await ProductService.deleteProduct(productId);
+            console.log("product deleted in ProductService");
+            
+            //update the pagination, if needed.
+            if(allProducts.length % perPage === 1 && currentPage === Math.ceil(allProducts.length/perPage) && currentPage > 1){
+                currentPage--;
+            }
             await fetchProducts(currentPage);
+            console.log("page reload after delete");
         } catch (error) {
             showError(error.message);
              noServiceTimeout = setTimeout(() => {
