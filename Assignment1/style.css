@@ -84,3 +84,7 @@
     font-size: 0.9rem;
     color: #666;
   }
+
+  #static-loading-message-box{
+    display:none;
+}
