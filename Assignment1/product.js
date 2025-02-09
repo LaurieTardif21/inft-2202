@@ -1,4 +1,4 @@
-import { addAnimal, findAnimal, updateAnimal } from './animals/animal.service.js';
+import { addAnimal, findAnimal, updateAnimal } from './product.service.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('animal-form');
