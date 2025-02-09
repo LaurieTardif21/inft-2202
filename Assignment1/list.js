@@ -11,6 +11,31 @@ const TIMEOUT_DURATION = 5000; // 5 seconds
 let allProducts = []; // Store all products to handle pagination
 let currentPage = 1; // Track the current page
 let noServiceTimeout;
+// Simulate API delay for 2 seconds
+const API_DELAY = 2000;
+
+// Function to simulate API delay
+async function getProductsWithDelay() {
+    return new Promise((resolve) => {
+        setTimeout(async () => {
+            const products = await ProductService.getProducts();
+            resolve(products);
+        }, API_DELAY);
+    });
+}
+
+async function deleteProductWithDelay(productId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            try {
+                await ProductService.deleteProduct(productId);
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        }, API_DELAY);
+    });
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     const productList = document.getElementById("products-list").querySelector('tbody');
@@ -63,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentPage = page;
             clearTimeout(noServiceTimeout);
             // Load product from local storage
-            const products = await ProductService.getProducts();
+            const products = await getProductsWithDelay();
             allProducts = products; // Store all products to handle pagination
 
             if (products.length === 0) {
@@ -84,10 +109,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             renderProducts(paginatedProducts);
             setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
 
-           
+
         } catch (error) {
             showError(error.message); // Display error message
-             noServiceTimeout = setTimeout(() => {
+            noServiceTimeout = setTimeout(() => {
                 clearMessages();
                 noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
                 hideLoading();
@@ -132,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 // Handle the confirm delete button
                 confirmDeleteButton.onclick = () => {
-                     console.log("confirmDeleteButton productId:", productId);// Check ID here
+                    console.log("confirmDeleteButton productId:", productId);// Check ID here
                     deleteProduct(productId);
                 };
             });
@@ -149,26 +174,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    async function deleteProduct(productId){
-         console.log("deleteProduct productId:", productId);// Check ID here
-         console.log("currentPage:", currentPage);
+    async function deleteProduct(productId) {
+        console.log("deleteProduct productId:", productId);// Check ID here
+        console.log("currentPage:", currentPage);
         // delete the product from local storage
         try {
-            await ProductService.deleteProduct(productId);
+            await deleteProductWithDelay(productId);
             console.log("product deleted in ProductService");
-            
+
             //update the pagination, if needed.
-            if(allProducts.length % perPage === 1 && currentPage === Math.ceil(allProducts.length/perPage) && currentPage > 1){
+            if (allProducts.length % perPage === 1 && currentPage === Math.ceil(allProducts.length / perPage) && currentPage > 1) {
                 currentPage--;
             }
             await fetchProducts(currentPage);
             console.log("page reload after delete");
         } catch (error) {
             showError(error.message);
-             noServiceTimeout = setTimeout(() => {
+            noServiceTimeout = setTimeout(() => {
                 clearMessages();
                 noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
-                 hideLoading();
+                hideLoading();
             }, TIMEOUT_DURATION);
         }
         $('#deleteConfirmationModal').modal('hide');
@@ -176,17 +201,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Function to set up pagination
     function setupPagination(totalPages, page) {
-       paginationLoading.classList.remove('d-none');
-       paginationContainer.innerHTML = "";
+        paginationLoading.classList.remove('d-none');
+        paginationContainer.innerHTML = "";
         previousPage.classList.remove("disabled");
         nextPage.classList.remove("disabled");
 
-        if(page === 1){
-           previousPage.classList.add("disabled");
+        if (page === 1) {
+            previousPage.classList.add("disabled");
         }
-         if(page === totalPages){
+        if (page === totalPages) {
             nextPage.classList.add("disabled");
-         }
+        }
 
         for (let i = 1; i <= totalPages; i++) {
             const li = document.createElement("li");
@@ -197,16 +222,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             paginationContainer.appendChild(li);
         }
-         paginationLoading.classList.add('d-none');
+        paginationLoading.classList.add('d-none');
     }
     previousPage.addEventListener("click", () => {
         if (currentPage > 1) {
-             fetchProducts(currentPage-1);
+            fetchProducts(currentPage - 1);
         }
     });
     nextPage.addEventListener("click", () => {
-         if (currentPage * perPage < allProducts.length) {
-              fetchProducts(currentPage + 1);
+        if (currentPage * perPage < allProducts.length) {
+            fetchProducts(currentPage + 1);
         }
     });
     fetchProducts(currentPage);
