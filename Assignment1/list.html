@@ -44,7 +44,7 @@ Description of file: list of products
             No products in the list. Add some products!
         </div>
         <!--Timeout message-->
-        <div id="loading-message-box" class="alert alert-info text-center flex-column d-flex d-none" role="alert">
+        <div id="loading-message-box" class="alert alert-info text-center flex-column d-flex" role="alert">
             <i class="fa fa-spinner fa-5x fa-spin"></i>
             <div>Loading product list... Please wait.</div>
         </div>
@@ -62,6 +62,13 @@ Description of file: list of products
         <!--loading for pagination-->
         <div id="loading-pagination-message-box" class="alert alert-info text-center d-none" role="alert">
             Loading...
+        </div>
+
+        <!--loading for spinner-->
+        <div id="loading-spinner" class="d-none text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
 
         <!-- Product List Table -->
