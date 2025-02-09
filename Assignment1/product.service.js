@@ -22,7 +22,7 @@ export function getProducts() {
                     }
                 });
 
-                resolve(product);
+                resolve(products);
             } catch (error) {
                 reject(new Error(`Error getting products: ${error.message}`));
             }
