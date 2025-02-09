@@ -13,9 +13,6 @@ let currentPage = 1; // Track the current page
 let noServiceTimeout;
 // Simulate API delay for 2 seconds
 const API_DELAY = 2000;
-//Global variable to store the productId to delete
-let productIdToDelete = null;
-let isInitialLoad = true; // Flag to check if it's the initial load
 
 // Function to simulate API delay
 async function getProductsWithDelay() {
@@ -40,61 +37,6 @@ async function deleteProductWithDelay(productId) {
     });
 }
 
-// Function to check if the list is empty and manage the no products message box
-function checkIfListIsEmpty(isLoading) {
-    const productListTable = document.getElementById('products-list');
-    const messageBox = document.getElementById('message-box');
-    const errorMessagebox = document.getElementById('error-message-box');
-    const tableBody = productListTable.querySelector('tbody');
-
-    if (isLoading) {
-        messageBox.classList.add('d-none');
-    } else {
-        if (tableBody.children.length === 0) {
-            if (errorMessagebox.classList.contains('d-none')) {
-                productListTable.classList.add('d-none');
-                messageBox.classList.remove('d-none');
-            }
-
-        } else {
-            productListTable.classList.remove('d-none');
-            messageBox.classList.add('d-none');
-        }
-    }
-}
-
-// Function to manage the no service message box
-function manageNoServiceMessage(show) {
-    const noServiceMessageBox = document.getElementById('no-service-message-box');
-    const productListTable = document.getElementById('products-list');
-    const loadingMessageBox = document.getElementById('loading-message-box');
-    const messageBox = document.getElementById('message-box');
-    const errorMessagebox = document.getElementById('error-message-box');
-    const paginationContainer = document.getElementById('paginationContainer');
-
-    if (show) {
-        // Show the no service message and hide everything else
-        noServiceMessageBox.classList.remove('d-none');
-        productListTable.classList.add('d-none');
-        loadingMessageBox.classList.add('d-none');
-        messageBox.classList.add('d-none');
-        errorMessagebox.classList.add('d-none');
-        paginationContainer.classList.add('d-none');
-    } else {
-        noServiceMessageBox.classList.add('d-none');
-    }
-}
-
-// Function to manage the loading on pagination
-function manageLoadingPagination(show) {
-    const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
-    if (show) {
-        loadingPaginationMessage.classList.remove('d-none');
-    } else {
-        loadingPaginationMessage.classList.add('d-none');
-    }
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
     const productList = document.getElementById("products-list").querySelector('tbody');
     const paginationContainer = document.getElementById("pagination");
@@ -108,8 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const body = document.querySelector('body');
     const previousPage = document.getElementById('previousPage');
     const nextPage = document.getElementById('nextPage');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const paginationUl = document.getElementById('pagination');
 
 
     // Function to clear messages
@@ -124,20 +64,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showLoading() {
         clearMessages();
         body.classList.add('loading');
-        loadingSpinner.classList.remove('d-none');
         loadingMessageBox.classList.remove('d-none');
         productList.parentElement.classList.add('d-none');
         paginationContainer.parentElement.classList.add('d-none');
     }
-    function showLoadingPagination(){
-        paginationLoading.classList.remove('d-none');
-    }
 
     function hideLoading() {
         body.classList.remove('loading');
-        loadingSpinner.classList.add('d-none');
         loadingMessageBox.classList.add('d-none');
-        paginationLoading.classList.add('d-none');
     }
 
     // Function to handle errors
@@ -150,23 +84,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Function to fetch products
     async function fetchProducts(page = 1) {
         try {
-            if (isInitialLoad) {
-              showLoading();
-            } else {
-              showLoadingPagination();
-            }
+            showLoading();
             currentPage = page;
             clearTimeout(noServiceTimeout);
             // Load product from local storage
             const products = await getProductsWithDelay();
             allProducts = products; // Store all products to handle pagination
-            checkIfListIsEmpty(false);
-    
-            // if the list is empty, exit the function
+
             if (products.length === 0) {
-              return;
+                hideLoading();
+                noProductsMessage.classList.remove('d-none');
+                productList.parentElement.classList.add('d-none');
+                paginationContainer.parentElement.classList.add('d-none');
+                return;
             }
-            // if the list is not empty, continue the function
             noProductsMessage.classList.add('d-none');
             productList.parentElement.classList.remove('d-none');
             paginationContainer.parentElement.classList.remove('d-none');
@@ -174,30 +105,30 @@ document.addEventListener("DOMContentLoaded", async () => {
             const start = (page - 1) * perPage;
             const end = start + perPage;
             const paginatedProducts = allProducts.slice(start, end);
-    
+
             renderProducts(paginatedProducts);
             setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
-    
-            isInitialLoad = false; // Set to false after the first load
-          } catch (error) {
+
+
+        } catch (error) {
             showError(error.message); // Display error message
             noServiceTimeout = setTimeout(() => {
-              clearMessages();
-              manageNoServiceMessage(true); // Show "No service available" message after timeout
-              hideLoading();
+                clearMessages();
+                noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
+                hideLoading();
             }, TIMEOUT_DURATION);
-          } finally {
+        } finally {
             // Always hide loading, even if an error occurred
             hideLoading();
-          }
         }
+    }
 
     // Function to render products
     function renderProducts(products) {
         productList.innerHTML = ""; // Clear existing products
         products.forEach(product => {
+            console.log('renderProduct product.id:', product.id);
             const row = document.createElement("tr");
-            row.id = `product-${product.id}`;
             row.innerHTML = `
                 <td>${product.name}</td>
                 <td>${product.description}</td>
@@ -220,10 +151,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", () => {
                 const productId = button.dataset.id;
+                console.log("setupDeleteButtons productId:", productId); // Check ID here
                 // Show the modal
                 $('#deleteConfirmationModal').modal('show');
-                // set the id of the product to delete
-                productIdToDelete = productId;
+
+                // Handle the confirm delete button
+                confirmDeleteButton.onclick = () => {
+                    console.log("confirmDeleteButton productId:", productId);// Check ID here
+                    deleteProduct(productId);
+                };
             });
         });
     }
@@ -239,108 +175,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function deleteProduct(productId) {
-        //disable the user interaction
-        document.body.classList.add('loading');
-        //disable the pagination
-        paginationUl.classList.add('disabled');
+        console.log("deleteProduct productId:", productId);// Check ID here
+        console.log("currentPage:", currentPage);
         // delete the product from local storage
         try {
             await deleteProductWithDelay(productId);
-
-             // Remove the animal in the global array
-             const index = allProducts.findIndex(product => product.id === productId);
-             if (index !== -1) {
-                allProducts.splice(index, 1);
-             }
-             // Remove the row from the table
-             const row = document.getElementById(`product-${productId}`);
-             if (row) {
-                row.remove();
-             }
-              // Update the empty list message if needed
-              checkIfListIsEmpty(false);
+            console.log("product deleted in ProductService");
 
             //update the pagination, if needed.
             if (allProducts.length % perPage === 1 && currentPage === Math.ceil(allProducts.length / perPage) && currentPage > 1) {
                 currentPage--;
             }
             await fetchProducts(currentPage);
+            console.log("page reload after delete");
         } catch (error) {
             showError(error.message);
             noServiceTimeout = setTimeout(() => {
                 clearMessages();
-                manageNoServiceMessage(true); // Show "No service available" message after timeout
+                noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
                 hideLoading();
             }, TIMEOUT_DURATION);
-        } finally {
-            //re-enable the user interaction
-            document.body.classList.remove('loading');
-            //enable the pagination
-            paginationUl.classList.remove('disabled');
-            $('#deleteConfirmationModal').modal('hide');
         }
+        $('#deleteConfirmationModal').modal('hide');
     }
 
     // Function to set up pagination
     function setupPagination(totalPages, page) {
-        const paginationContainer = document.getElementById('paginationContainer');
-        const paginationUl = document.getElementById('pagination');
-        //get the previous and next li
-        const previousPageLi = document.getElementById('previousPage');
-        const nextPageLi = document.getElementById('nextPage');
-        // Remove previous page link
-        paginationUl.querySelectorAll('.page-number').forEach(li => li.remove());
+        paginationLoading.classList.remove('d-none');
+        paginationContainer.innerHTML = "";
+        previousPage.classList.remove("disabled");
+        nextPage.classList.remove("disabled");
 
-        //check if there is more than 5 products
-        if (allProducts.length > perPage) {
-            paginationContainer.classList.remove('d-none');
-        } else {
-            paginationContainer.classList.add('d-none');
-            return;
+        if (page === 1) {
+            previousPage.classList.add("disabled");
         }
+        if (page === totalPages) {
+            nextPage.classList.add("disabled");
+        }
+
         for (let i = 1; i <= totalPages; i++) {
             const li = document.createElement("li");
-            li.className = `page-item ${i === page ? "active" : ""} page-number`;
+            li.className = `page-item ${i === page ? "active" : ""}`;
             li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
             li.addEventListener("click", () => {
                 fetchProducts(i);
             });
             paginationContainer.appendChild(li);
         }
-
-          //Manage the previous button
-    previousPageLi.classList.toggle('disabled', currentPage === 1);
-    //add the event if is not disabled
-    if (currentPage !== 1) {
-        //remove the old event
-        previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
-        previousPageLi.querySelector('a').addEventListener('click', (event) => {
-            event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
-            currentPage--;
-            fetchProducts(currentPage);
-        });
-    }
-
-    //Manage the next button
-    nextPageLi.classList.toggle('disabled', currentPage === totalPages);
-    //add the event if is not disabled
-    if (currentPage !== totalPages) {
-        //remove the old event
-        nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
-        nextPageLi.querySelector('a').addEventListener('click', (event) => {
-            event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
-            currentPage++;
-            fetchProducts(currentPage);
-        });
-    }
+        paginationLoading.classList.add('d-none');
     }
     previousPage.addEventListener("click", () => {
         if (currentPage > 1) {
@@ -352,61 +234,5 @@ document.addEventListener("DOMContentLoaded", async () => {
             fetchProducts(currentPage + 1);
         }
     });
-      async function initializePage() {
-        try {
-            //disable the user interaction
-            document.body.classList.add('loading');
-            //disable the pagination
-            const paginationUl = document.getElementById('pagination');
-            paginationUl.classList.add('disabled');
-    
-            //show that the list is loading
-            checkIfListIsEmpty(true);
-            await fetchProducts(currentPage);
-        } catch (error) {
-            // Show error message
-            const errorMessagebox = document.getElementById('error-message-box');
-            if (errorMessagebox) {
-                errorMessagebox.textContent = "Error fetching products, please try again later";
-                errorMessagebox.classList.remove('d-none');
-            }
-              // Show "no service" message if everything fails
-              manageNoServiceMessage(true);
-        } finally {
-          //re-enable the user interaction
-          document.body.classList.remove('loading');
-          //enable the pagination
-          const paginationUl = document.getElementById('pagination');
-          paginationUl.classList.remove('disabled');
-        }
-    }
-
-    confirmDeleteButton.addEventListener('click', async () => {
-        // Check if the animalIdToDelete is defined
-        //disable the user interaction
-        document.body.classList.add('loading');
-        //disable the pagination
-        const paginationUl = document.getElementById('pagination');
-        paginationUl.classList.add('disabled');
-        if (productIdToDelete !== null) {
-            try {
-                await deleteProduct(productIdToDelete);
-               
-            } catch (error) {
-                // Show error message
-                const errorMessagebox = document.getElementById('error-message-box');
-                if (errorMessagebox) {
-                    errorMessagebox.textContent = "Error deleting the product, please try again later";
-                    errorMessagebox.classList.remove('d-none');
-                }
-            } finally {
-                //re-enable the user interaction
-                document.body.classList.remove('loading');
-                //enable the pagination
-                paginationUl.classList.remove('disabled');
-                $('#deleteConfirmationModal').modal('hide');
-            }
-        }
-    });
-    initializePage();
+    fetchProducts(currentPage);
 });
