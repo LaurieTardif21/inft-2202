@@ -1,4 +1,4 @@
-import { getProducts, deleteProduct } from './product.service.js';
+import { getProducts, deleteProduct } from 'product.service.js';
 
 // Global variable to store the productId to delete
 let productIdToDelete = null;
