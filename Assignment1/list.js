@@ -13,6 +13,7 @@ let currentPage = 1; // Track the current page
 let noServiceTimeout;
 // Simulate API delay for 2 seconds
 const API_DELAY = 2000;
+let isLoading = false; // Global loading state
 
 // Function to simulate API delay
 async function getProductsWithDelay() {
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const body = document.querySelector('body');
     const previousPage = document.getElementById('previousPage');
     const nextPage = document.getElementById('nextPage');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
 
     // Function to clear messages
@@ -62,16 +64,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function showLoading() {
+        isLoading = true; // Set the global loading state
         clearMessages();
         body.classList.add('loading');
+        loadingSpinner.classList.remove('d-none');
         loadingMessageBox.classList.remove('d-none');
         productList.parentElement.classList.add('d-none');
         paginationContainer.parentElement.classList.add('d-none');
     }
 
+     function showLoadingPagination(){
+        isLoading = true; // Set the global loading state
+        paginationLoading.classList.remove('d-none');
+    }
+
     function hideLoading() {
+        isLoading = false; // Reset the global loading state
         body.classList.remove('loading');
+        loadingSpinner.classList.add('d-none');
         loadingMessageBox.classList.add('d-none');
+        paginationLoading.classList.add('d-none');
     }
 
     // Function to handle errors
@@ -84,7 +96,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Function to fetch products
     async function fetchProducts(page = 1) {
         try {
-            showLoading();
+            if (page === 1 && currentPage === 1) {
+                 showLoading();
+            }else{
+                showLoadingPagination();
+            }
             currentPage = page;
             clearTimeout(noServiceTimeout);
             // Load product from local storage
@@ -108,7 +124,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             renderProducts(paginatedProducts);
             setupPagination(Math.ceil(allProducts.length / perPage), page); // Calculate the total pages
-
+            hideLoading();
 
         } catch (error) {
             showError(error.message); // Display error message
@@ -117,9 +133,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 noServiceMessage.classList.remove('d-none'); // Show "No service available" message after timeout
                 hideLoading();
             }, TIMEOUT_DURATION);
-        } finally {
-            // Always hide loading, even if an error occurred
-            hideLoading();
         }
     }
 
@@ -127,7 +140,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderProducts(products) {
         productList.innerHTML = ""; // Clear existing products
         products.forEach(product => {
-            console.log('renderProduct product.id:', product.id);
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${product.name}</td>
@@ -151,13 +163,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", () => {
                 const productId = button.dataset.id;
-                console.log("setupDeleteButtons productId:", productId); // Check ID here
                 // Show the modal
                 $('#deleteConfirmationModal').modal('show');
 
                 // Handle the confirm delete button
                 confirmDeleteButton.onclick = () => {
-                    console.log("confirmDeleteButton productId:", productId);// Check ID here
                     deleteProduct(productId);
                 };
             });
@@ -175,19 +185,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function deleteProduct(productId) {
-        console.log("deleteProduct productId:", productId);// Check ID here
-        console.log("currentPage:", currentPage);
+        if (isLoading) return; //prevent duplicate request
+        showLoading();// show the loading when we delete a product
         // delete the product from local storage
         try {
             await deleteProductWithDelay(productId);
-            console.log("product deleted in ProductService");
 
             //update the pagination, if needed.
             if (allProducts.length % perPage === 1 && currentPage === Math.ceil(allProducts.length / perPage) && currentPage > 1) {
                 currentPage--;
             }
             await fetchProducts(currentPage);
-            console.log("page reload after delete");
+            hideLoading();
         } catch (error) {
             showError(error.message);
             noServiceTimeout = setTimeout(() => {
@@ -201,7 +210,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Function to set up pagination
     function setupPagination(totalPages, page) {
-        paginationLoading.classList.remove('d-none');
         paginationContainer.innerHTML = "";
         previousPage.classList.remove("disabled");
         nextPage.classList.remove("disabled");
@@ -222,7 +230,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             paginationContainer.appendChild(li);
         }
-        paginationLoading.classList.add('d-none');
     }
     previousPage.addEventListener("click", () => {
         if (currentPage > 1) {
