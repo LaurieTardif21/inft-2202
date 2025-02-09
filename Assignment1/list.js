@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const body = document.querySelector('body');
     const previousPage = document.getElementById('previousPage');
     const nextPage = document.getElementById('nextPage');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
 
     // Function to clear messages
@@ -65,6 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showLoading() {
         clearMessages();
         body.classList.add('loading');
+        loadingSpinner.classList.remove('d-none');
         loadingMessageBox.classList.remove('d-none');
         productList.parentElement.classList.add('d-none');
         paginationContainer.parentElement.classList.add('d-none');
@@ -75,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function hideLoading() {
         body.classList.remove('loading');
+        loadingSpinner.classList.add('d-none');
         loadingMessageBox.classList.add('d-none');
         paginationLoading.classList.add('d-none');
     }
