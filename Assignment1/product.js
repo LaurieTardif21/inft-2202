@@ -110,15 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-
-        if (!validateField(nameInput, nameError, (value) => value !== '', 'Name is required.')) {
-            isValid = false;
-        }
-
-
-
-
         if (!validateField(stockInput, stockError, isValidNonNegativeNumber, 'Stock must be a non-negative number.')) {
             isValid = false;
         }
@@ -152,17 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
     descriptionInput.addEventListener('input', () => {
         validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.');
     });
-
-
-
-
-
-
-    nameInput.addEventListener('input', () => {
-        validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
-    });
-
-
 
 
 
