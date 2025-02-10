@@ -1,4 +1,4 @@
-import { getAnimals, deleteAnimal } from './animal.service.js';
+import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 // Global variable to store the animalId to delete
 let animalIdToDelete = null;
