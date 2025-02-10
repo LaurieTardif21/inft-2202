@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let isValid = true;
 
 
-        if (!validateField(nameInput, nameError, (value) => value !== '', 'name is required.')) {
+        if (!validateField(nameInput, nameError, (value) => value !== '', 'Name is required.')) {
             isValid = false;
         }
 
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     nameInput.addEventListener('input', () => {
-        validateField(nameInput, nameError, (value) => value !== '', 'Nameis required.');
+        validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
     });
 
     descriptionInput.addEventListener('input', () => {
