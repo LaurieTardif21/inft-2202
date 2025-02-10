@@ -213,6 +213,15 @@ async function loadProducts(page) {
         const response = await getProducts();
 
         if (response) {
+             // Log each product in the desired format
+            response.forEach(product => {
+                console.log({
+                    "name": product.name,
+                    "description": product.description,
+                    "stock": product.stock,
+                    "price": product.price
+                });
+            });
             const startIndex = (page - 1) * productsPerPage;
             const endIndex = startIndex + productsPerPage;
             const paginatedProducts = response.slice(startIndex, endIndex);
