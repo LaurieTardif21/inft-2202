@@ -33,16 +33,16 @@ function hideMessages() {
     noServiceMessage.classList.add('d-none');
     loadingPaginationMessageBox.classList.add('d-none');
 }
-function displayError(error) {
+function displayError(error){
     hideMessages();
     errorMessage.textContent = error;
     errorMessage.classList.remove('d-none');
 }
-function displayNoService() {
+function displayNoService(){
     hideMessages();
     noServiceMessage.classList.remove('d-none');
 }
-function showLoadingPagination() {
+function showLoadingPagination(){
     hideMessages();
     loadingPaginationMessageBox.classList.remove('d-none');
     paginationContainer.classList.add('d-none');
@@ -88,31 +88,20 @@ function createProductCard(product) {
     price.textContent = `Price: $${product.price.toFixed(2)}`;
     cardBody.appendChild(price);
 
-    // Buttons container
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.classList.add('d-flex', 'gap-2');
     // Edit Button
     const editButton = document.createElement('a');
     editButton.href = `product.html?id=${product.id}`;
-    editButton.classList.add('btn', 'btn-primary');
+    editButton.classList.add('btn', 'btn-primary', 'me-2');
     editButton.textContent = 'Edit';
-    buttonsContainer.appendChild(editButton);
+    cardBody.appendChild(editButton);
 
     // Delete Button
     const deleteButton = document.createElement('button');
     deleteButton.classList.add('btn', 'btn-danger');
     deleteButton.textContent = 'Delete';
     deleteButton.addEventListener('click', () => openDeleteModal(product.id));
-    buttonsContainer.appendChild(deleteButton);
+    cardBody.appendChild(deleteButton);
 
-    // Add to cart Button
-    const addToCartButton = document.createElement('button');
-    addToCartButton.classList.add('btn', 'btn-success');
-    addToCartButton.textContent = 'Add to Cart';
-    // NO EVENT LISTENER HERE
-    buttonsContainer.appendChild(addToCartButton);
-
-    cardBody.appendChild(buttonsContainer);
     card.appendChild(cardBody);
     return card;
 }
@@ -207,41 +196,40 @@ async function loadProducts(page) {
     try {
         const response = await getProducts();
 
-        if (response) {
-            const startIndex = (page - 1) * productsPerPage;
+        if(response){
+              const startIndex = (page - 1) * productsPerPage;
             const endIndex = startIndex + productsPerPage;
             const paginatedProducts = response.slice(startIndex, endIndex);
-            if (response.length === 0) {
+             if (response.length === 0) {
                 showMessageBox('No products in the list. Add some products!');
                 paginationContainer.classList.add('d-none');
             } else {
-                const totalPages = Math.ceil(response.length / productsPerPage);
-                if (totalPages === 1) {
+                 const totalPages = Math.ceil(response.length / productsPerPage);
+                if(totalPages === 1){
                     paginationContainer.classList.add('d-none');
                 } else {
                     paginationContainer.classList.remove('d-none');
                 }
-                hideMessages();
+                 hideMessages();
                 productsList.innerHTML = ''; // Clear existing products
-                paginatedProducts.forEach(product => {
+                 paginatedProducts.forEach(product => {
                     const card = createProductCard(product);
-                    productsList.appendChild(card);
-                });
-                productsList.classList.remove('d-none');
+                     productsList.appendChild(card);
+                 });
+                 productsList.classList.remove('d-none');
                 updatePagination(totalPages, page);
             }
 
         } else {
-            displayNoService();
+           displayNoService();
         }
 
     } catch (error) {
-        displayError(`Error loading products: ${error.message}`);
+       displayError(`Error loading products: ${error.message}`);
     }
 }
 
 loadProducts(currentPage);
-
 
 
 
