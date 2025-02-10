@@ -1,3 +1,9 @@
+// Name: Laurie Tardif
+//date: 02/09/2025
+// filename: product.service.js
+// course: inft 2202
+// description: product service functions 
+
 // Function to generate a unique ID without uuid
 function generateId() {
     return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;

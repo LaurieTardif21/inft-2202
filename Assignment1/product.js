@@ -1,3 +1,9 @@
+// name: laurie tardif
+// date: 02/09/2025
+// filename: product.js
+// course: inft 2202
+// description: product functions
+
 import { addProduct, findProduct, updateProduct } from './product.service.js';
 
 document.addEventListener('DOMContentLoaded', () => {

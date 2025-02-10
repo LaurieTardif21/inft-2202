@@ -1,3 +1,9 @@
+// name: laurie tardif
+// date: 02/09/2025
+// filename: list.js
+// course: inft 2202
+// description: list  functions
+
 import { getProducts, deleteProduct } from './product.service.js';
 
 const productsList = document.getElementById('products-list');
