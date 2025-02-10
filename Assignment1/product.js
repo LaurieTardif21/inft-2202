@@ -106,9 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.')) {
             isValid = false;
         }
-
-
-
         if (!validateField(stockInput, stockError, isValidNonNegativeNumber, 'Stock must be a non-negative number.')) {
             isValid = false;
         }
@@ -143,9 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
         validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.');
     });
 
-
-
-
     stockInput.addEventListener('input', () => {
         validateField(stockInput, stockError, isValidNonNegativeNumber, 'Stock must be a non-negative number.');
     });
@@ -154,5 +148,3 @@ document.addEventListener('DOMContentLoaded', () => {
         validateField(priceInput, priceError, isValidNonNegativeNumber, 'Price must be a non-negative number.');
     });
 });
-
-
