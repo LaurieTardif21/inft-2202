@@ -148,3 +148,4 @@ document.addEventListener('DOMContentLoaded', () => {
         validateField(priceInput, priceError, isValidNonNegativeNumber, 'Price must be a non-negative number.');
     });
 });
+
