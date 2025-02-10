@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const eyesError = document.getElementById('eyesError');
     const legsError = document.getElementById('legsError');
     const soundError = document.getElementById('soundError');
+    
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
     const animalId = urlParams.get('id');
