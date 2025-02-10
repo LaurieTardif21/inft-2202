@@ -36,14 +36,27 @@
             opacity: 0.5;
             cursor: default;
         }
+
         #products-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
         }
-        .card-img-top{
+
+        .card-img-top {
             height: 200px;
             object-fit: cover;
+        }
+        .error-message {
+            color: red;
+            font-size: small;
+            display: none; /* Hide error messages by default */
+        }
+        .is-invalid {
+            border-color: red;
+        }
+        .is-valid {
+            border-color: green;
         }
     </style>
 </head>
@@ -99,7 +112,7 @@
 
         <!-- Product List Container -->
         <div id="products-list" class="d-none">
-           </div>
+        </div>
 
         <!-- Pagination -->
         <nav aria-label="Product navigation" class="mt-4 d-none" id="paginationContainer">
