@@ -1,5 +1,7 @@
+//import section
 import { getProducts, deleteProduct } from './product.service.js';
 
+// const section
 const productsList = document.getElementById('products-list');
 const messageBox = document.getElementById('message-box');
 const loadingMessageBox = document.getElementById('loading-message-box');
@@ -12,20 +14,24 @@ const previousPage = document.getElementById('previousPage');
 const nextPage = document.getElementById('nextPage');
 const paginationContainer = document.getElementById('paginationContainer');
 
+// pagination
 let currentPage = 1;
 const productsPerPage = 8;
 
+// show message box function
 function showMessageBox(message) {
     messageBox.textContent = message;
     messageBox.classList.remove('d-none');
     productsList.classList.add('d-none');
 }
 
+//loading message
 function showLoadingMessage() {
     loadingMessageBox.classList.remove('d-none');
     productsList.classList.add('d-none');
 }
 
+// hide message
 function hideMessages() {
     messageBox.classList.add('d-none');
     loadingMessageBox.classList.add('d-none');
@@ -33,15 +39,18 @@ function hideMessages() {
     noServiceMessage.classList.add('d-none');
     loadingPaginationMessageBox.classList.add('d-none');
 }
+//display errors
 function displayError(error) {
     hideMessages();
     errorMessage.textContent = error;
     errorMessage.classList.remove('d-none');
 }
+// display no service
 function displayNoService() {
     hideMessages();
     noServiceMessage.classList.remove('d-none');
 }
+//loading pagination
 function showLoadingPagination() {
     hideMessages();
     loadingPaginationMessageBox.classList.remove('d-none');
