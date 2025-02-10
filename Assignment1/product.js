@@ -103,6 +103,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const price = priceInput.value.trim();
         let isValid = true;
 
+
+
+
+
+
+
+
+        if (!validateField(nameInput, nameError, (value) => value != '', 'Name is required')){
+            isValid = false;
+        }
+
+
+
+
+
+
+
+
         if (!validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.')) {
             isValid = false;
         }
@@ -136,6 +154,25 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Failed to add/update product. Please try again.');
         }
     });
+
+
+
+
+
+    
+
+
+    nameInput.addEventListener('input', () =>{
+        validateField(nameInput, nameError, (value) => value !== '', 'Name is required');
+    });
+
+
+
+
+
+
+
+
     descriptionInput.addEventListener('input', () => {
         validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.');
     });
