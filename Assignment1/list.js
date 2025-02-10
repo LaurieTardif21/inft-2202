@@ -1,12 +1,5 @@
-// Author: Laurie Tardif
-// Date: 02/09/2025
-// Filename: list.js
-// Course: INFT 2202
-// Description: Handles product listing, pagination, and interactions like deletion and cart addition.
-
 import { getProducts, deleteProduct } from './product.service.js';
 
-// DOM Elements
 const productsList = document.getElementById('products-list');
 const messageBox = document.getElementById('message-box');
 const loadingMessageBox = document.getElementById('loading-message-box');
@@ -22,20 +15,17 @@ const paginationContainer = document.getElementById('paginationContainer');
 let currentPage = 1;
 const productsPerPage = 8;
 
-// Displays a general message and hides product list
 function showMessageBox(message) {
     messageBox.textContent = message;
     messageBox.classList.remove('d-none');
     productsList.classList.add('d-none');
 }
 
-// Shows a loading message while fetching products
 function showLoadingMessage() {
     loadingMessageBox.classList.remove('d-none');
     productsList.classList.add('d-none');
 }
 
-// Hides all message boxes
 function hideMessages() {
     messageBox.classList.add('d-none');
     loadingMessageBox.classList.add('d-none');
@@ -43,35 +33,29 @@ function hideMessages() {
     noServiceMessage.classList.add('d-none');
     loadingPaginationMessageBox.classList.add('d-none');
 }
-
-// Displays an error message
 function displayError(error) {
     hideMessages();
     errorMessage.textContent = error;
     errorMessage.classList.remove('d-none');
 }
-
-// Displays a message when no service is available
 function displayNoService() {
     hideMessages();
     noServiceMessage.classList.remove('d-none');
 }
-
-// Shows a loading message for pagination updates
 function showLoadingPagination() {
     hideMessages();
     loadingPaginationMessageBox.classList.remove('d-none');
     paginationContainer.classList.add('d-none');
 }
 
-// Creates a product card dynamically
+// Function to create a product card
 function createProductCard(product) {
     const card = document.createElement('div');
     card.classList.add('card', 'mb-3');
 
-    // Product Image
+    // Card Image
     const img = document.createElement('img');
-    img.src = 'https://via.placeholder.com/300x200?text=Product';
+    img.src = 'https://via.placeholder.com/300x200?text=Product'; // Placeholder image
     img.classList.add('card-img-top');
     img.alt = product.name;
     card.appendChild(img);
@@ -80,44 +64,63 @@ function createProductCard(product) {
     const cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
 
-    // Product Details
-    cardBody.innerHTML = `
-        <h5 class="card-title">${product.name}</h5>
-        <p class="card-text">Description: ${product.description}</p>
-        <p class="card-text">Stock: ${product.stock}</p>
-        <p class="card-text">Price: $${product.price.toFixed(2)}</p>
-    `;
+    // Product Name
+    const title = document.createElement('h5');
+    title.classList.add('card-title');
+    title.textContent = product.name;
+    cardBody.appendChild(title);
 
-    // Buttons for actions
+    // Product Description
+    const description = document.createElement('p');
+    description.classList.add('card-text');
+    description.textContent = `Description: ${product.description}`;
+    cardBody.appendChild(description);
+
+    // Product Stock
+    const stock = document.createElement('p');
+    stock.classList.add('card-text');
+    stock.textContent = `Stock: ${product.stock}`;
+    cardBody.appendChild(stock);
+
+    // Product Price
+    const price = document.createElement('p');
+    price.classList.add('card-text');
+    price.textContent = `Price: $${product.price.toFixed(2)}`;
+    cardBody.appendChild(price);
+
+    // Buttons container
     const buttonsContainer = document.createElement('div');
     buttonsContainer.classList.add('gap-2');
-
     // Edit Button
     const editButton = document.createElement('a');
     editButton.href = `product.html?id=${product.id}`;
     editButton.classList.add('btn', 'btn-primary');
-    editButton.innerHTML = '<i class="fas fa-edit"></i>';
+    editButton.setAttribute('data-bs-toggle', 'tooltip');
+    editButton.setAttribute('title', 'Edit');
+    editButton.innerHTML = '<i class="fas fa-edit"></i>'; // Font Awesome icon
     buttonsContainer.appendChild(editButton);
 
     // Delete Button
     const deleteButton = document.createElement('button');
     deleteButton.classList.add('btn', 'btn-danger');
-    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
+    deleteButton.setAttribute('data-bs-toggle', 'tooltip');
+    deleteButton.setAttribute('title', 'Delete');
+    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome icon
     deleteButton.addEventListener('click', () => openDeleteModal(product.id));
     buttonsContainer.appendChild(deleteButton);
 
-    // Add to Cart Button
+    // Add to cart Button
     const addToCartButton = document.createElement('button');
     addToCartButton.classList.add('btn', 'btn-success');
-    addToCartButton.innerHTML = '<i class="fas fa-cart-plus"></i>';
+    addToCartButton.setAttribute('data-bs-toggle', 'tooltip');
+    addToCartButton.setAttribute('title', 'Add to Cart');
+    addToCartButton.innerHTML = '<i class="fas fa-cart-plus"></i>'; // Font Awesome icon
     buttonsContainer.appendChild(addToCartButton);
 
     cardBody.appendChild(buttonsContainer);
     card.appendChild(cardBody);
     return card;
 }
-
-// Opens a modal for confirming product deletion
 function openDeleteModal(productId) {
     const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
@@ -133,55 +136,120 @@ function openDeleteModal(productId) {
     };
     deleteConfirmationModal.show();
 }
-
-// Updates pagination controls
 function updatePagination(totalPages, currentPage) {
-    pagination.innerHTML = '';
-    
-    // Creates and appends pagination buttons dynamically
-    // Handles previous, next, and individual page clicks
-    
+    pagination.innerHTML = ''; // Clear existing pagination
+
+    // Previous page button
+    const prevLi = document.createElement('li');
+    prevLi.classList.add('page-item');
+    prevLi.id = 'previousPage';
+    const prevLink = document.createElement('a');
+    prevLink.classList.add('page-link');
+    prevLink.href = '#';
+    prevLink.textContent = 'Previous';
+    prevLi.appendChild(prevLink);
+    pagination.appendChild(prevLi);
+
+    // Handle Previous button click
+    prevLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (currentPage > 1) {
+            currentPage--;
+            loadProducts(currentPage);
+        }
+    });
+
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        const pageLi = document.createElement('li');
+        pageLi.classList.add('page-item');
+        if (i === currentPage) {
+            pageLi.classList.add('active');
+        }
+        const pageLink = document.createElement('a');
+        pageLink.classList.add('page-link');
+        pageLink.href = '#';
+        pageLink.textContent = i;
+        pageLi.appendChild(pageLink);
+        pagination.appendChild(pageLi);
+
+        // Handle page number click
+        pageLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            currentPage = i;
+            loadProducts(currentPage);
+        });
+    }
+
+    // Next page button
+    const nextLi = document.createElement('li');
+    nextLi.classList.add('page-item');
+    nextLi.id = 'nextPage';
+    const nextLink = document.createElement('a');
+    nextLink.classList.add('page-link');
+    nextLink.href = '#';
+    nextLink.textContent = 'Next';
+    nextLi.appendChild(nextLink);
+    pagination.appendChild(nextLi);
+
+    // Handle Next button click
+    nextLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadProducts(currentPage);
+        }
+    });
+
+    // Disable/Enable previous and next buttons based on current page
     prevLi.classList.toggle('disabled', currentPage === 1);
     nextLi.classList.toggle('disabled', currentPage === totalPages);
 }
 
-// Fetches and displays products with pagination
 async function loadProducts(page) {
     showLoadingMessage();
     showLoadingPagination();
     try {
         const response = await getProducts();
-        
+
         if (response) {
             const startIndex = (page - 1) * productsPerPage;
             const endIndex = startIndex + productsPerPage;
             const paginatedProducts = response.slice(startIndex, endIndex);
-
             if (response.length === 0) {
                 showMessageBox('No products in the list. Add some products!');
                 paginationContainer.classList.add('d-none');
             } else {
+                const totalPages = Math.ceil(response.length / productsPerPage);
+                if (totalPages === 1) {
+                    paginationContainer.classList.add('d-none');
+                } else {
+                    paginationContainer.classList.remove('d-none');
+                }
                 hideMessages();
-                productsList.innerHTML = '';
+                productsList.innerHTML = ''; // Clear existing products
                 paginatedProducts.forEach(product => {
-                    productsList.appendChild(createProductCard(product));
+                    const card = createProductCard(product);
+                    productsList.appendChild(card);
                 });
                 productsList.classList.remove('d-none');
+                // Enable tooltips after the cards are rendered
                 enableTooltips();
-                updatePagination(Math.ceil(response.length / productsPerPage), page);
+                updatePagination(totalPages, page);
             }
+
         } else {
             displayNoService();
         }
+
     } catch (error) {
         displayError(`Error loading products: ${error.message}`);
     }
 }
-
-// Enables Bootstrap tooltips on dynamically added elements
+// Function to enable tooltips
 function enableTooltips() {
-    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 }
 
-// Initial load of products
 loadProducts(currentPage);
