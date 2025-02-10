@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const stockInput = document.getElementById('product-stock');
     const priceInput = document.getElementById('product-price');
     // Errors
-    const descriptionError = document.getElementById('breedError');
-    const stockError = document.getElementById('eyesError');
-    const priceError = document.getElementById('legsError');
+    const descriptionError = document.getElementById('descriptionError');
+    const stockError = document.getElementById('stockError');
+    const priceError = document.getElementById('priceError');
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
