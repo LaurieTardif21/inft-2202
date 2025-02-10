@@ -4,8 +4,10 @@
 // course: inft 2202
 // description: product functions
 
+//import section
 import { addProduct, findProduct, updateProduct } from './product.service.js';
 
+// event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('product-form');
     const saveButton = form.querySelector('button[type="submit"]');
@@ -44,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // function to display errors
     function displayError(input, errorElement, message) {
         input.classList.add('is-invalid');
         input.classList.remove('is-valid');
@@ -51,12 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
         errorElement.style.display = 'block';
     }
 
+    // function to set validation
     function setValid(input) {
         input.classList.remove('is-invalid');
         input.classList.add('is-valid');
         input.nextElementSibling.style.display = 'none';
     }
 
+    // function to validate
     function validateField(input, errorElement, validationFunction, errorMessage) {
         const value = input.value.trim();
         if (!value || !validationFunction(value)) {
@@ -100,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nameInput.disabled = false;
     }
 
+    // event listener for submit
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         clearErrors();
@@ -110,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const price = priceInput.value.trim();
         let isValid = true;
 
-
+        // ensure form is filled out
         if (!validateField(nameInput, nameError, (value) => value !== '', 'Name is required.')) {
             isValid = false;
         }
@@ -149,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // event listeners for the input
     nameInput.addEventListener('input', () => {
         validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
     });
