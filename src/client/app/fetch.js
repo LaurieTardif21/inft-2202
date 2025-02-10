@@ -84,5 +84,5 @@ async function add(){
 }*/
 
 //await add();
-await load();
-//list();
+//await load();
+list();
