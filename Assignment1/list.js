@@ -1,348 +1,235 @@
 import { getProducts, deleteProduct } from './product.service.js';
 
-// Global variable to store the productId to delete
-let productIdToDelete = null;
-// global variable for the current page
+const productsList = document.getElementById('products-list');
+const messageBox = document.getElementById('message-box');
+const loadingMessageBox = document.getElementById('loading-message-box');
+const errorMessage = document.getElementById('error-message-box');
+const noServiceMessage = document.getElementById('no-service-message-box');
+const loadingPaginationMessageBox = document.getElementById('loading-pagination-message-box');
+
+const pagination = document.getElementById('pagination');
+const previousPage = document.getElementById('previousPage');
+const nextPage = document.getElementById('nextPage');
+const paginationContainer = document.getElementById('paginationContainer');
+
 let currentPage = 1;
-// Global variable for the number of entries per page
-const perPage = 5;
-// Global varible for the array of products
-let productsArray = [];
-// Simulate API delay for 2 seconds
-const API_DELAY = 2000;
+const productsPerPage = 8;
 
-function createEditButton(productId) {
-    const button = document.createElement('button');
-    button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
-    button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
-    button.setAttribute('data-bs-placement', 'top'); // Set tooltip placement
-    button.setAttribute('title', 'Edit Product'); // Set tooltip text
-    // Add icon
-    const icon = document.createElement('i');
-    icon.classList.add('fas', 'fa-pen-to-square'); // Edit icon
-    button.appendChild(icon);
-    button.addEventListener('click', () => {
-        // Redirect to product.html with the productId as a query parameter
-        window.location.href = `product.html?id=${productId}`;
-    });
-    return button;
+function showMessageBox(message) {
+    messageBox.textContent = message;
+    messageBox.classList.remove('d-none');
+    productsList.classList.add('d-none');
 }
 
-function createDeleteButton(productId) {
-    const button = document.createElement('button');
-    button.classList.add('btn', 'btn-danger', 'btn-sm');
-    button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
-    button.setAttribute('data-bs-placement', 'top'); // Set tooltip placement
-    button.setAttribute('title', 'Delete Product'); // Set tooltip text
-    // Add icon
-    const icon = document.createElement('i');
-    icon.classList.add('fas', 'fa-trash-alt'); // Delete icon
-    button.appendChild(icon);
-    button.addEventListener('click', () => {
-        // Set the product ID to delete in the global variable
-        productIdToDelete = productId;
-        // Show the confirmation modal
-        const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-        deleteConfirmationModal.show();
-    });
-    return button;
+function showLoadingMessage() {
+    loadingMessageBox.classList.remove('d-none');
+    productsList.classList.add('d-none');
 }
 
-async function populateProductTable(products) {
-    manageNoServiceMessage(false);
-    await new Promise(resolve => setTimeout(resolve, 0));
-    const tableBody = document.querySelector('#products-list tbody');
-    manageLoadingPagination(false);
-
-    products.forEach((product) => {
-        // ... other code to create the row
-        const row = document.createElement('tr');
-        row.id = `product-${product.id}`; // Assign an ID to the row for easy removal later
-
-        const nameCell = document.createElement('td');
-        nameCell.textContent = product.name; // Accessing the 'productName' property
-        row.appendChild(nameCell);
-
-        const descriptionCell = document.createElement('td');
-        descriptionCell.textContent = product.description; // Accessing the 'productDescription' property
-        row.appendChild(descriptionCell);
-
-        const stockCell = document.createElement('td');
-        stockCell.textContent = product.stock; // Accessing the 'productStock' property
-        row.appendChild(stockCell);
-
-        const priceCell = document.createElement('td');
-        priceCell.textContent = product.price; // Accessing the 'productPrice' property
-        row.appendChild(priceCell);
-
-        const actionsCell = document.createElement('td');
-        const editButton = createEditButton(product.id); // Pass the product ID to the edit button
-        actionsCell.appendChild(editButton);
-        const deleteButton = createDeleteButton(product.id); // Pass the product ID to the delete button
-        actionsCell.appendChild(deleteButton);
-        row.appendChild(actionsCell);
-
-        tableBody.appendChild(row);
-        // ... add the button to the row
-    });
-    // Initialize Bootstrap tooltips after the table is populated
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-    checkIfListIsEmpty(false);
-
+function hideMessages() {
+    messageBox.classList.add('d-none');
+    loadingMessageBox.classList.add('d-none');
+    errorMessage.classList.add('d-none');
+    noServiceMessage.classList.add('d-none');
+    loadingPaginationMessageBox.classList.add('d-none');
+}
+function displayError(error){
+    hideMessages();
+    errorMessage.textContent = error;
+    errorMessage.classList.remove('d-none');
+}
+function displayNoService(){
+    hideMessages();
+    noServiceMessage.classList.remove('d-none');
+}
+function showLoadingPagination(){
+    hideMessages();
+    loadingPaginationMessageBox.classList.remove('d-none');
+    paginationContainer.classList.add('d-none');
 }
 
-function checkIfListIsEmpty(isLoading) {
-    const tableBody = document.querySelector('#products-list tbody');
-    const messageBox = document.getElementById('message-box');
-    const productListTable = document.getElementById('products-list');
-    const errorMessagebox = document.getElementById('error-message-box');
-    if (isLoading) {
-        messageBox.classList.add('d-none');
-    } else {
-        if (tableBody.children.length === 0) {
-            if (errorMessagebox.classList.contains('d-none')) {
-                productListTable.classList.add('d-none');
-                messageBox.classList.remove('d-none');
-            }
-            
-        } else {
-            productListTable.classList.remove('d-none');
-            messageBox.classList.add('d-none');
-        }
-    }
+// Function to create a product card
+function createProductCard(product) {
+    const card = document.createElement('div');
+    card.classList.add('card', 'mb-3');
+
+    // Card Image
+    const img = document.createElement('img');
+    img.src = 'https://via.placeholder.com/300x200?text=Product'; // Placeholder image
+    img.classList.add('card-img-top');
+    img.alt = product.name;
+    card.appendChild(img);
+
+    // Card Body
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+
+    // Product Name
+    const title = document.createElement('h5');
+    title.classList.add('card-title');
+    title.textContent = product.name;
+    cardBody.appendChild(title);
+
+    // Product Description
+    const description = document.createElement('p');
+    description.classList.add('card-text');
+    description.textContent = `Description: ${product.description}`;
+    cardBody.appendChild(description);
+
+    // Product Stock
+    const stock = document.createElement('p');
+    stock.classList.add('card-text');
+    stock.textContent = `Stock: ${product.stock}`;
+    cardBody.appendChild(stock);
+
+    // Product Price
+    const price = document.createElement('p');
+    price.classList.add('card-text');
+    price.textContent = `Price: $${product.price.toFixed(2)}`;
+    cardBody.appendChild(price);
+
+    // Edit Button
+    const editButton = document.createElement('a');
+    editButton.href = `product.html?id=${product.id}`;
+    editButton.classList.add('btn', 'btn-primary', 'me-2');
+    editButton.textContent = 'Edit';
+    cardBody.appendChild(editButton);
+
+    // Delete Button
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('btn', 'btn-danger');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => openDeleteModal(product.id));
+    cardBody.appendChild(deleteButton);
+
+    card.appendChild(cardBody);
+    return card;
 }
-// Function to create and manage the pagination
-function managePagination() {
-    // Get the container and the ul
-    const paginationContainer = document.getElementById('paginationContainer');
-    const paginationUl = document.getElementById('pagination');
-    //get the previous and next li
-    const previousPageLi = document.getElementById('previousPage');
-    const nextPageLi = document.getElementById('nextPage');
-    // Remove previous page link
-    paginationUl.querySelectorAll('.page-number').forEach(li => li.remove());
-
-    //check if there is more than 5 products
-    if (productsArray.length > perPage) {
-        paginationContainer.classList.remove('d-none');
-    } else {
-        paginationContainer.classList.add('d-none');
-        return;
-    }
-    // Calculate the number of pages
-    const numberOfPages = Math.ceil(productsArray.length / perPage);
-    const tableBody = document.querySelector('#products-list tbody');
-
-    // Create the page number
-    for (let i = 1; i <= numberOfPages; i++) {
-        //create the li
-        const pageNumberLi = document.createElement('li');
-        pageNumberLi.classList.add('page-item', 'page-number');
-        if (i === currentPage) {
-            pageNumberLi.classList.add('active');
-        }
-        //create the link
-        const pageNumberLink = document.createElement('a');
-        pageNumberLink.classList.add('page-link');
-        pageNumberLink.href = '#';
-        pageNumberLink.textContent = i;
-
-        //manage the click event
-        pageNumberLink.addEventListener('click', (event) => {
-            event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
-            currentPage = i;
-            tableBody.innerHTML = '';
-            managePagination(); // Update the pagination
-            populateProductTable(getCurrentPageProducts());
-        });
-
-        //append the elements
-        pageNumberLi.appendChild(pageNumberLink);
-        paginationUl.insertBefore(pageNumberLi, nextPageLi);
-    }
-
-    //Manage the previous button
-    previousPageLi.classList.toggle('disabled', currentPage === 1);
-    //add the event if is not disabled
-    if (currentPage !== 1) {
-        //remove the old event
-        previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
-        previousPageLi.querySelector('a').addEventListener('click', (event) => {
-            event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
-            currentPage--;
-            tableBody.innerHTML = '';
-            managePagination();
-            populateProductTable(getCurrentPageProducts());
-        });
-    }
-
-    //Manage the next button
-    nextPageLi.classList.toggle('disabled', currentPage === numberOfPages);
-    //add the event if is not disabled
-    if (currentPage !== numberOfPages) {
-        //remove the old event
-        nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
-        nextPageLi.querySelector('a').addEventListener('click', (event) => {
-            event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
-             //hide no service message
-             manageNoServiceMessage(false);
-            currentPage++;
-            tableBody.innerHTML = '';
-            managePagination();
-            populateProductTable(getCurrentPageProducts());
-        });
-    }
-}
-async function getProductsWithDelay() {
-    return new Promise((resolve) => {
-        setTimeout(async () => {
-            const products = await getProducts();
-            resolve(products)
-        }, API_DELAY);
-    })
-}
-
-function manageNoServiceMessage(show) {
-    const noServiceMessageBox = document.getElementById('no-service-message-box');
-    const productListTable = document.getElementById('products-list');
-    const loadingMessageBox = document.getElementById('loading-message-box');
-    const messageBox = document.getElementById('message-box');
-    const errorMessagebox = document.getElementById('error-message-box');
-    if (show) {
-        //show the no service message and hide everything else
-        noServiceMessageBox.classList.remove('d-none');
-        productListTable.classList.add('d-none');
-        loadingMessageBox.classList.add('d-none');
-        messageBox.classList.add('d-none');
-        errorMessagebox.classList.add('d-none');
-        paginationContainer.classList.add('d-none');
-
-    } else {
-        noServiceMessageBox.classList.add('d-none');
-    }
-}
-function manageLoadingPagination(show) {
-    const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
-    if (show) {
-        loadingPaginationMessage.classList.remove('d-none');
-    } else {
-        loadingPaginationMessage.classList.add('d-none');
-    }
-}
-async function initializePage() {
-    try {
-        //disable the user interaction
-        document.body.classList.add('loading');
-        //disable the pagination
-        const paginationUl = document.getElementById('pagination');
-        paginationUl.classList.add('disabled');
-
-        //show that the list is loading
-        checkIfListIsEmpty(true);
-        const products = await getProductsWithDelay();
-        productsArray = products;
-        managePagination();
-        populateProductTable(getCurrentPageProducts());
-    } catch (error) {
-        console.error('Error fetching products:', error);
-        // Show error message
-        const errorMessagebox = document.getElementById('error-message-box');
-        if (errorMessagebox) {
-            errorMessagebox.textContent = "Error fetching products, please try again later";
-            errorMessagebox.classList.remove('d-none');
-        }
-          // Show "no service" message if everything fails
-        manageNoServiceMessage(true);
-    } finally {
-        //re-enable the user interaction
-        document.body.classList.remove('loading');
-        //enable the pagination
-        const paginationUl = document.getElementById('pagination');
-        paginationUl.classList.remove('disabled');
-        // Hide loading message
-        const loadingMessageBox = document.getElementById('loading-message-box');
-        if (loadingMessageBox) {
-            loadingMessageBox.classList.add('d-none');
-        }
-
-    }
-}
-// Function to get the products for the current page
-function getCurrentPageProducts() {
-    const startIndex = (currentPage - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    return productsArray.slice(startIndex, endIndex);
-}
-// Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Show loading message
-    const loadingMessageBox = document.getElementById('loading-message-box');
-    if (loadingMessageBox) {
-        loadingMessageBox.classList.remove('d-none');
-    }
+function openDeleteModal(productId) {
+    const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-    confirmDeleteButton.addEventListener('click', async () => {
-        // Check if the productIdToDelete is defined
-        //disable the user interaction
-        document.body.classList.add('loading');
-        //disable the pagination
-        const paginationUl = document.getElementById('pagination');
-        paginationUl.classList.add('disabled');
-        if (productIdToDelete !== null) {
-            try {
-                await deleteProduct(productIdToDelete);
-                // Remove the product in the global array
-                const index = productsArray.findIndex(product => product.id === productIdToDelete);
-                if (index !== -1) {
-                    productsArray.splice(index, 1);
-                }
-                // Remove the row from the table
-                const row = document.getElementById(`product-${productIdToDelete}`);
-                row.remove();
-                // Update the empty list message if needed
-                checkIfListIsEmpty(false);
-                // Update the pagination
-                managePagination();
-                // Update the table
-                populateProductTable(getCurrentPageProducts());
-                // Close the modal
-                const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
-                deleteConfirmationModal.hide();
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                // Show error message
-                const errorMessagebox = document.getElementById('error-message-box');
-                if (errorMessagebox) {
-                    errorMessagebox.textContent = "Error deleting the product, please try again later";
-                    errorMessagebox.classList.remove('d-none');
-                }
-            } finally {
-                //re-enable the user interaction
-                document.body.classList.remove('loading');
-                //enable the pagination
-                const paginationUl = document.getElementById('pagination');
-                paginationUl.classList.remove('disabled');
-              
-            }
+
+    confirmDeleteButton.onclick = async () => {
+        try {
+            await deleteProduct(productId);
+            deleteConfirmationModal.hide();
+            loadProducts(currentPage);
+        } catch (error) {
+            displayError(`Failed to delete product: ${error.message}`);
+        }
+    };
+    deleteConfirmationModal.show();
+}
+function updatePagination(totalPages, currentPage) {
+    pagination.innerHTML = ''; // Clear existing pagination
+
+    // Previous page button
+    const prevLi = document.createElement('li');
+    prevLi.classList.add('page-item');
+    prevLi.id = 'previousPage';
+    const prevLink = document.createElement('a');
+    prevLink.classList.add('page-link');
+    prevLink.href = '#';
+    prevLink.textContent = 'Previous';
+    prevLi.appendChild(prevLink);
+    pagination.appendChild(prevLi);
+
+    // Handle Previous button click
+    prevLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (currentPage > 1) {
+            currentPage--;
+            loadProducts(currentPage);
         }
     });
-    initializePage();
-});
 
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        const pageLi = document.createElement('li');
+        pageLi.classList.add('page-item');
+        if (i === currentPage) {
+            pageLi.classList.add('active');
+        }
+        const pageLink = document.createElement('a');
+        pageLink.classList.add('page-link');
+        pageLink.href = '#';
+        pageLink.textContent = i;
+        pageLi.appendChild(pageLink);
+        pagination.appendChild(pageLi);
 
+        // Handle page number click
+        pageLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            currentPage = i;
+            loadProducts(currentPage);
+        });
+    }
+
+    // Next page button
+    const nextLi = document.createElement('li');
+    nextLi.classList.add('page-item');
+    nextLi.id = 'nextPage';
+    const nextLink = document.createElement('a');
+    nextLink.classList.add('page-link');
+    nextLink.href = '#';
+    nextLink.textContent = 'Next';
+    nextLi.appendChild(nextLink);
+    pagination.appendChild(nextLi);
+
+    // Handle Next button click
+    nextLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadProducts(currentPage);
+        }
+    });
+
+    // Disable/Enable previous and next buttons based on current page
+    prevLi.classList.toggle('disabled', currentPage === 1);
+    nextLi.classList.toggle('disabled', currentPage === totalPages);
+}
+
+async function loadProducts(page) {
+    showLoadingMessage();
+    showLoadingPagination();
+    try {
+        const response = await getProducts();
+
+        if(response){
+              const startIndex = (page - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const paginatedProducts = response.slice(startIndex, endIndex);
+             if (response.length === 0) {
+                showMessageBox('No products in the list. Add some products!');
+                paginationContainer.classList.add('d-none');
+            } else {
+                 const totalPages = Math.ceil(response.length / productsPerPage);
+                if(totalPages === 1){
+                    paginationContainer.classList.add('d-none');
+                } else {
+                    paginationContainer.classList.remove('d-none');
+                }
+                 hideMessages();
+                productsList.innerHTML = ''; // Clear existing products
+                 paginatedProducts.forEach(product => {
+                    const card = createProductCard(product);
+                     productsList.appendChild(card);
+                 });
+                 productsList.classList.remove('d-none');
+                updatePagination(totalPages, page);
+            }
+
+        } else {
+           displayNoService();
+        }
+
+    } catch (error) {
+       displayError(`Error loading products: ${error.message}`);
+    }
+}
+
+loadProducts(currentPage);
 
 
 
