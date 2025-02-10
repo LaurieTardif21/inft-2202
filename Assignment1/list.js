@@ -59,6 +59,13 @@ function showLoadingPagination() {
 
 // Function to create a product card
 function createProductCard(product) {
+    // ADDED: Log the product object to the console
+    console.log({
+        "name": product.name,
+        "description": product.description,
+        "stock": product.stock,
+        "price": product.price
+    });
     const card = document.createElement('div');
     card.classList.add('card', 'mb-3');
 
