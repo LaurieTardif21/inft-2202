@@ -2,7 +2,7 @@
 
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
-function list(recordPage) {
+async function list(recordPage) {
     // Global variable to store the animalId to delete
     let animalIdToDelete = null;
 
@@ -54,7 +54,7 @@ function list(recordPage) {
                         const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
                         deleteConfirmationModal.hide();
                         //refresh the table
-                        createContent();
+                        await createContent();
                     } catch (error) {
                         console.error("Error deleting the animal", error);
                         const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
@@ -95,7 +95,6 @@ function list(recordPage) {
             loadingMessageBox.classList.add('d-none');
             messageBox.classList.add('d-none');
             errorMessagebox.classList.add('d-none');
-            paginationContainer.classList.add('d-none');
 
         } else {
             noServiceMessageBox.classList.add('d-none');
@@ -174,17 +173,23 @@ function list(recordPage) {
             header.append(drawPagination(pagination));
             container.append(header);
             container.append(drawAnimalTable(records));
+            return container;
         } catch (err) {
             divWaiting.classList.add('d-none');
-            divMessage.innerHTML = err;
+            //show the message
             divMessage.classList.remove('d-none');
             divMessage.classList.add('alert-danger');
+             const errorMessagebox = document.getElementById('error-message-box');
+            if (errorMessagebox) {
+                 errorMessagebox.textContent = "Error fetching animals, please try again later";
+            errorMessagebox.classList.remove('d-none');
+            }
+            console.error(err);
+            return container;
         }
-        return container;
     }
-    return {
-        element: createContent()
-    }
+    const element = await createContent();
+    return { element };
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -192,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentPage = urlParams.get('page') ? urlParams.get('page') : 1;
     let currentPerPage = urlParams.get('perPage') ? urlParams.get('perPage') : 5;
 
-    const mylist = list({ page: currentPage, perPage: currentPerPage });
+    const mylist = await list({ page: currentPage, perPage: currentPerPage });
     const main = document.querySelector('main .container');
     main.replaceChildren(mylist.element);
 });
