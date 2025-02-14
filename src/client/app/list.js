@@ -88,13 +88,19 @@ async function list(recordPage) {
         const loadingMessageBox = document.getElementById('loading-message-box');
         const messageBox = document.getElementById('message-box');
         const errorMessagebox = document.getElementById('error-message-box');
+        const paginationContainer = document.getElementById('paginationContainer');
         if (show) {
             //show the no service message and hide everything else
             noServiceMessageBox.classList.remove('d-none');
-            animalListTable.classList.add('d-none');
+            if (animalListTable) {
+                animalListTable.classList.add('d-none');
+            }
             loadingMessageBox.classList.add('d-none');
             messageBox.classList.add('d-none');
             errorMessagebox.classList.add('d-none');
+            if (paginationContainer) {
+                paginationContainer.classList.add('d-none');
+            }
 
         } else {
             noServiceMessageBox.classList.add('d-none');
@@ -107,6 +113,7 @@ async function list(recordPage) {
             </li>`
         }
         const pagination = document.createElement('nav');
+        pagination.id = 'paginationContainer';
         pagination.setAttribute('aria-label', 'Animal navigation')
         if (pages > 1) {
             pagination.classList.remove('d-none');
@@ -125,7 +132,7 @@ async function list(recordPage) {
     function drawAnimalTable(animals) {
         const eleTable = document.createElement('table');
         eleTable.id = "animals-list";
-        eleTable.classList.add('table', 'table-striped', 'd-none');
+        eleTable.classList.add('table', 'table-striped');
         // Create a <thead> element
         const thead = eleTable.createTHead();
         // Create a row in the <thead>
@@ -164,6 +171,11 @@ async function list(recordPage) {
         try {
             const data = await getAnimals(currentPage, currentPerPage);
             let { records, pagination } = data;
+            if (records.length == 0) {
+                manageNoServiceMessage(true);
+            } else {
+                manageNoServiceMessage(false);
+            }
             divWaiting.classList.add('d-none');
             let header = document.createElement('div');
             header.classList.add('d-flex', 'justify-content-between');
@@ -179,10 +191,10 @@ async function list(recordPage) {
             //show the message
             divMessage.classList.remove('d-none');
             divMessage.classList.add('alert-danger');
-             const errorMessagebox = document.getElementById('error-message-box');
+            const errorMessagebox = document.getElementById('error-message-box');
             if (errorMessagebox) {
-                 errorMessagebox.textContent = "Error fetching animals, please try again later";
-            errorMessagebox.classList.remove('d-none');
+                errorMessagebox.textContent = err;
+                errorMessagebox.classList.remove('d-none');
             }
             console.error(err);
             return container;

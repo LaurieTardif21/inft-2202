@@ -2,7 +2,7 @@
 
 const API_DELAY = 2000; // 2 seconds
 const BASE_URL = 'https://inft2202.opentech.durhamcollege.org/'; // Your API base URL
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // Your API key
+const API_KEY = '06ecdba4-4ac1-40bd-83a8-b74a04430a49'; // Your API key
 
 // Function to get the list of animals (from the API)
 export function getAnimals(currentPage = 1, perPage = 5) {
