@@ -1,28 +1,28 @@
-// animal.service.js
+// Function to generate a unique ID without uuid
+function generateId() {
+    return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+}
 
-const API_DELAY = 2000; // 2 seconds
-const BASE_URL = 'https://inft2202.opentech.durhamcollege.org'; // Your API base URL
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // Your API key
+// Simulate API delay (adjust to 2 seconds)
+const API_DELAY = 2000; // 2 second
 
-// Function to get the list of animals (from the API)
-export function getAnimals(currentPage = 1, perPage = 5) {
+// Function to get the list of animals (from localStorage)
+export function getAnimals() {
     return new Promise((resolve, reject) => {
-        setTimeout(async () => {
+        setTimeout(() => {
             try {
-                const response = await fetch(`${BASE_URL}/api/animals?page=${currentPage}&perPage=${perPage}`, {
-                    method: 'GET',
-                    headers: {
-                        'apiKey': API_KEY,
-                    },
+                // Fetch from localStorage
+                const animals = JSON.parse(localStorage.getItem('animals')) || [];
+
+                // Ensure each animal has a unique 'id'
+                animals.forEach((animal) => {
+                    if (!animal.id) {
+                        // Assign a unique ID if not present
+                        animal.id = generateId();
+                    }
                 });
 
-                if (!response.ok) {
-                    const text = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} message: ${text}`);
-                }
-
-                const data = await response.json();
-                resolve(data);
+                resolve(animals);
             } catch (error) {
                 reject(new Error(`Error getting animals: ${error.message}`));
             }
@@ -30,25 +30,16 @@ export function getAnimals(currentPage = 1, perPage = 5) {
     });
 }
 
-// Function to add a new animal (to the API)
+// Function to add a new animal to the list (to localStorage)
 export function addAnimal(animal) {
     return new Promise((resolve, reject) => {
-        setTimeout(async () => {
+        setTimeout(() => {
             try {
-                const response = await fetch(`${BASE_URL}/api/animals`, {
-                    method: 'POST',
-                    headers: {
-                        'apiKey': API_KEY,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(animal),
-                });
-
-                if (!response.ok) {
-                    const text = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} message: ${text}`);
-                }
-
+                // Add to localStorage
+                const animals = JSON.parse(localStorage.getItem('animals')) || [];
+                animal.id = generateId(); // Ensure unique ID for each animal
+                animals.push(animal); // Add the new animal to the array
+                localStorage.setItem('animals', JSON.stringify(animals)); // Save to localStorage
                 resolve();
             } catch (error) {
                 reject(new Error(`Error adding animal: ${error.message}`));
@@ -57,23 +48,15 @@ export function addAnimal(animal) {
     });
 }
 
-// Function to delete an animal by ID (from the API)
+// Function to delete an animal by ID (from localStorage)
 export function deleteAnimal(animalId) {
     return new Promise((resolve, reject) => {
-        setTimeout(async () => {
+        setTimeout(() => {
             try {
-                const response = await fetch(`${BASE_URL}/api/animals/${animalId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'apiKey': API_KEY,
-                    },
-                });
-
-                if (!response.ok) {
-                    const text = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} message: ${text}`);
-                }
-
+                // Remove from localStorage
+                const animals = JSON.parse(localStorage.getItem('animals')) || [];
+                const updatedAnimals = animals.filter(animal => animal.id !== animalId); // Filter out the deleted animal by ID
+                localStorage.setItem('animals', JSON.stringify(updatedAnimals)); // Save to localStorage
                 resolve();
             } catch (error) {
                 reject(new Error(`Error deleting animal: ${error.message}`));
@@ -82,54 +65,45 @@ export function deleteAnimal(animalId) {
     });
 }
 
-// Function to find an animal by ID (from the API)
+// Function to find an animal by ID (Checks Local Storage)
 export function findAnimal(animalId) {
     return new Promise((resolve, reject) => {
-        setTimeout(async () => {
+        setTimeout(() => {
             try {
-                const response = await fetch(`${BASE_URL}/api/animals/${animalId}`, {
-                    method: 'GET',
-                    headers: {
-                        'apiKey': API_KEY,
-                    },
-                });
+                // Check Local Storage
+                const animals = JSON.parse(localStorage.getItem('animals')) || [];
+                const animal = animals.find(a => a.id === animalId);
 
-                if (!response.ok) {
-                    const text = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} message: ${text}`);
+                if (!animal) {
+                    reject(new Error(`Error finding animal: animal not found`)); // Changed from throw to reject
+                    return; //stops the function
                 }
-
-                const animal = await response.json();
-                resolve(animal);
+                resolve(animal); // Found in local storage
             } catch (error) {
-                reject(new Error(`Error finding animal: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
 }
 
-// Function to update an animal (to the API)
+// Function to update an animal (Updates Local Storage)
 export function updateAnimal(updatedAnimal) {
     return new Promise((resolve, reject) => {
-        setTimeout(async () => {
+        setTimeout(() => {
             try {
-                const response = await fetch(`${BASE_URL}/api/animals/${updatedAnimal.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'apiKey': API_KEY,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(updatedAnimal),
-                });
+                // Update Local Storage
+                const animals = JSON.parse(localStorage.getItem('animals')) || [];
+                const index = animals.findIndex(a => a.id === updatedAnimal.id);
 
-                if (!response.ok) {
-                    const text = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} message: ${text}`);
+                if (index === -1) {
+                    reject(new Error('Animal not found in local storage')); // Changed from throw to reject
+                    return; //stops the function
                 }
-
+                animals[index] = updatedAnimal;
+                localStorage.setItem('animals', JSON.stringify(animals));
                 resolve();
             } catch (error) {
-                reject(new Error(`Error updating animal: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
