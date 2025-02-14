@@ -1,6 +1,6 @@
 // API Base URL
-const API_URL = 'https://inft2202.opentech.durhamcollege.org/animals';
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // Replace with your own key if needed
+const API_URL = 'https://inft2202.opentech.durhamcollege.org/animals'; //URL DATA IS FETCHED FROM
+const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIEY
 
 // Simulate API delay (adjusted to 2 seconds)
 const API_DELAY = 2000;
