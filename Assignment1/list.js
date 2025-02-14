@@ -236,6 +236,7 @@ async function loadProducts(page) {
             if (response.length === 0) {
                 showMessageBox('No products in the list. Add some products!');
                 loadingMessageBox.classList.add('d-none'); // Add this line
+                loadingPaginationMessageBox.classList.add('d-none');// Add this line
                 paginationContainer.classList.add('d-none');
             } else {
                 const totalPages = Math.ceil(response.length / productsPerPage);
