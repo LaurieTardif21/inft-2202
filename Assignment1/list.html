@@ -191,6 +191,18 @@ date: 02/09/2025
             navbarToggler.addEventListener('click', () => {
                 navbarNav.classList.toggle('show');
             });
+
+            // Get the delete modal element
+            const deleteModal = document.getElementById('deleteConfirmationModal');
+
+            // Listen for the 'hidden.bs.modal' event on the modal
+            deleteModal.addEventListener('hidden.bs.modal', function () {
+                // Remove focus from any element inside the modal
+                const focusedElement = deleteModal.querySelector(':focus');
+                if (focusedElement) {
+                    focusedElement.blur();
+                }
+            });
         });
     </script>
     <script type="module" src="list.js"></script>
