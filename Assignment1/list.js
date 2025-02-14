@@ -223,6 +223,7 @@ function updatePagination(totalPages, currentPage) {
 }
 
 async function loadProducts(page) {
+    hideMessages();
     showLoadingMessage();
     showLoadingPagination();
     try {
@@ -234,6 +235,7 @@ async function loadProducts(page) {
             const paginatedProducts = response.slice(startIndex, endIndex);
             if (response.length === 0) {
                 showMessageBox('No products in the list. Add some products!');
+                loadingMessageBox.classList.add('d-none'); // Add this line
                 paginationContainer.classList.add('d-none');
             } else {
                 const totalPages = Math.ceil(response.length / productsPerPage);
@@ -249,9 +251,9 @@ async function loadProducts(page) {
                     productsList.appendChild(card);
                 });
                 productsList.classList.remove('d-none');
-                // Enable tooltips after the cards are rendered
-                enableTooltips();
+                
                 updatePagination(totalPages, page);
+                enableTooltips();// moved here
             }
 
         } else {
