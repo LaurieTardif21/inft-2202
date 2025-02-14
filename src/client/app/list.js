@@ -285,63 +285,48 @@ async function initializePage() {
     }
 }
 // Function to get the animals for the current page
-function getCurrentPageAnimals() {
-    const startIndex = (currentPage - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    return animalsArray.slice(startIndex, endIndex);
-}
-// Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Show loading message
-    const loadingMessageBox = document.getElementById('loading-message-box');
-    if (loadingMessageBox) {
-        loadingMessageBox.classList.remove('d-none');
+// Function to fetch animals and paginate based on the current page
+function getCurrentPageAnimals(response, currentPage, itemsPerPage) {
+    // Ensure the response has a valid 'records' array
+    if (!Array.isArray(response.records)) {
+        console.error('Expected an array for records, but received:', typeof response.records);
+        return [];  // Return an empty array if the data is invalid
     }
-    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-    confirmDeleteButton.addEventListener('click', async () => {
-        // Check if the animalIdToDelete is defined
-        //disable the user interaction
-        document.body.classList.add('loading');
-        //disable the pagination
-        const paginationUl = document.getElementById('pagination');
-        paginationUl.classList.add('disabled');
-        if (animalIdToDelete !== null) {
-            try {
-                await deleteAnimal(animalIdToDelete);
-                // Remove the animal in the global array
-                const index = animalsArray.findIndex(animal => animal.id === animalIdToDelete);
-                if (index !== -1) {
-                    animalsArray.splice(index, 1);
-                }
-                // Remove the row from the table
-                const row = document.getElementById(`animal-${animalIdToDelete}`);
-                row.remove();
-                // Update the empty list message if needed
-                checkIfListIsEmpty(false);
-                // Update the pagination
-                managePagination();
-                // Update the table
-                populateAnimalTable(getCurrentPageAnimals());
-                // Close the modal
-                const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
-                deleteConfirmationModal.hide();
-            } catch (error) {
-                console.error('Error deleting animal:', error);
-                // Show error message
-                const errorMessagebox = document.getElementById('error-message-box');
-                if (errorMessagebox) {
-                    errorMessagebox.textContent = "Error deleting the animal, please try again later";
-                    errorMessagebox.classList.remove('d-none');
-                }
-            } finally {
-                //re-enable the user interaction
-                document.body.classList.remove('loading');
-                //enable the pagination
-                const paginationUl = document.getElementById('pagination');
-                paginationUl.classList.remove('disabled');
-              
-            }
-        }
+
+    // Destructure the records and pagination data from the response
+    const { records } = response;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    // Return the sliced array based on the current page
+    return records.slice(startIndex, endIndex);
+}
+
+// Function to initialize the page (e.g., display animals based on pagination)
+function initializePage(response, currentPage, itemsPerPage) {
+    const animalsToDisplay = getCurrentPageAnimals(response, currentPage, itemsPerPage);
+
+    // Example: Print out the names of the animals on the current page
+    console.log('Animals on current page:', currentPage);
+    animalsToDisplay.forEach(animal => {
+        console.log(animal.name);  // Print the name of each animal
     });
-    initializePage();
-});
+}
+
+// Sample API response (simulating the data structure you provided)
+const response = {
+    "pagination": {
+        "page": 1,
+        "perPage": 5,
+        "count": 3,
+        "pages": 1
+    },
+    "records": [
+        {"name":"Cool Guy Fedora","user":"00000","createTime":1739374737,"updateTime":null},
+        {"name":"name3","user":"00000","createTime":1739374737,"updateTime":null},
+        {"name":"name2","user":"00000","createTime":1739374737,"updateTime":null}
+    ]
+};
+
+// Initialize and display the current page's animals
+initializePage(response, currentPage, itemsPerPage);
