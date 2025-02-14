@@ -254,6 +254,7 @@ async function initializePage() {
         animalsArray = await getAnimalsWithDelay();
         //populate the table
         await populateAnimalTable(getCurrentPageAnimals());
+        //populate the pagination
         managePagination();
     } catch (error) {
         manageNoServiceMessage(true);
