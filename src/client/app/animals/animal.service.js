@@ -1,8 +1,8 @@
 // animal.service.js
 
 const API_DELAY = 2000; // 2 seconds
-const BASE_URL = 'https://inft2202-server.onrender.com'; // Your API base URL
-const API_KEY = 'laurie'; // Your API key
+const BASE_URL = 'https://inft2202.opentech.durhamcollege.org/'; // Your API base URL
+const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // Your API key
 
 // Function to get the list of animals (from the API)
 export function getAnimals(currentPage = 1, perPage = 5) {
