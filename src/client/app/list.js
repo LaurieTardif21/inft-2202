@@ -2,15 +2,39 @@ import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 // Global variable to store the animalId to delete
 let animalIdToDelete = null;
-// Global variable for the current page
+// global variable for the current page
 let currentPage = 1;
 // Global variable for the number of entries per page
 const perPage = 5;
 // Global variable for the array of animals
 let animalsArray = [];
-// Simulate API delay for 2 seconds
-const API_DELAY = 2000;
+// Simulate API delay for 0.5 seconds
+const API_DELAY = 500;
+// Get the container and the ul
+const paginationContainer = document.getElementById('paginationContainer');
+const paginationUl = document.getElementById('pagination');
+//get the previous and next li
+const previousPageLi = document.getElementById('previousPage');
+const nextPageLi = document.getElementById('nextPage');
+const tableBody = document.querySelector('#animals-list tbody');
+const messageBox = document.getElementById('message-box');
+const animalListTable = document.getElementById('animals-list');
+const errorMessagebox = document.getElementById('error-message-box');
+const deleteModal = document.getElementById('deleteConfirmationModal');
+// Handle Modal Show
+deleteModal.addEventListener('show.bs.modal', () => {
+    deleteModal.removeAttribute('inert');
+});
 
+// Handle Modal Hide
+deleteModal.addEventListener('hidden.bs.modal', () => {
+    deleteModal.setAttribute('inert', 'true');
+    // Find the currently focused element inside the modal
+    const focusedElement = deleteModal.querySelector(':focus');
+    if (focusedElement) {
+        focusedElement.blur();
+    }
+});
 function createEditButton(animalId) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
@@ -48,12 +72,9 @@ function createDeleteButton(animalId) {
     return button;
 }
 
-async function populateAnimalTable(animals) {
-    manageNoServiceMessage(false);
-    await new Promise(resolve => setTimeout(resolve, 0));
-    const tableBody = document.querySelector('#animals-list tbody');
-    manageLoadingPagination(false);
-
+function populateTable(animals) {
+    //clear the table
+    tableBody.innerHTML = '';
     animals.forEach((animal) => {
         const row = document.createElement('tr');
         row.id = `animal-${animal.id}`; // Assign an ID to the row for easy removal later
@@ -63,43 +84,39 @@ async function populateAnimalTable(animals) {
         row.appendChild(nameCell);
 
         const breedCell = document.createElement('td');
-        breedCell.textContent = animal.breed;
+        breedCell.textContent = animal.description;
         row.appendChild(breedCell);
 
         const eyesCell = document.createElement('td');
-        eyesCell.textContent = animal.eyes;
+        eyesCell.textContent = animal.stock;
         row.appendChild(eyesCell);
 
         const legsCell = document.createElement('td');
-        legsCell.textContent = animal.legs;
+        legsCell.textContent = "not available";
         row.appendChild(legsCell);
 
         const soundCell = document.createElement('td');
-        soundCell.textContent = animal.sound;
+        soundCell.textContent = "$"+ animal.price;
         row.appendChild(soundCell);
 
         const actionsCell = document.createElement('td');
-        const editButton = createEditButton(animal.id);
+        const editButton = createEditButton(animal.id); // Pass the animal ID to the edit button
         actionsCell.appendChild(editButton);
-        const deleteButton = createDeleteButton(animal.id);
+        const deleteButton = createDeleteButton(animal.id); // Pass the animal ID to the delete button
         actionsCell.appendChild(deleteButton);
         row.appendChild(actionsCell);
 
         tableBody.appendChild(row);
     });
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    // Initialize Bootstrap tooltips after the table is populated
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-    checkIfListIsEmpty(false);
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
 }
 
 function checkIfListIsEmpty(isLoading) {
-    const tableBody = document.querySelector('#animals-list tbody');
-    const messageBox = document.getElementById('message-box');
-    const animalListTable = document.getElementById('animals-list');
-    const errorMessagebox = document.getElementById('error-message-box');
     if (isLoading) {
         messageBox.classList.add('d-none');
     } else {
@@ -108,91 +125,105 @@ function checkIfListIsEmpty(isLoading) {
                 animalListTable.classList.add('d-none');
                 messageBox.classList.remove('d-none');
             }
+
         } else {
             animalListTable.classList.remove('d-none');
             messageBox.classList.add('d-none');
         }
     }
 }
-
+// Function to create and manage the pagination
 function managePagination() {
-    const paginationContainer = document.getElementById('paginationContainer');
-    const paginationUl = document.getElementById('pagination');
-    const previousPageLi = document.getElementById('previousPage');
-    const nextPageLi = document.getElementById('nextPage');
+    // Remove previous page link
     paginationUl.querySelectorAll('.page-number').forEach(li => li.remove());
+    // Calculate the number of pages
+    const numberOfPages = Math.ceil(animalsArray.length / perPage);
 
+    //check if there is more than 5 animals
     if (animalsArray.length > perPage) {
         paginationContainer.classList.remove('d-none');
     } else {
         paginationContainer.classList.add('d-none');
         return;
     }
-
-    const numberOfPages = Math.ceil(animalsArray.length / perPage);
-    const tableBody = document.querySelector('#animals-list tbody');
-
+    // Create the page number
     for (let i = 1; i <= numberOfPages; i++) {
+        //create the li
         const pageNumberLi = document.createElement('li');
         pageNumberLi.classList.add('page-item', 'page-number');
         if (i === currentPage) {
             pageNumberLi.classList.add('active');
         }
+        //create the link
         const pageNumberLink = document.createElement('a');
         pageNumberLink.classList.add('page-link');
         pageNumberLink.href = '#';
         pageNumberLink.textContent = i;
+
+        //manage the click event
         pageNumberLink.addEventListener('click', (event) => {
             event.preventDefault();
+            //show loading div
             manageLoadingPagination(true);
+            //hide no service message
             manageNoServiceMessage(false);
             currentPage = i;
-            tableBody.innerHTML = '';
+            populateTable(getCurrentPageAnimals());
             managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
         });
+
+        //append the elements
         pageNumberLi.appendChild(pageNumberLink);
         paginationUl.insertBefore(pageNumberLi, nextPageLi);
     }
 
+    //Manage the previous button
     previousPageLi.classList.toggle('disabled', currentPage === 1);
-    if (currentPage !== 1) {
-        previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
-        previousPageLi.querySelector('a').addEventListener('click', (event) => {
-            event.preventDefault();
+    //add the event if is not disabled
+    previousPageLi.querySelector('a').addEventListener('click', (event) => {
+        event.preventDefault();
+        if (currentPage > 1) {
+            //show loading div
             manageLoadingPagination(true);
+            //hide no service message
             manageNoServiceMessage(false);
             currentPage--;
-            tableBody.innerHTML = '';
+            populateTable(getCurrentPageAnimals());
             managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
-        });
-    }
+        }
 
+    });
+
+
+    //Manage the next button
     nextPageLi.classList.toggle('disabled', currentPage === numberOfPages);
-    if (currentPage !== numberOfPages) {
-        nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
-        nextPageLi.querySelector('a').addEventListener('click', (event) => {
-            event.preventDefault();
+    //add the event if is not disabled
+    nextPageLi.querySelector('a').addEventListener('click', (event) => {
+        event.preventDefault();
+        if (currentPage < numberOfPages) {
+            //show loading div
             manageLoadingPagination(true);
+            //hide no service message
             manageNoServiceMessage(false);
             currentPage++;
-            tableBody.innerHTML = '';
+            populateTable(getCurrentPageAnimals());
             managePagination();
-            populateAnimalTable(getCurrentPageAnimals());
-        });
-    }
+        }
+    });
+    checkIfListIsEmpty(false);
 }
-
 async function getAnimalsWithDelay() {
     return new Promise((resolve) => {
         setTimeout(async () => {
-            const animals = await getAnimals();
-            resolve(animals);
+            try {
+                const animals = await getAnimals();
+                resolve(animals)
+            } catch (error) {
+                throw error; //rethrow the error
+            }
         }, API_DELAY);
-    });
+    })
 }
-
 function manageNoServiceMessage(show) {
     const noServiceMessageBox = document.getElementById('no-service-message-box');
     const animalListTable = document.getElementById('animals-list');
@@ -200,17 +231,18 @@ function manageNoServiceMessage(show) {
     const messageBox = document.getElementById('message-box');
     const errorMessagebox = document.getElementById('error-message-box');
     if (show) {
+        //show the no service message and hide everything else
         noServiceMessageBox.classList.remove('d-none');
         animalListTable.classList.add('d-none');
         loadingMessageBox.classList.add('d-none');
         messageBox.classList.add('d-none');
         errorMessagebox.classList.add('d-none');
         paginationContainer.classList.add('d-none');
+
     } else {
         noServiceMessageBox.classList.add('d-none');
     }
 }
-
 function manageLoadingPagination(show) {
     const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
     if (show) {
@@ -220,22 +252,30 @@ function manageLoadingPagination(show) {
     }
 }
 
-async function initializePage() {
-    try {
-        document.body.classList.add('loading');
-        const paginationUl = document.getElementById('pagination');
-        paginationUl.classList.add('disabled');
-        checkIfListIsEmpty(true);
-        const animals = await getAnimalsWithDelay();
-        animalsArray = animals;
-        managePagination();
-        populateAnimalTable(getCurrentPageAnimals());
-    } catch (error) {
-        manageNoServiceMessage(true);
-        console.error("Error fetching data:", error);
-    } finally {
-        document.body.classList.remove('loading');
-    }
+// Function to get the animals for the current page
+function getCurrentPageAnimals() {
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    return animalsArray.slice(start, end);
 }
 
+// Function to initialize the page
+async function initializePage() {
+    //show loading div
+    manageLoadingPagination(true);
+    //hide no service message
+    manageNoServiceMessage(false);
+    try {
+        const animals = await getAnimalsWithDelay();//get the animals with the delay
+        animalsArray = animals; //save the array
+        populateTable(getCurrentPageAnimals()); //populate the table
+        managePagination(); // manage the pagination
+    } catch (error) {
+        manageNoServiceMessage(true);
+        console.error("Error fetching animals:", error);
+    }
+    checkIfListIsEmpty(false);
+}
+
+// Initialize the page
 initializePage();

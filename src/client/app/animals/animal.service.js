@@ -1,9 +1,9 @@
 // API Base URL
 const API_URL = "https://inft2202-server.onrender.com/api/products"; //URL DATA IS FETCHED FROM
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIEY
+const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
 
-// Simulate API delay (adjusted to 2 seconds)
-const API_DELAY = 2000;
+// Simulate API delay (adjusted to 0.5 seconds)
+const API_DELAY = 500;
 
 // Common headers for API requests
 const headers = {
@@ -17,10 +17,19 @@ export async function getAnimals() {
         setTimeout(async () => {
             try {
                 const response = await fetch(API_URL, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
-                resolve(await response.json());
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Resource not found.');
+                    } else if (response.status === 500) {
+                        throw new Error('Internal Server Error.');
+                    } else {
+                        throw new Error('Failed to fetch animals.');
+                    }
+                }
+                const data = await response.json();
+                resolve(data);
             } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
@@ -37,10 +46,18 @@ export async function addAnimal(animal) {
                     body: JSON.stringify(animal),
                 });
 
-                if (!response.ok) throw new Error('Failed to add animal');
+                if (!response.ok) {
+                    if (response.status === 400) {
+                        throw new Error('Bad request. Check the data sent.');
+                    } else if (response.status === 500) {
+                        throw new Error('Internal Server Error.');
+                    } else {
+                        throw new Error('Failed to add animal.');
+                    }
+                }
                 resolve();
             } catch (error) {
-                reject(new Error(`Error adding animal: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
@@ -55,11 +72,18 @@ export async function deleteAnimal(animalId) {
                     method: 'DELETE',
                     headers
                 });
-
-                if (!response.ok) throw new Error('Failed to delete animal');
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Animal not found.');
+                    } else if (response.status === 500) {
+                        throw new Error('Internal Server Error.');
+                    } else {
+                        throw new Error('Failed to delete animal.');
+                    }
+                }
                 resolve();
             } catch (error) {
-                reject(new Error(`Error deleting animal: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
@@ -72,10 +96,19 @@ export async function findAnimal(animalId) {
             try {
                 const response = await fetch(`${API_URL}/${animalId}`, { headers });
 
-                if (!response.ok) throw new Error('Animal not found');
-                resolve(await response.json());
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Animal not found.');
+                    } else if (response.status === 500) {
+                        throw new Error('Internal Server Error.');
+                    } else {
+                        throw new Error('Failed to find the animal.');
+                    }
+                }
+                const data = await response.json();
+                resolve(data);
             } catch (error) {
-                reject(new Error(`Error finding animal: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
@@ -92,10 +125,20 @@ export async function updateAnimal(updatedAnimal) {
                     body: JSON.stringify(updatedAnimal),
                 });
 
-                if (!response.ok) throw new Error('Failed to update animal');
+                if (!response.ok) {
+                    if (response.status === 400) {
+                        throw new Error('Bad request. Check the data sent.');
+                    } else if (response.status === 404) {
+                        throw new Error('Animal not found.');
+                    } else if (response.status === 500) {
+                        throw new Error('Internal Server Error.');
+                    } else {
+                        throw new Error('Failed to update the animal.');
+                    }
+                }
                 resolve();
             } catch (error) {
-                reject(new Error(`Error updating animal: ${error.message}`));
+                reject(error);
             }
         }, API_DELAY);
     });
