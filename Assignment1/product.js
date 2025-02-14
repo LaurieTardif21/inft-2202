@@ -157,4 +157,21 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Failed to add/update product. Please try again.');
         }
     });
+
+     // event listeners for the input
+    nameInput.addEventListener('input', () => {
+        validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
+    });
+
+    descriptionInput.addEventListener('input', () => {
+        validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.');
+    });
+
+    stockInput.addEventListener('input', () => {
+        validateField(stockInput, stockError, isValidStock, 'Stock must be at least 1.');
+    });
+
+    priceInput.addEventListener('input', () => {
+        validateField(priceInput, priceError, isValidNonNegativeNumber, 'Price must be a non-negative number.');
+    });
 });
