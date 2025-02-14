@@ -30,7 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
-        return !isNaN(num) && num >= 0;
+        return value !== "" && !isNaN(num) && num >= 0;
+    }
+    // Helper function to validate if an input is a valid stock
+    function isValidStock(value) {
+        const num = Number(value);
+        return !isNaN(num) && Number.isInteger(num) && num >= 1;
     }
 
     // Helper function to clear all errors
@@ -58,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function setValid(input) {
         input.classList.remove('is-invalid');
         input.classList.add('is-valid');
-        input.nextElementSibling.style.display = 'none';
     }
 
     // function to validate
@@ -92,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setValid(priceInput);
         } catch (error) {
             console.error('Error fetching product:', error);
-            // alert('Failed to fetch product data. Please try again.');
         }
     }
 
@@ -124,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.')) {
             isValid = false;
         }
-        if (!validateField(stockInput, stockError, isValidNonNegativeNumber, 'Stock must be a non-negative number.')) {
+        if (!validateField(stockInput, stockError, isValidStock, 'Stock must be at least 1.')) {
             isValid = false;
         }
         if (!validateField(priceInput, priceError, isValidNonNegativeNumber, 'Price must be a non-negative number.')) {
@@ -154,23 +157,4 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Failed to add/update product. Please try again.');
         }
     });
-
-    // event listeners for the input
-    nameInput.addEventListener('input', () => {
-        validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
-    });
-
-    descriptionInput.addEventListener('input', () => {
-        validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.');
-    });
-
-    stockInput.addEventListener('input', () => {
-        validateField(stockInput, stockError, isValidNonNegativeNumber, 'Stock must be a non-negative number.');
-    });
-
-    priceInput.addEventListener('input', () => {
-        validateField(priceInput, priceError, isValidNonNegativeNumber, 'Price must be a non-negative number.');
-    });
 });
-
-
