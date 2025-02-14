@@ -195,14 +195,18 @@ date: 02/09/2025
             // Get the delete modal element
             const deleteModal = document.getElementById('deleteConfirmationModal');
 
-            // Listen for the 'hidden.bs.modal' event on the modal
-            deleteModal.addEventListener('hidden.bs.modal', function () {
-                // Remove focus from any element inside the modal
-                const focusedElement = deleteModal.querySelector(':focus');
-                if (focusedElement) {
-                    focusedElement.blur();
+             // Listen for the 'transitionend' event on the modal
+            deleteModal.addEventListener('transitionend', function (event) {
+                if (event.target === deleteModal && deleteModal.getAttribute('aria-hidden') === 'true') {
+                  // Remove focus from any element inside the modal
+                    const focusedElement = deleteModal.querySelector(':focus');
+                    if (focusedElement) {
+                         focusedElement.blur();
+                     }
                 }
-            });
+             });
+
+            
         });
     </script>
     <script type="module" src="list.js"></script>
