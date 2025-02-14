@@ -90,7 +90,7 @@ async function populateAnimalTable(animals) {
         // ... add the button to the row
     });
     // Initialize Bootstrap tooltips after the table is populated
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipTriggerList = [].call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
@@ -288,7 +288,7 @@ async function initializePage() {
 function getCurrentPageAnimals() {
     const startIndex = (currentPage - 1) * perPage;
     const endIndex = startIndex + perPage;
-    return animalsArray.slice(startIndex, endIndex);
+    return animalsArray(startIndex, endIndex);
 }
 // Attach the event listener to the confirmDeleteButton when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
