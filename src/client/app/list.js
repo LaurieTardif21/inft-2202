@@ -209,12 +209,8 @@ function managePagination() {
     }
 }
 async function getAnimalsWithDelay() {
-    return new Promise((resolve) => {
-        setTimeout(async () => {
-            const animals = await getAnimals();
-            resolve(animals)
-        }, API_DELAY);
-    })
+    const animals = await getAnimals();
+    return animals;
 }
 
 function manageNoServiceMessage(show) {
