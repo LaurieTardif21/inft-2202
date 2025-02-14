@@ -1,3 +1,5 @@
+// list.js
+
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 function list(recordPage) {
@@ -156,41 +158,28 @@ function list(recordPage) {
         return eleTable;
     }
 
-    function createContent() {
+    async function createContent() {
         const params = new URLSearchParams(recordPage);
-        const url = new URL(`/api/animals?${params.toString()}`, 'https://inft2202-server.onrender.com');
-        const req = new Request(url, {
-            headers: {
-                'User': 'laurie'
-            },
-            method: 'GET',
-        });
-        //do fetch here
-        fetch(req)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then((ret) => {
-                let { records, pagination } = ret;
-                divWaiting.classList.add('d-none');
-                let header = document.createElement('div');
-                header.classList.add('d-flex', 'justify-content-between');
-                let h1 = document.createElement('h1');
-                h1.innerHTML = 'Animal List';
-                header.append(h1);
-                header.append(drawPagination(pagination));
-                container.append(header);
-                container.append(drawAnimalTable(records));
-            })
-            .catch(err => {
-                divWaiting.classList.add('d-none');
-                divMessage.innerHTML = err;
-                divMessage.classList.remove('d-none');
-                divMessage.classList.add('alert-danger');
-            });
+        let currentPage = params.get('page') ? parseInt(params.get('page')) : 1;
+        let currentPerPage = params.get('perPage') ? parseInt(params.get('perPage')) : 5;
+        try {
+            const data = await getAnimals(currentPage, currentPerPage);
+            let { records, pagination } = data;
+            divWaiting.classList.add('d-none');
+            let header = document.createElement('div');
+            header.classList.add('d-flex', 'justify-content-between');
+            let h1 = document.createElement('h1');
+            h1.innerHTML = 'Animal List';
+            header.append(h1);
+            header.append(drawPagination(pagination));
+            container.append(header);
+            container.append(drawAnimalTable(records));
+        } catch (err) {
+            divWaiting.classList.add('d-none');
+            divMessage.innerHTML = err;
+            divMessage.classList.remove('d-none');
+            divMessage.classList.add('alert-danger');
+        }
         return container;
     }
     return {
