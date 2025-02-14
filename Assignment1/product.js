@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
-        return value !== "" && !isNaN(num) && num >= 0;
+        return  !isNaN(num) && num >= 0;
     }
     // Helper function to validate if an input is a valid stock
     function isValidStock(value) {
@@ -50,7 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
             input.classList.remove('is-invalid', 'is-valid');
         });
     }
-
+    // function to hide errors
+        function hideError(input, errorElement) {
+        input.classList.remove('is-invalid');
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+    }
     // function to display errors
     function displayError(input, errorElement, message) {
         input.classList.add('is-invalid');
@@ -68,10 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // function to validate
     function validateField(input, errorElement, validationFunction, errorMessage) {
         const value = input.value.trim();
-        if (!value || !validationFunction(value)) {
+        if (value === '') {
             displayError(input, errorElement, errorMessage);
             return false;
-        } else {
+        } else if (!validationFunction(value)) {
+            displayError(input, errorElement, errorMessage);
+            return false;
+        }
+        else {
+            hideError(input, errorElement)
             setValid(input);
             return true;
         }
