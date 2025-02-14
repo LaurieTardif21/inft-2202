@@ -191,22 +191,16 @@ date: 02/09/2025
             navbarToggler.addEventListener('click', () => {
                 navbarNav.classList.toggle('show');
             });
-
-            // Get the delete modal element
             const deleteModal = document.getElementById('deleteConfirmationModal');
+            // Handle Modal Show
+            deleteModal.addEventListener('show.bs.modal', () => {
+                deleteModal.removeAttribute('inert');
+            });
 
-             // Listen for the 'transitionend' event on the modal
-            deleteModal.addEventListener('transitionend', function (event) {
-                if (event.target === deleteModal && deleteModal.getAttribute('aria-hidden') === 'true') {
-                  // Remove focus from any element inside the modal
-                    const focusedElement = deleteModal.querySelector(':focus');
-                    if (focusedElement) {
-                         focusedElement.blur();
-                     }
-                }
-             });
-
-            
+            // Handle Modal Hide
+            deleteModal.addEventListener('hidden.bs.modal', () => {
+                deleteModal.setAttribute('inert', 'true');
+            });
         });
     </script>
     <script type="module" src="list.js"></script>
