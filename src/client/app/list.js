@@ -130,16 +130,16 @@ async function managePagination() {
     const nextPageLi = document.getElementById('nextPage');
     // Remove previous page link
     paginationUl.querySelectorAll('.page-number').forEach(li => li.remove());
+    // Calculate the number of pages
+    const numberOfPages = animalsArray.pagination.pages;
 
     //check if there is more than 5 animals
-    if (animalsArray.length > perPage) {
+    if (numberOfPages > 1) {
         paginationContainer.classList.remove('d-none');
     } else {
         paginationContainer.classList.add('d-none');
         return;
     }
-    // Calculate the number of pages
-    const numberOfPages = Math.ceil(animalsArray.length / perPage);
     const tableBody = document.querySelector('#animals-list tbody');
      // Create the page number
      for (let i = 1; i <= numberOfPages; i++) {
@@ -163,19 +163,16 @@ async function managePagination() {
             //hide no service message
             manageNoServiceMessage(false);
             currentPage = i;
-            animalsArray = [];
             const response = await getAnimalsWithDelay(currentPage, perPage);
             if (!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
             }
-           
-            animalsArray = response.records;
+            animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
             checkIfListIsEmpty(false);
-            const numberOfPages = response.pagination.pages;
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
             populateAnimalTable(getCurrentPageAnimals());
@@ -199,19 +196,16 @@ async function managePagination() {
             //hide no service message
             manageNoServiceMessage(false);
             currentPage--;
-            animalsArray = [];
             const response = await getAnimalsWithDelay(currentPage, perPage);
             if (!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
             }
-           
-            animalsArray = response.records;
+            animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
             checkIfListIsEmpty(false);
-            const numberOfPages = response.pagination.pages;
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -231,19 +225,16 @@ async function managePagination() {
             //hide no service message
             manageNoServiceMessage(false);
             currentPage++;
-            animalsArray = [];
             const response = await getAnimalsWithDelay(currentPage, perPage);
             if (!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
             }
-            
-            animalsArray = response.records;
+            animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
             checkIfListIsEmpty(false);
-            const numberOfPages = response.pagination.pages;
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -286,7 +277,7 @@ function manageLoadingPagination(show) {
 function getCurrentPageAnimals() {
     const startIndex = (currentPage - 1) * perPage;
     const endIndex = startIndex + perPage;
-    return animalsArray.slice(startIndex, endIndex);
+    return animalsArray.records.slice(startIndex, endIndex);
 }
 function manageLoadingMessage(show) {
     const loadingMessageBox = document.getElementById('loading-message-box');
@@ -311,8 +302,7 @@ async function initializePage() {
             manageLoadingMessage(false);
             return;
         }
-        
-        animalsArray = response.records;
+        animalsArray = response;
         perPage = response.pagination.perPage;
         currentPage = response.pagination.page;
 
