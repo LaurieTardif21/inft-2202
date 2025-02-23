@@ -8,8 +8,6 @@ let currentPage = 1;
 let perPage = 5;
 // Global varible for the array of animals
 let animalsArray = [];
-// Simulate API delay for 2 seconds
-const API_DELAY = 2000;
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
@@ -123,7 +121,7 @@ function checkIfListIsEmpty(isLoading) {
     }
 }
 // Function to create and manage the pagination
-function managePagination() {
+async function managePagination() {
     // Get the container and the ul
     const paginationContainer = document.getElementById('paginationContainer');
     const paginationUl = document.getElementById('pagination');
@@ -143,9 +141,8 @@ function managePagination() {
     // Calculate the number of pages
     const numberOfPages = Math.ceil(animalsArray.length / perPage);
     const tableBody = document.querySelector('#animals-list tbody');
-
-    // Create the page number
-    for (let i = 1; i <= numberOfPages; i++) {
+     // Create the page number
+     for (let i = 1; i <= numberOfPages; i++) {
         //create the li
         const pageNumberLi = document.createElement('li');
         pageNumberLi.classList.add('page-item', 'page-number');
@@ -173,12 +170,12 @@ function managePagination() {
                 manageLoadingMessage(false);
                 return;
             }
-            if (!response.records || !Array.isArray(response.records)) {
-                console.error('Error: The API does not return an array', response);
-                manageLoadingMessage(false);
-                return;
-            }
+           
             animalsArray = response.records;
+            perPage = response.pagination.perPage;
+            currentPage = response.pagination.page;
+            checkIfListIsEmpty(false);
+            const numberOfPages = response.pagination.pages;
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
             populateAnimalTable(getCurrentPageAnimals());
@@ -209,12 +206,12 @@ function managePagination() {
                 manageLoadingMessage(false);
                 return;
             }
-            if (!response.records || !Array.isArray(response.records)) {
-                console.error('Error: The API does not return an array', response);
-                manageLoadingMessage(false);
-                return;
-            }
+           
             animalsArray = response.records;
+            perPage = response.pagination.perPage;
+            currentPage = response.pagination.page;
+            checkIfListIsEmpty(false);
+            const numberOfPages = response.pagination.pages;
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -241,12 +238,12 @@ function managePagination() {
                 manageLoadingMessage(false);
                 return;
             }
-            if (!response.records || !Array.isArray(response.records)) {
-                console.error('Error: The API does not return an array', response);
-                manageLoadingMessage(false);
-                return;
-            }
+            
             animalsArray = response.records;
+            perPage = response.pagination.perPage;
+            currentPage = response.pagination.page;
+            checkIfListIsEmpty(false);
+            const numberOfPages = response.pagination.pages;
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -254,12 +251,9 @@ function managePagination() {
     }
 }
 async function getAnimalsWithDelay(page, perPage) {
-    return new Promise((resolve) => {
-        setTimeout(async () => {
-            const response = await getAnimals(page, perPage);
-            resolve(response)
-        }, API_DELAY);
-    })
+    const response = await getAnimals(page, perPage);
+    return response;
+
 }
 
 function manageNoServiceMessage(show) {
@@ -317,12 +311,7 @@ async function initializePage() {
             manageLoadingMessage(false);
             return;
         }
-        //check if there is records in the response
-        if (!response.records || !Array.isArray(response.records)) {
-            console.error('Error: The API does not return an array', response);
-            manageLoadingMessage(false);
-            return;
-        }
+        
         animalsArray = response.records;
         perPage = response.pagination.perPage;
         currentPage = response.pagination.page;
