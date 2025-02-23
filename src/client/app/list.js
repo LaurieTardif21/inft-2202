@@ -159,13 +159,26 @@ function managePagination() {
         pageNumberLink.textContent = i;
 
         //manage the click event
-        pageNumberLink.addEventListener('click', (event) => {
+        pageNumberLink.addEventListener('click', async (event) => {
             event.preventDefault();
             //show loading div
             manageLoadingPagination(true);
             //hide no service message
             manageNoServiceMessage(false);
             currentPage = i;
+            animalsArray = [];
+            const response = await getAnimalsWithDelay(currentPage, perPage);
+            if (!response) {
+                manageNoServiceMessage(true);
+                manageLoadingMessage(false);
+                return;
+            }
+            if (!response.records || !Array.isArray(response.records)) {
+                console.error('Error: The API does not return an array', response);
+                manageLoadingMessage(false);
+                return;
+            }
+            animalsArray = response.records;
             tableBody.innerHTML = '';
             managePagination(); // Update the pagination
             populateAnimalTable(getCurrentPageAnimals());
@@ -182,13 +195,26 @@ function managePagination() {
     if (currentPage !== 1) {
         //remove the old event
         previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
-        previousPageLi.querySelector('a').addEventListener('click', (event) => {
+        previousPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             //show loading div
             manageLoadingPagination(true);
             //hide no service message
             manageNoServiceMessage(false);
             currentPage--;
+            animalsArray = [];
+            const response = await getAnimalsWithDelay(currentPage, perPage);
+            if (!response) {
+                manageNoServiceMessage(true);
+                manageLoadingMessage(false);
+                return;
+            }
+            if (!response.records || !Array.isArray(response.records)) {
+                console.error('Error: The API does not return an array', response);
+                manageLoadingMessage(false);
+                return;
+            }
+            animalsArray = response.records;
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
@@ -201,23 +227,36 @@ function managePagination() {
     if (currentPage !== numberOfPages) {
         //remove the old event
         nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
-        nextPageLi.querySelector('a').addEventListener('click', (event) => {
+        nextPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             //show loading div
             manageLoadingPagination(true);
             //hide no service message
             manageNoServiceMessage(false);
             currentPage++;
+            animalsArray = [];
+            const response = await getAnimalsWithDelay(currentPage, perPage);
+            if (!response) {
+                manageNoServiceMessage(true);
+                manageLoadingMessage(false);
+                return;
+            }
+            if (!response.records || !Array.isArray(response.records)) {
+                console.error('Error: The API does not return an array', response);
+                manageLoadingMessage(false);
+                return;
+            }
+            animalsArray = response.records;
             tableBody.innerHTML = '';
             managePagination();
             populateAnimalTable(getCurrentPageAnimals());
         });
     }
 }
-async function getAnimalsWithDelay() {
+async function getAnimalsWithDelay(page, perPage) {
     return new Promise((resolve) => {
         setTimeout(async () => {
-            const response = await getAnimals();
+            const response = await getAnimals(page, perPage);
             resolve(response)
         }, API_DELAY);
     })
@@ -271,15 +310,15 @@ async function initializePage() {
     // show loading message
     manageLoadingMessage(true);
     try {
-        const response = await getAnimalsWithDelay();
+        const response = await getAnimalsWithDelay(currentPage, perPage);
         //check if the reponse is define
-        if(!response){
+        if (!response) {
             manageNoServiceMessage(true);
             manageLoadingMessage(false);
             return;
         }
         //check if there is records in the response
-        if(!response.records || !Array.isArray(response.records)){
+        if (!response.records || !Array.isArray(response.records)) {
             console.error('Error: The API does not return an array', response);
             manageLoadingMessage(false);
             return;
@@ -297,7 +336,7 @@ async function initializePage() {
         const errorMessagebox = document.getElementById('error-message-box');
         errorMessagebox.classList.remove('d-none');
         console.error('Error fetching animals:', error);
-    } finally{
+    } finally {
         //hide loading message
         manageLoadingMessage(false);
     }
