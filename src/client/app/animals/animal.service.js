@@ -2,9 +2,6 @@
 const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
 const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
 
-// Simulate API delay (adjusted to 2 seconds)
-const API_DELAY = 2000;
-
 // Common headers for API requests
 const headers = {
     'Content-Type': 'application/json',
@@ -13,126 +10,126 @@ const headers = {
 
 // Function to get one page of animals
 export function getAnimalPage(page, perPage) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
+            if (!response.ok) throw new Error('Failed to fetch animals');
 
-                // Get total number of records from response headers
-                const totalRecords = response.headers.get('X-Total-Count');
-                const totalPages = Math.ceil(totalRecords / perPage);
-                console.log("getAnimals totalRecords", totalRecords);
-                console.log("getAnimals totalPages", totalPages);
-                // Parse the JSON data from the response
-                const data = await response.json();
-                console.log("getAnimals data", data);
+            // Get total number of records from response headers
+            const totalRecords = response.headers.get('X-Total-Count');
+            const totalPages = Math.ceil(totalRecords / perPage);
+            console.log("getAnimals totalRecords", totalRecords);
+            console.log("getAnimals totalPages", totalPages);
+            // Parse the JSON data from the response
+            const data = await response.json();
+            console.log("getAnimals data", data);
 
-                resolve({
-                    records: data,
-                    pagination: {
-                        pages: totalPages,
-                        page: page,
-                        perPage: perPage
-                    }
-                });
-            } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
-            }
-        }, API_DELAY);
+            resolve({
+                records: data,
+                pagination: {
+                    pages: totalPages,
+                    page: page,
+                    perPage: perPage
+                }
+            });
+        } catch (error) {
+            reject(new Error(`Error getting animals: ${error.message}`));
+        }
     });
 }
 
 // Function to get the list of animals from API
 export async function getAnimals() {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(API_URL, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
-                resolve(await response.json());
-            } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
-            }
-        }, API_DELAY);
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(API_URL, { headers });
+            if (!response.ok) throw new Error('Failed to fetch animals');
+            resolve(await response.json());
+        } catch (error) {
+            reject(new Error(`Error getting animals: ${error.message}`));
+        }
     });
 }
 
 // Function to add a new animal via API
 export async function addAnimal(animal) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify(animal),
-                });
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(animal),
+            });
 
-                if (!response.ok) throw new Error('Failed to add animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error adding animal: ${error.message}`));
-            }
-        }, API_DELAY);
+            if (!response.ok) throw new Error('Failed to add animal');
+            resolve();
+        } catch (error) {
+            reject(new Error(`Error adding animal: ${error.message}`));
+        }
     });
 }
 
 // Function to delete an animal via API
 export async function deleteAnimal(animalId) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}/${animalId}`, {
-                    method: 'DELETE',
-                    headers
-                });
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(`${API_URL}/${animalId}`, {
+                method: 'DELETE',
+                headers
+            });
 
-                if (!response.ok) throw new Error('Failed to delete animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error deleting animal: ${error.message}`));
-            }
-        }, API_DELAY);
+            if (!response.ok) throw new Error('Failed to delete animal');
+            resolve();
+        } catch (error) {
+            reject(new Error(`Error deleting animal: ${error.message}`));
+        }
     });
 }
 
-// Function to find an animal by ID via API
-export async function findAnimal(animalId) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            if (!animalId) {
-                reject(new Error('Animal ID is required.'));
-                return; // Exit the function early
-            }
-            try {
-                const response = await fetch(`${API_URL}/${animalId}`, { headers });
+// Function to find an animal by name via API
+export async function findAnimal(animalName) {
+    return new Promise(async (resolve, reject) => {
+        if (!animalName) {
+            reject(new Error('Animal name is required.'));
+            return; // Exit the function early
+        }
+        try {
+            const response = await fetch(API_URL, { headers });// fetch all animals
+            if (!response.ok) throw new Error('Failed to fetch animals');
+            const animals = await response.json(); // Parse JSON response
 
-                if (!response.ok) throw new Error('Animal not found');
-                resolve(await response.json());
-            } catch (error) {
-                reject(new Error(`Error finding animal: ${error.message}`));
+            const animal = animals.find(a => a.name === animalName); // Search for the animal by name
+            if (!animal) {
+                throw new Error('Animal not found');
             }
-        }, API_DELAY);
+            resolve(animal); // Return the found animal
+        } catch (error) {
+            reject(new Error(`Error finding animal: ${error.message}`));
+        }
     });
 }
 
 // Function to update an animal via API
 export async function updateAnimal(updatedAnimal) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}/${updatedAnimal.id}`, {
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify(updatedAnimal),
-                });
-
-                if (!response.ok) throw new Error('Failed to update animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error updating animal: ${error.message}`));
+    return new Promise(async (resolve, reject) => {
+        try {
+            const animalToUpdate = { //create a new object without the id
+                name: updatedAnimal.name,
+                breed: updatedAnimal.breed,
+                eyes: updatedAnimal.eyes,
+                legs: updatedAnimal.legs,
+                sound: updatedAnimal.sound,
             }
-        }, API_DELAY);
+            const response = await fetch(API_URL, { //fetch all animals
+                method: 'POST', //since there is no put, we will use post to overwrite
+                headers,
+                body: JSON.stringify(animalToUpdate),
+            });
+
+            if (!response.ok) throw new Error('Failed to update animal');
+            resolve();
+        } catch (error) {
+            reject(new Error(`Error updating animal: ${error.message}`));
+        }
     });
 }
