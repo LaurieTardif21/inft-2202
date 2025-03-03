@@ -1,138 +1,123 @@
-// API Base URL
-const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
+import { addAnimal, findAnimal, updateAnimal } from './animals/animal.service.js';
 
-// Simulate API delay (adjusted to 2 seconds)
-const API_DELAY = 2000;
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('animal-form');
+    const saveButton = form.querySelector('button[type="submit"]');
+    // Inputs
+    const nameInput = document.getElementById('animal-name');
+    const breedInput = document.getElementById('animal-breed');
+    const eyesInput = document.getElementById('animal-eyes');
+    const legsInput = document.getElementById('animal-legs');
+    const soundInput = document.getElementById('animal-sound');
+    // Errors
+    const breedError = document.getElementById('breedError');
+    const eyesError = document.getElementById('eyesError');
+    const legsError = document.getElementById('legsError');
+    const soundError = document.getElementById('soundError');
+    
+    // Check if we're editing or adding
+    const urlParams = new URLSearchParams(window.location.search);
+    const animalId = urlParams.get('id');
 
-// Common headers for API requests
-const headers = {
-    'Content-Type': 'application/json',
-    'apiKey': API_KEY //changed x-apikey to apiKey
-};
+    // Helper function to validate if an input is a non-negative number
+    function isValidNonNegativeNumber(value) {
+        const num = Number(value);
+        if (isNaN(num) || num < 0) {
+            throw new Error('Input must be a non-negative number.');
+        }
+        return true; // Indicate validation passed
+    }
 
-// Function to get one page of animals
-export function getAnimalPage(page, perPage) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
+    // Helper function to clear all errors
+    function clearErrors() {
+        breedError.textContent = '';
+        eyesError.textContent = '';
+        legsError.textContent = '';
+        soundError.textContent = '';
+    }
+    // Function to fill the form
+    async function fillForm(){
+          // Editing an animal
+          saveButton.textContent = 'Save Animal'; // Change button text
+          nameInput.disabled = true; // Disable name input in edit mode
+          try {
+            const animal = await findAnimal(animalId);
+             // Pre-fill the form
+             nameInput.value = animal.name;
+             breedInput.value = animal.breed;
+             eyesInput.value = animal.eyes;
+             legsInput.value = animal.legs;
+             soundInput.value = animal.sound;
+          } catch (error) {
+             console.error('Error fetching animal:', error);
+             alert('Failed to fetch animal data. Please try again.');
+          }
+    }
+    
+    if (animalId) {
+       fillForm();
+    } else {
+        // Adding a new animal
+        saveButton.textContent = 'Add Animal'; //Change button text
+        nameInput.disabled = false; // Enable name input in add mode (optional)
+    }
 
-                // Get total number of records from response headers
-                const totalRecords = response.headers.get('X-Total-Count');
-                const totalPages = Math.ceil(totalRecords / perPage);
-                console.log("getAnimals totalRecords", totalRecords);
-                console.log("getAnimals totalPages", totalPages);
-                // Parse the JSON data from the response
-                const data = await response.json();
-                console.log("getAnimals data", data);
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+        clearErrors();// Reset error messages
 
-                resolve({
-                    records: data,
-                    pagination: {
-                        pages: totalPages,
-                        page: page,
-                        perPage: perPage
-                    }
-                });
-            } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
+        // Get the values from the form, and remove white spaces
+        const name = nameInput.value.trim();
+        const breed = breedInput.value.trim();
+        const eyes = eyesInput.value.trim();
+        const legs = legsInput.value.trim();
+        const sound = soundInput.value.trim();
+
+        // Validation
+        try {
+            if (!breed) {
+                throw new Error('Breed is required.');
             }
-        }, API_DELAY);
+            isValidNonNegativeNumber(eyes);
+            isValidNonNegativeNumber(legs);
+            if (!sound) {
+                throw new Error('Sound is required.');
+            }
+        } catch (error) {
+            //Error handling
+            if (error.message === 'Breed is required.') {
+                breedError.textContent = error.message;
+            } else if (error.message === 'Input must be a non-negative number.') {
+                eyesError.textContent = (eyesError.textContent)?eyesError.textContent: error.message;
+                legsError.textContent = (legsError.textContent)?legsError.textContent: error.message;
+            }else if (error.message === 'Sound is required.') {
+                soundError.textContent = error.message;
+            }
+            return;
+        }
+        // Create the animal object
+        const animal = {
+            name: name,
+            breed: breed,
+            eyes: parseInt(eyes), // convert to an int, this is a good practice
+            legs: parseInt(legs), // convert to an int, this is a good practice
+            sound: sound,
+        };
+
+        try{
+            if (animalId) {
+                // If editing, add the id to the animal object
+                animal.id = animalId;
+                 // Call updateAnimal
+                await updateAnimal(animal);
+            } else {
+                // If adding, call addAnimal
+                await addAnimal(animal);
+            }
+            window.location.href = 'list.html'; // Redirect to list page
+        }catch(error){
+            console.error('Error adding/updating animal:', error);
+            alert('Failed to add/update animal. Please try again.');
+        }
     });
-}
-
-// Function to get the list of animals from API
-export async function getAnimals() {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(API_URL, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
-                resolve(await response.json());
-            } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to add a new animal via API
-export async function addAnimal(animal) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify(animal),
-                });
-
-                if (!response.ok) throw new Error('Failed to add animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error adding animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to delete an animal via API
-export async function deleteAnimal(animalId) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}/${animalId}`, {
-                    method: 'DELETE',
-                    headers
-                });
-
-                if (!response.ok) throw new Error('Failed to delete animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error deleting animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to find an animal by ID via API
-export async function findAnimal(animalId) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            if (!animalId) {
-                reject(new Error('Animal ID is required.'));
-                return; // Exit the function early
-            }
-            try {
-                const response = await fetch(`${API_URL}/${animalId}`, { headers });
-
-                if (!response.ok) throw new Error('Animal not found');
-                resolve(await response.json());
-            } catch (error) {
-                reject(new Error(`Error finding animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to update an animal via API
-export async function updateAnimal(updatedAnimal) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}/${updatedAnimal.id}`, {
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify(updatedAnimal),
-                });
-
-                if (!response.ok) throw new Error('Failed to update animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error updating animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
+});
