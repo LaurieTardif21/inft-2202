@@ -20,8 +20,8 @@ function createEditButton(animalId) {
     icon.classList.add('fas', 'fa-pen-to-square'); // Edit icon
     button.appendChild(icon);
     button.addEventListener('click', () => {
-        // Redirect to animal.html with the animalId as a query parameter
-        window.location.href = `animal.html?name=${animalname}`;
+        // Redirect to animal.html with the animalname as a query parameter
+        window.location.href = `animal.html?name=${animal.name}`;
     });
     return button;
 }
