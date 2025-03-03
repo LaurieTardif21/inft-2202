@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render animal list
     function renderAnimalList(animals) {
         animalList.innerHTML = '';
-        if (animals.length === 0) {
+        if (!animals || animals.length === 0) { // Check if animals is null or undefined
             messageBox.classList.remove('d-none');
             table.classList.add('d-none'); // Hide the table
             showPaginationContainer(false);
