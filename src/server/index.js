@@ -6,6 +6,6 @@ app.get("/", (req, res) => {
     res.send("Hello World!");
 });
 
-app.listenerCount(port, () => {
+app.listen(port, () => {
     console.log(`Example app listenng on port ${port}!`);
 });
