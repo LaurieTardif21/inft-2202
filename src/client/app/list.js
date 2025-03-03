@@ -21,7 +21,7 @@ function createEditButton(animalId) {
     button.appendChild(icon);
     button.addEventListener('click', () => {
         // Redirect to animal.html with the animalId as a query parameter
-        window.location.href = `animal.html?id=${animalId}`;
+        window.location.href = `animal.html?name=${animalname}`;
     });
     return button;
 }
