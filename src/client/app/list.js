@@ -25,7 +25,9 @@ function createEditButton(animalId) {
     });
     return button;
 }
-
+function setModalAriaHidden(modal, isHidden) {
+    modal.setAttribute('aria-hidden', isHidden.toString());
+}
 function createDeleteButton(animalId) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-danger', 'btn-sm');
@@ -40,8 +42,11 @@ function createDeleteButton(animalId) {
         // Set the animal ID to delete in the global variable
         animalIdToDelete = animalId;
         // Show the confirmation modal
-        const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-        deleteConfirmationModal.show();
+        const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
+        const modal = new bootstrap.Modal(deleteConfirmationModal);
+        //manage aria-hidden
+        setModalAriaHidden(deleteConfirmationModal, false);
+        modal.show();
     });
     return button;
 }
@@ -324,8 +329,11 @@ document.getElementById('confirmDeleteButton').addEventListener('click', async (
         manageNoServiceMessage(true);
     } finally {
         // Hide the modal
-        const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
-        deleteConfirmationModal.hide();
+        const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
+        const modal = bootstrap.Modal.getInstance(deleteConfirmationModal);
+        modal.hide();
+        //manage aria-hidden
+        setModalAriaHidden(deleteConfirmationModal, true);
         checkIfListIsEmpty(false);
     }
 });
