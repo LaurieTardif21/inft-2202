@@ -1,6 +1,6 @@
 // API Base URL
 const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
+const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIEY
 
 // Simulate API delay (adjusted to 2 seconds)
 const API_DELAY = 2000;
@@ -8,40 +8,8 @@ const API_DELAY = 2000;
 // Common headers for API requests
 const headers = {
     'Content-Type': 'application/json',
-    'x-apikey': API_KEY
+    'apiKey': API_KEY
 };
-
-// Function to get one page of animals
-export function getAnimalPage(page, perPage) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
-
-                // Get total number of records from response headers
-                const totalRecords = response.headers.get('X-Total-Count');
-                const totalPages = Math.ceil(totalRecords / perPage);
-                console.log("getAnimals totalRecords", totalRecords);
-                console.log("getAnimals totalPages", totalPages);
-                // Parse the JSON data from the response
-                const data = await response.json();
-                console.log("getAnimals data", data);
-
-                resolve({
-                    records: data,
-                    pagination: {
-                        pages: totalPages,
-                        page: page,
-                        perPage: perPage
-                    }
-                });
-            } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
 
 // Function to get the list of animals from API
 export async function getAnimals() {
@@ -101,10 +69,6 @@ export async function deleteAnimal(animalId) {
 export async function findAnimal(animalId) {
     return new Promise((resolve, reject) => {
         setTimeout(async () => {
-             if (!animalId) {
-                reject(new Error('Animal ID is required.'));
-                return; // Exit the function early
-            }
             try {
                 const response = await fetch(`${API_URL}/${animalId}`, { headers });
 
