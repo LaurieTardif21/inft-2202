@@ -1,4 +1,4 @@
-import { getAnimalPage, deleteAnimal } from './animals/animal.service.js';
+import { getAnimals, getAnimalPage, deleteAnimal } from './animals/animal.service.js';
 
 // Page elements
 const animalsList = document.getElementById('animals-list');
