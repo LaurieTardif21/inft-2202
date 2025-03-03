@@ -1,152 +1,138 @@
-import animalService from './animals/animal.service.js';
+// API Base URL
+const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
+const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
 
-// Form elements
-const animalForm = document.getElementById('animalForm');
-const animalName = document.getElementById('animalName');
-const animalBreed = document.getElementById('animalBreed');
-const animalEyes = document.getElementById('animalEyes');
-const animalLegs = document.getElementById('animalLegs');
-const animalSound = document.getElementById('animalSound');
-const animalId = document.getElementById('animalId');
-const action = document.getElementById('action');
-const loadingMessageBox = document.getElementById('loading-message-box');
-const errorMessage = document.getElementById('error-message-box');
-const noServiceMessageBox = document.getElementById('no-service-message-box');
+// Simulate API delay (adjusted to 2 seconds)
+const API_DELAY = 2000;
 
-// Get the animal id from the url
-const urlParams = new URLSearchParams(window.location.search);
-const animalNameFromUrl = urlParams.get('id');
+// Common headers for API requests
+const headers = {
+    'Content-Type': 'application/json',
+    'apiKey': API_KEY //changed x-apikey to apiKey
+};
 
-// If there is an animal id, then we are editing an animal
-if (animalNameFromUrl) {
-    action.innerHTML = "Edit an animal";
-    animalId.value = animalNameFromUrl;
-    loadAnimal(animalNameFromUrl);
+// Function to get one page of animals
+export function getAnimalPage(page, perPage) {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            try {
+                const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
+                if (!response.ok) throw new Error('Failed to fetch animals');
+
+                // Get total number of records from response headers
+                const totalRecords = response.headers.get('X-Total-Count');
+                const totalPages = Math.ceil(totalRecords / perPage);
+                console.log("getAnimals totalRecords", totalRecords);
+                console.log("getAnimals totalPages", totalPages);
+                // Parse the JSON data from the response
+                const data = await response.json();
+                console.log("getAnimals data", data);
+
+                resolve({
+                    records: data,
+                    pagination: {
+                        pages: totalPages,
+                        page: page,
+                        perPage: perPage
+                    }
+                });
+            } catch (error) {
+                reject(new Error(`Error getting animals: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
 }
 
-// Initialize the form
-initForm();
-
-// Event listener for form submission
-animalForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    // Get the data from the form
-    const animal = {
-        name: animalName.value,
-        breed: animalBreed.value,
-        eyes: animalEyes.value,
-        legs: animalLegs.value,
-        sound: animalSound.value,
-    };
-
-    // Check if we are adding or editing an animal
-    if (animalId.value) {
-        await updateAnimal(animal);
-    } else {
-        await addAnimal(animal);
-    }
-    // Redirect to the list page
-    window.location.href = 'list.html';
-});
-
-// Function to load an animal
-async function loadAnimal(name) {
-    manageLoadingMessage(true);
-    manageNoServiceMessage(false);
-    try {
-        const animal = await animalService.findAnimal(name);
-        if (animal) {
-            animalName.value = animal.name;
-            animalBreed.value = animal.breed;
-            animalEyes.value = animal.eyes;
-            animalLegs.value = animal.legs;
-            animalSound.value = animal.sound;
-            manageLoadingMessage(false);
-        } else {
-            manageNoServiceMessage(true);
-            manageLoadingMessage(false);
-        }
-    } catch (error) {
-        manageErrorMessage(true);
-        manageNoServiceMessage(false);
-        manageLoadingMessage(false);
-    }
+// Function to get the list of animals from API
+export async function getAnimals() {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            try {
+                const response = await fetch(API_URL, { headers });
+                if (!response.ok) throw new Error('Failed to fetch animals');
+                resolve(await response.json());
+            } catch (error) {
+                reject(new Error(`Error getting animals: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
 }
 
-// Function to add an animal
-async function addAnimal(animal) {
-    manageLoadingMessage(true);
-    try {
-        await animalService.saveAnimal(animal);
-    } catch (error) {
-        manageErrorMessage(true);
-    } finally {
-        manageLoadingMessage(false);
-    }
+// Function to add a new animal via API
+export async function addAnimal(animal) {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(animal),
+                });
+
+                if (!response.ok) throw new Error('Failed to add animal');
+                resolve();
+            } catch (error) {
+                reject(new Error(`Error adding animal: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
 }
 
-// Function to update an animal
-async function updateAnimal(animal) {
-    manageLoadingMessage(true);
-    try {
-        await animalService.updateAnimal(animal);
-    } catch (error) {
-        manageErrorMessage(true);
-    } finally {
-        manageLoadingMessage(false);
-    }
+// Function to delete an animal via API
+export async function deleteAnimal(animalId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            try {
+                const response = await fetch(`${API_URL}/${animalId}`, {
+                    method: 'DELETE',
+                    headers
+                });
+
+                if (!response.ok) throw new Error('Failed to delete animal');
+                resolve();
+            } catch (error) {
+                reject(new Error(`Error deleting animal: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
 }
 
-function manageErrorMessage(show) {
-    if (show) {
-        errorMessage.classList.remove('d-none');
-    } else {
-        errorMessage.classList.add('d-none');
-    }
+// Function to find an animal by ID via API
+export async function findAnimal(animalId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            if (!animalId) {
+                reject(new Error('Animal ID is required.'));
+                return; // Exit the function early
+            }
+            try {
+                const response = await fetch(`${API_URL}/${animalId}`, { headers });
+
+                if (!response.ok) throw new Error('Animal not found');
+                resolve(await response.json());
+            } catch (error) {
+                reject(new Error(`Error finding animal: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
 }
 
-function manageLoadingMessage(show) {
-    if (show) {
-        loadingMessageBox.classList.remove('d-none');
-    } else {
-        loadingMessageBox.classList.add('d-none');
-    }
+// Function to update an animal via API
+export async function updateAnimal(updatedAnimal) {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            try {
+                const response = await fetch(`${API_URL}/${updatedAnimal.id}`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(updatedAnimal),
+                });
+
+                if (!response.ok) throw new Error('Failed to update animal');
+                resolve();
+            } catch (error) {
+                reject(new Error(`Error updating animal: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
 }
-function manageNoServiceMessage(show) {
-    if (show) {
-        noServiceMessageBox.classList.remove('d-none');
-    } else {
-        noServiceMessageBox.classList.add('d-none');
-    }
-}
-
-function initForm() {
-    manageErrorMessage(false);
-    manageLoadingMessage(false);
-    manageNoServiceMessage(false);
-}
-
-// Handle timeout and no service
-let timeoutId; // Define timeoutId in the outer scope
-
-async function initialize() {
-    try {
-        timeoutId = setTimeout(() => {
-            console.log("Timeout triggered");
-            noServiceMessageBox.classList.remove('d-none'); // Show "no service" message
-            loadingMessageBox.classList.add('d-none'); // Hide "loading" message
-            clearTimeout(timeoutId);
-        }, 5000);
-
-    } catch (error) {
-        console.error('Initialization failed:', error);
-        // Handle the error during initialization
-    } finally {
-        clearTimeout(timeoutId);
-        loadingMessageBox.classList.add('d-none');
-        noServiceMessageBox.classList.add('d-none');
-    }
-}
-
-initialize();
