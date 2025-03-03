@@ -52,6 +52,7 @@ function createDeleteButton(animalId) {
 }
 
 async function populateAnimalTable(animals) {
+    console.log("populateAnimalTable called with:", animals);
     if (!animals) {
         //do something
         return;
@@ -127,6 +128,7 @@ function checkIfListIsEmpty(isLoading) {
 }
 // Function to create and manage the pagination
 async function managePagination() {
+    console.log("managePagination called");
     // Get the container and the ul
     const paginationContainer = document.getElementById('paginationContainer');
     const paginationUl = document.getElementById('pagination');
@@ -247,13 +249,16 @@ async function managePagination() {
     }
 }
 async function getAnimalsWithDelay(page, perPage) {
+    console.log("getAnimalsWithDelay called with:", page, perPage);
     try{
         const response = await getAnimals(page, perPage);
+        console.log("getAnimalsWithDelay response:", response);
         //check if the response has data
         if(response && response.animals && response.pagination) {
             return response;
         }
         //if not, return empty data
+        console.log("getAnimalsWithDelay returning empty data");
         return { animals: [], pagination: {pages:0, page: 0, perPage: 0}};
     }catch(error){
         console.error('Error getting animals:', error);
@@ -300,10 +305,12 @@ function manageLoadingMessage(isLoading) {
 function getCurrentPageAnimals() {
     // add a check to be sure that animals array exist
     if(!animalsArray.animals){
+        console.log("getCurrentPageAnimals: No animals array");
         return [];
     }
     const start = (currentPage - 1) * perPage;
     const end = start + perPage;
+    console.log("getCurrentPageAnimals:", animalsArray.animals.slice(start, end));
     return animalsArray.animals.slice(start, end);
 }
 
@@ -359,7 +366,9 @@ document.getElementById('confirmDeleteButton').addEventListener('click', async (
     manageNoServiceMessage(false);
     //hide the message box if no animal in list
     checkIfListIsEmpty(true);
+    console.log("Starting initial data load");
     const response = await getAnimalsWithDelay(currentPage, perPage);
+    console.log("Initial data load response:", response);
     if (!response) {
         manageNoServiceMessage(true);
         manageLoadingMessage(false);
@@ -368,6 +377,7 @@ document.getElementById('confirmDeleteButton').addEventListener('click', async (
     animalsArray = response;
     perPage = response.pagination.perPage;
     currentPage = response.pagination.page;
+    console.log("animalsArray after initial load:", animalsArray);
     managePagination();
     populateAnimalTable(getCurrentPageAnimals());
     manageLoadingMessage(false);
