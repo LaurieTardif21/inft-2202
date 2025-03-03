@@ -1,123 +1,152 @@
-import { addAnimal, findAnimal, updateAnimal } from './animals/animal.service.js';
+import animalService from './animals/animal.service.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('animal-form');
-    const saveButton = form.querySelector('button[type="submit"]');
-    // Inputs
-    const nameInput = document.getElementById('animal-name');
-    const breedInput = document.getElementById('animal-breed');
-    const eyesInput = document.getElementById('animal-eyes');
-    const legsInput = document.getElementById('animal-legs');
-    const soundInput = document.getElementById('animal-sound');
-    // Errors
-    const breedError = document.getElementById('breedError');
-    const eyesError = document.getElementById('eyesError');
-    const legsError = document.getElementById('legsError');
-    const soundError = document.getElementById('soundError');
-    
-    // Check if we're editing or adding
-    const urlParams = new URLSearchParams(window.location.search);
-    const animalId = urlParams.get('id');
+// Form elements
+const animalForm = document.getElementById('animalForm');
+const animalName = document.getElementById('animalName');
+const animalBreed = document.getElementById('animalBreed');
+const animalEyes = document.getElementById('animalEyes');
+const animalLegs = document.getElementById('animalLegs');
+const animalSound = document.getElementById('animalSound');
+const animalId = document.getElementById('animalId');
+const action = document.getElementById('action');
+const loadingMessageBox = document.getElementById('loading-message-box');
+const errorMessage = document.getElementById('error-message-box');
+const noServiceMessageBox = document.getElementById('no-service-message-box');
 
-    // Helper function to validate if an input is a non-negative number
-    function isValidNonNegativeNumber(value) {
-        const num = Number(value);
-        if (isNaN(num) || num < 0) {
-            throw new Error('Input must be a non-negative number.');
-        }
-        return true; // Indicate validation passed
-    }
+// Get the animal id from the url
+const urlParams = new URLSearchParams(window.location.search);
+const animalNameFromUrl = urlParams.get('id');
 
-    // Helper function to clear all errors
-    function clearErrors() {
-        breedError.textContent = '';
-        eyesError.textContent = '';
-        legsError.textContent = '';
-        soundError.textContent = '';
-    }
-    // Function to fill the form
-    async function fillForm(){
-          // Editing an animal
-          saveButton.textContent = 'Save Animal'; // Change button text
-          nameInput.disabled = true; // Disable name input in edit mode
-          try {
-            const animal = await findAnimal(animalId);
-             // Pre-fill the form
-             nameInput.value = animal.name;
-             breedInput.value = animal.breed;
-             eyesInput.value = animal.eyes;
-             legsInput.value = animal.legs;
-             soundInput.value = animal.sound;
-          } catch (error) {
-             console.error('Error fetching animal:', error);
-             alert('Failed to fetch animal data. Please try again.');
-          }
-    }
-    
-    if (animalId) {
-       fillForm();
+// If there is an animal id, then we are editing an animal
+if (animalNameFromUrl) {
+    action.innerHTML = "Edit an animal";
+    animalId.value = animalNameFromUrl;
+    loadAnimal(animalNameFromUrl);
+}
+
+// Initialize the form
+initForm();
+
+// Event listener for form submission
+animalForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    // Get the data from the form
+    const animal = {
+        name: animalName.value,
+        breed: animalBreed.value,
+        eyes: animalEyes.value,
+        legs: animalLegs.value,
+        sound: animalSound.value,
+    };
+
+    // Check if we are adding or editing an animal
+    if (animalId.value) {
+        await updateAnimal(animal);
     } else {
-        // Adding a new animal
-        saveButton.textContent = 'Add Animal'; //Change button text
-        nameInput.disabled = false; // Enable name input in add mode (optional)
+        await addAnimal(animal);
     }
-
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Prevent the default form submission
-        clearErrors();// Reset error messages
-
-        // Get the values from the form, and remove white spaces
-        const name = nameInput.value.trim();
-        const breed = breedInput.value.trim();
-        const eyes = eyesInput.value.trim();
-        const legs = legsInput.value.trim();
-        const sound = soundInput.value.trim();
-
-        // Validation
-        try {
-            if (!breed) {
-                throw new Error('Breed is required.');
-            }
-            isValidNonNegativeNumber(eyes);
-            isValidNonNegativeNumber(legs);
-            if (!sound) {
-                throw new Error('Sound is required.');
-            }
-        } catch (error) {
-            //Error handling
-            if (error.message === 'Breed is required.') {
-                breedError.textContent = error.message;
-            } else if (error.message === 'Input must be a non-negative number.') {
-                eyesError.textContent = (eyesError.textContent)?eyesError.textContent: error.message;
-                legsError.textContent = (legsError.textContent)?legsError.textContent: error.message;
-            }else if (error.message === 'Sound is required.') {
-                soundError.textContent = error.message;
-            }
-            return;
-        }
-        // Create the animal object
-        const animal = {
-            name: name,
-            breed: breed,
-            eyes: parseInt(eyes), // convert to an int, this is a good practice
-            legs: parseInt(legs), // convert to an int, this is a good practice
-            sound: sound,
-        };
-
-        try{
-            if (animalId) {
-                // If editing, add the id to the animal object
-                animal.id = animalId;
-                 // Call updateAnimal
-                await updateAnimal(animal);
-            } else {
-                // If adding, call addAnimal
-                await addAnimal(animal);
-            }
-            window.location.href = 'list.html'; // Redirect to list page
-        }catch(error){
-            console.error('Error adding/updating animal:', error);
-            alert('Failed to add/update animal. Please try again.');
-        }
-    });
+    // Redirect to the list page
+    window.location.href = 'list.html';
 });
+
+// Function to load an animal
+async function loadAnimal(name) {
+    manageLoadingMessage(true);
+    manageNoServiceMessage(false);
+    try {
+        const animal = await animalService.findAnimal(name);
+        if (animal) {
+            animalName.value = animal.name;
+            animalBreed.value = animal.breed;
+            animalEyes.value = animal.eyes;
+            animalLegs.value = animal.legs;
+            animalSound.value = animal.sound;
+            manageLoadingMessage(false);
+        } else {
+            manageNoServiceMessage(true);
+            manageLoadingMessage(false);
+        }
+    } catch (error) {
+        manageErrorMessage(true);
+        manageNoServiceMessage(false);
+        manageLoadingMessage(false);
+    }
+}
+
+// Function to add an animal
+async function addAnimal(animal) {
+    manageLoadingMessage(true);
+    try {
+        await animalService.saveAnimal(animal);
+    } catch (error) {
+        manageErrorMessage(true);
+    } finally {
+        manageLoadingMessage(false);
+    }
+}
+
+// Function to update an animal
+async function updateAnimal(animal) {
+    manageLoadingMessage(true);
+    try {
+        await animalService.updateAnimal(animal);
+    } catch (error) {
+        manageErrorMessage(true);
+    } finally {
+        manageLoadingMessage(false);
+    }
+}
+
+function manageErrorMessage(show) {
+    if (show) {
+        errorMessage.classList.remove('d-none');
+    } else {
+        errorMessage.classList.add('d-none');
+    }
+}
+
+function manageLoadingMessage(show) {
+    if (show) {
+        loadingMessageBox.classList.remove('d-none');
+    } else {
+        loadingMessageBox.classList.add('d-none');
+    }
+}
+function manageNoServiceMessage(show) {
+    if (show) {
+        noServiceMessageBox.classList.remove('d-none');
+    } else {
+        noServiceMessageBox.classList.add('d-none');
+    }
+}
+
+function initForm() {
+    manageErrorMessage(false);
+    manageLoadingMessage(false);
+    manageNoServiceMessage(false);
+}
+
+// Handle timeout and no service
+let timeoutId; // Define timeoutId in the outer scope
+
+async function initialize() {
+    try {
+        timeoutId = setTimeout(() => {
+            console.log("Timeout triggered");
+            noServiceMessageBox.classList.remove('d-none'); // Show "no service" message
+            loadingMessageBox.classList.add('d-none'); // Hide "loading" message
+            clearTimeout(timeoutId);
+        }, 5000);
+
+    } catch (error) {
+        console.error('Initialization failed:', error);
+        // Handle the error during initialization
+    } finally {
+        clearTimeout(timeoutId);
+        loadingMessageBox.classList.add('d-none');
+        noServiceMessageBox.classList.add('d-none');
+    }
+}
+
+initialize();
