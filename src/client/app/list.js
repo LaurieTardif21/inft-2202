@@ -148,8 +148,8 @@ async function managePagination() {
         return;
     }
     const tableBody = document.querySelector('#animals-list tbody');
-     // Create the page number
-     for (let i = 1; i <= numberOfPages; i++) {
+    // Create the page number
+    for (let i = 1; i <= numberOfPages; i++) {
         //create the li
         const pageNumberLi = document.createElement('li');
         pageNumberLi.classList.add('page-item', 'page-number');
@@ -250,17 +250,22 @@ async function managePagination() {
 }
 async function getAnimalsWithDelay(page, perPage) {
     console.log("getAnimalsWithDelay called with:", page, perPage);
-    try{
+    try {
         const response = await getAnimals(page, perPage);
         console.log("getAnimalsWithDelay response:", response);
         //check if the response has data
-        if(response && response.animals && response.pagination) {
-            return response;
+        if (response && response.records && response.pagination) {
+            // Change the response to have the good format.
+            const newResponse = {
+                animals: response.records,
+                pagination: response.pagination
+            };
+            return newResponse;
         }
         //if not, return empty data
         console.log("getAnimalsWithDelay returning empty data");
-        return { animals: [], pagination: {pages:0, page: 0, perPage: 0}};
-    }catch(error){
+        return { animals: [], pagination: { pages: 0, page: 0, perPage: 0 } };
+    } catch (error) {
         console.error('Error getting animals:', error);
         return null;
     }
@@ -304,7 +309,7 @@ function manageLoadingMessage(isLoading) {
 
 function getCurrentPageAnimals() {
     // add a check to be sure that animals array exist
-    if(!animalsArray.animals){
+    if (!animalsArray.animals) {
         console.log("getCurrentPageAnimals: No animals array");
         return [];
     }
