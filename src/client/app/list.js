@@ -7,7 +7,7 @@ let currentPage = 1;
 // Global variable for the number of entries per page
 let perPage = 5;
 // Global varible for the array of animals
-let animalsArray = [];
+let animalsArray = { animals: [], pagination: {} };
 
 function createEditButton(animalId) {
     const button = document.createElement('button');
@@ -247,9 +247,18 @@ async function managePagination() {
     }
 }
 async function getAnimalsWithDelay(page, perPage) {
-    const response = await getAnimals(page, perPage);
-    return response;
-
+    try{
+        const response = await getAnimals(page, perPage);
+        //check if the response has data
+        if(response && response.animals && response.pagination) {
+            return response;
+        }
+        //if not, return empty data
+        return { animals: [], pagination: {pages:0, page: 0, perPage: 0}};
+    }catch(error){
+        console.error('Error getting animals:', error);
+        return null;
+    }
 }
 
 function manageNoServiceMessage(show) {
@@ -289,6 +298,10 @@ function manageLoadingMessage(isLoading) {
 }
 
 function getCurrentPageAnimals() {
+    // add a check to be sure that animals array exist
+    if(!animalsArray.animals){
+        return [];
+    }
     const start = (currentPage - 1) * perPage;
     const end = start + perPage;
     return animalsArray.animals.slice(start, end);
