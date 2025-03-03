@@ -1,4 +1,3 @@
-
 // API Base URL
 const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
 const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
@@ -98,19 +97,34 @@ export async function deleteAnimal(animalId) {
     });
 }
 
-// Function to find an animal by ID via API
-export async function findAnimal(animalId) {
+// Function to find an animal by name via API
+export async function findAnimal(animalName) {
     return new Promise((resolve, reject) => {
         setTimeout(async () => {
-            if (!animalId) {
-                reject(new Error('Animal ID is required.'));
+            if (!animalName) {
+                reject(new Error('Animal Name is required.'));
                 return; // Exit the function early
             }
             try {
-                const response = await fetch(`${API_URL}/${animalId}`, { headers });
+                // Construct the URL with the animal name as a query parameter
+                const response = await fetch(`${API_URL}?name=${animalName}`, { headers });
 
-                if (!response.ok) throw new Error('Animal not found');
-                resolve(await response.json());
+                if (!response.ok) {
+                    if (response.status === 404) {
+                      reject(new Error('Animal not found'));
+                    } else {
+                      reject(new Error('Failed to get animal'));
+                    }
+                    return;
+                  }
+                  //check if there is data in the response
+                  const data = await response.json();
+
+                  if (data.length === 0) {
+                    reject(new Error('Animal not found'));
+                    return;
+                  }
+                resolve(data[0]); // Resolve with the first animal found (assuming uniqueness)
             } catch (error) {
                 reject(new Error(`Error finding animal: ${error.message}`));
             }
@@ -123,10 +137,10 @@ export async function updateAnimal(updatedAnimal) {
     return new Promise((resolve, reject) => {
         setTimeout(async () => {
             try {
-                const response = await fetch(`${API_URL}/${updatedAnimal.id}`, {
+                const response = await fetch(`${API_URL}`, { //change the end of the url to be the base
                     method: 'PUT',
                     headers,
-                    body: JSON.stringify(updatedAnimal),
+                    body: JSON.stringify(updatedAnimal), //now the id is part of the body
                 });
 
                 if (!response.ok) throw new Error('Failed to update animal');
