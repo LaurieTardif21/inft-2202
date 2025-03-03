@@ -17,9 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
-    const animalId = urlParams.get('id'); // Get the animal's ID from the URL
-    //let animalName; //remove this line since we dont use it anymore
-    
+    const animalName = urlParams.get('name'); // Get the animal's name from the URL
+    let animalId;//Declare the variable
+
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
         saveButton.textContent = 'Save Animal'; // Change button text
         nameInput.disabled = true; // Disable name input in edit mode
         try {
-            const animal = await findAnimal(animalId); // Search by id
+            const animal = await findAnimal(animalName); // Search by name
             if (animal) {
                 // Pre-fill the form
-                //animalId = animal.id;//Save the id for later//remove this line
+                animalId = animal.id;//Save the id for later
                 nameInput.value = animal.name;
                 breedInput.value = animal.breed;
                 eyesInput.value = animal.eyes;
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (animalId) { //check for id
+    if (animalName) {
         fillForm();
     } else {
         // Adding a new animal
@@ -94,16 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (error.message === 'Input must be a non-negative number.') {
                 eyesError.textContent = (eyesError.textContent) ? eyesError.textContent : error.message;
                 legsError.textContent = (legsError.textContent) ? legsError.textContent : error.message;
-            } else if (error.message === 'Sound is required.') {
-                soundError.textContent = error.message;
-            } else if (error.message){
-              console.log(error.message);
+            } else if (error.message) {
+                console.log(error.message);
             }
             return;
         }
         // Create the animal object
         const animal = {
-            id: parseInt(animalId), // this is added in edit mode
             name: name,
             breed: breed,
             eyes: parseInt(eyes), // convert to an int, this is a good practice
@@ -112,7 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            if (animalId) { // Check for id
+            if (animalName) {
+                // If editing, add the id to the animal object
+                animal.id = animalId; //We use the id saved from the animal
                 // Call updateAnimal
                 await updateAnimal(animal);
             } else {
