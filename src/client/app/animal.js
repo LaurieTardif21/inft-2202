@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const eyesError = document.getElementById('eyesError');
     const legsError = document.getElementById('legsError');
     const soundError = document.getElementById('soundError');
-    
+
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
     const animalId = urlParams.get('id');
@@ -53,9 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
              alert('Failed to fetch animal data. Please try again.');
           }
     }
-    
+
     if (animalId) {
-       fillForm();
+        fillForm();
     } else {
         // Adding a new animal
         saveButton.textContent = 'Add Animal'; //Change button text
