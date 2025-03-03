@@ -9,7 +9,7 @@ let perPage = 5;
 // Global varible for the array of animals
 let animalsArray = [];
 
-function createEditButton(animalId) {
+function createEditButton(animal) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
     button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
