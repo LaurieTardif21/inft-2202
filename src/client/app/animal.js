@@ -14,11 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const eyesError = document.getElementById('eyesError');
     const legsError = document.getElementById('legsError');
     const soundError = document.getElementById('soundError');
-    
+
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
-    const animalId = urlParams.get('id');
-
+    const animalName = urlParams.get('name'); // Now we get the name
+    let animalId; //Declare the variable
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
@@ -36,26 +36,29 @@ document.addEventListener('DOMContentLoaded', () => {
         soundError.textContent = '';
     }
     // Function to fill the form
-    async function fillForm(){
-          // Editing an animal
-          saveButton.textContent = 'Save Animal'; // Change button text
-          nameInput.disabled = true; // Disable name input in edit mode
-          try {
-            const animal = await findAnimal(animalId);
-             // Pre-fill the form
-             nameInput.value = animal.name;
-             breedInput.value = animal.breed;
-             eyesInput.value = animal.eyes;
-             legsInput.value = animal.legs;
-             soundInput.value = animal.sound;
-          } catch (error) {
-             console.error('Error fetching animal:', error);
-             alert('Failed to fetch animal data. Please try again.');
-          }
+    async function fillForm() {
+        // Editing an animal
+        saveButton.textContent = 'Save Animal'; // Change button text
+        nameInput.disabled = true; // Disable name input in edit mode
+        try {
+            const animal = await findAnimal(animalName); // Search by name
+            if (animal) {
+                // Pre-fill the form
+                animalId = animal.id;//Save the id for later
+                nameInput.value = animal.name;
+                breedInput.value = animal.breed;
+                eyesInput.value = animal.eyes;
+                legsInput.value = animal.legs;
+                soundInput.value = animal.sound;
+            }
+        } catch (error) {
+            console.error('Error fetching animal:', error);
+            alert('Failed to fetch animal data. Please try again.');
+        }
     }
-    
-    if (animalId) {
-       fillForm();
+
+    if (animalName) {
+        fillForm();
     } else {
         // Adding a new animal
         saveButton.textContent = 'Add Animal'; //Change button text
@@ -88,10 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error.message === 'Breed is required.') {
                 breedError.textContent = error.message;
             } else if (error.message === 'Input must be a non-negative number.') {
-                eyesError.textContent = (eyesError.textContent)?eyesError.textContent: error.message;
-                legsError.textContent = (legsError.textContent)?legsError.textContent: error.message;
-            }else if (error.message === 'Sound is required.') {
+                eyesError.textContent = (eyesError.textContent) ? eyesError.textContent : error.message;
+                legsError.textContent = (legsError.textContent) ? legsError.textContent : error.message;
+            } else if (error.message === 'Sound is required.') {
                 soundError.textContent = error.message;
+            } else if (error.message){
+              console.log(error.message);
             }
             return;
         }
@@ -104,18 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
             sound: sound,
         };
 
-        try{
-            if (animalId) {
+        try {
+            if (animalName) {
                 // If editing, add the id to the animal object
-                animal.id = animalId;
-                 // Call updateAnimal
+                animal.id = animalId; //We use the id saved from the animal
+                // Call updateAnimal
                 await updateAnimal(animal);
             } else {
                 // If adding, call addAnimal
                 await addAnimal(animal);
             }
             window.location.href = 'list.html'; // Redirect to list page
-        }catch(error){
+        } catch (error) {
             console.error('Error adding/updating animal:', error);
             alert('Failed to add/update animal. Please try again.');
         }

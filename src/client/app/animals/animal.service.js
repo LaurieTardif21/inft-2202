@@ -96,8 +96,34 @@ export async function deleteAnimal(animalId) {
         }, API_DELAY);
     });
 }
+// New function
+export async function findAnimalByName(animalName) {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            if (!animalName) {
+                reject(new Error('Animal name is required.'));
+                return; // Exit the function early
+            }
+            try {
+                // Fetch all animals and then filter by name
+                const response = await fetch(API_URL, { headers });
+                if (!response.ok) throw new Error('Animal not found');
 
-// Function to find an animal by ID via API
+                const allAnimals = await response.json();
+                const foundAnimal = allAnimals.find(animal => animal.name === animalName);
+
+                if (!foundAnimal) {
+                    resolve(null);//If not found, return null
+                } else {
+                    resolve(foundAnimal);
+                }
+            } catch (error) {
+                reject(new Error(`Error finding animal: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
+}
+// Function to find an animal by ID or by name via API
 export async function findAnimal(animalId) {
     return new Promise((resolve, reject) => {
         setTimeout(async () => {
@@ -106,10 +132,16 @@ export async function findAnimal(animalId) {
                 return; // Exit the function early
             }
             try {
-                const response = await fetch(`${API_URL}/${animalId}`, { headers });
-
-                if (!response.ok) throw new Error('Animal not found');
-                resolve(await response.json());
+                if(isNaN(Number(animalId))){
+                    //animalId is a string, so we search by name
+                    const animal = await findAnimalByName(animalId);
+                    resolve(animal);
+                } else {
+                    // animalId is a number, so we search by id
+                    const response = await fetch(`${API_URL}/${animalId}`, { headers });
+                    if (!response.ok) throw new Error('Animal not found');
+                    resolve(await response.json());
+                }
             } catch (error) {
                 reject(new Error(`Error finding animal: ${error.message}`));
             }
