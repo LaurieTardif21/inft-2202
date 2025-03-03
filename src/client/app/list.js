@@ -353,13 +353,18 @@ document.getElementById('confirmDeleteButton').addEventListener('click', async (
         // Handle the error, e.g., display an error message
         manageNoServiceMessage(true);
     } finally {
-        // Hide the modal
         const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
         const modal = bootstrap.Modal.getInstance(deleteConfirmationModal);
+
+        // Use the 'hidden.bs.modal' event to handle aria-hidden after the modal is fully hidden
+        deleteConfirmationModal.addEventListener('hidden.bs.modal', function () {
+            // Now, the modal is fully hidden, so it's safe to set aria-hidden and remove focus
+            setModalAriaHidden(deleteConfirmationModal, true);
+        }, { once: true });
+         // remove focus
+         document.activeElement.blur();
+        // Hide the modal
         modal.hide();
-        deleteConfirmationModal.blur();
-         //manage aria-hidden
-        setModalAriaHidden(deleteConfirmationModal, true);
         checkIfListIsEmpty(false);
     }
 });
