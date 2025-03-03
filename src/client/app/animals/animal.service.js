@@ -1,5 +1,3 @@
-animal.service.js
-
 // API Base URL
 const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
 const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
