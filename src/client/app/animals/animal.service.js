@@ -1,17 +1,17 @@
 const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIEY
+const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
 
 // Common headers for API requests
 const headers = {
     'Content-Type': 'application/json',
-    'apiKey': API_KEY
+    'x-apikey': API_KEY
 };
 
 // Function to get the list of animals from API
 export async function getAnimals(page, perPage) {
     console.log("getAnimals called with", page, perPage);
     try {
-        const response = await fetch(`${API_URL}?_page=${page}&_limit=${perPage}`, { headers });
+        const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
         if (!response.ok) {
             throw new Error('Failed to fetch animals');
         }
