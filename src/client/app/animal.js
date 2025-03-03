@@ -1,222 +1,123 @@
-// API Base URL
-const API_URL = "https://inft2202-server.onrender.com/api/animals"; //URL DATA IS FETCHED FROM
-const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
+import { addAnimal, findAnimal, updateAnimal } from './animals/animal.service.js';
 
-// Simulate API delay (adjusted to 2 seconds)
-const API_DELAY = 2000;
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('animal-form');
+    const saveButton = form.querySelector('button[type="submit"]');
+    // Inputs
+    const nameInput = document.getElementById('animal-name');
+    const breedInput = document.getElementById('animal-breed');
+    const eyesInput = document.getElementById('animal-eyes');
+    const legsInput = document.getElementById('animal-legs');
+    const soundInput = document.getElementById('animal-sound');
+    // Errors
+    const breedError = document.getElementById('breedError');
+    const eyesError = document.getElementById('eyesError');
+    const legsError = document.getElementById('legsError');
+    const soundError = document.getElementById('soundError');
+    
+    // Check if we're editing or adding
+    const urlParams = new URLSearchParams(window.location.search);
+    const animalId = urlParams.get('id');
 
-// Common headers for API requests
-const headers = {
-    'Content-Type': 'application/json',
-    'apiKey': API_KEY //changed x-apikey to apiKey
-};
+    // Helper function to validate if an input is a non-negative number
+    function isValidNonNegativeNumber(value) {
+        const num = Number(value);
+        if (isNaN(num) || num < 0) {
+            throw new Error('Input must be a non-negative number.');
+        }
+        return true; // Indicate validation passed
+    }
 
-// Function to get one page of animals
-export function getAnimalPage(page, perPage) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
+    // Helper function to clear all errors
+    function clearErrors() {
+        breedError.textContent = '';
+        eyesError.textContent = '';
+        legsError.textContent = '';
+        soundError.textContent = '';
+    }
+    // Function to fill the form
+    async function fillForm(){
+          // Editing an animal
+          saveButton.textContent = 'Save Animal'; // Change button text
+          nameInput.disabled = true; // Disable name input in edit mode
+          try {
+            const animal = await findAnimal(animalId);
+             // Pre-fill the form
+             nameInput.value = animal.name;
+             breedInput.value = animal.breed;
+             eyesInput.value = animal.eyes;
+             legsInput.value = animal.legs;
+             soundInput.value = animal.sound;
+          } catch (error) {
+             console.error('Error fetching animal:', error);
+             alert('Failed to fetch animal data. Please try again.');
+          }
+    }
+    
+    if (animalId) {
+       fillForm();
+    } else {
+        // Adding a new animal
+        saveButton.textContent = 'Add Animal'; //Change button text
+        nameInput.disabled = false; // Enable name input in add mode (optional)
+    }
 
-                // Get total number of records from response headers
-                const totalRecords = response.headers.get('X-Total-Count');
-                const totalPages = Math.ceil(totalRecords / perPage);
-                console.log("getAnimals totalRecords", totalRecords);
-                console.log("getAnimals totalPages", totalPages);
-                // Parse the JSON data from the response
-                const data = await response.json();
-                console.log("getAnimals data", data);
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+        clearErrors();// Reset error messages
 
-                resolve({
-                    records: data,
-                    pagination: {
-                        pages: totalPages,
-                        page: page,
-                        perPage: perPage
-                    }
-                });
-            } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
+        // Get the values from the form, and remove white spaces
+        const name = nameInput.value.trim();
+        const breed = breedInput.value.trim();
+        const eyes = eyesInput.value.trim();
+        const legs = legsInput.value.trim();
+        const sound = soundInput.value.trim();
+
+        // Validation
+        try {
+            if (!breed) {
+                throw new Error('Breed is required.');
             }
-        }, API_DELAY);
+            isValidNonNegativeNumber(eyes);
+            isValidNonNegativeNumber(legs);
+            if (!sound) {
+                throw new Error('Sound is required.');
+            }
+        } catch (error) {
+            //Error handling
+            if (error.message === 'Breed is required.') {
+                breedError.textContent = error.message;
+            } else if (error.message === 'Input must be a non-negative number.') {
+                eyesError.textContent = (eyesError.textContent)?eyesError.textContent: error.message;
+                legsError.textContent = (legsError.textContent)?legsError.textContent: error.message;
+            }else if (error.message === 'Sound is required.') {
+                soundError.textContent = error.message;
+            }
+            return;
+        }
+        // Create the animal object
+        const animal = {
+            name: name,
+            breed: breed,
+            eyes: parseInt(eyes), // convert to an int, this is a good practice
+            legs: parseInt(legs), // convert to an int, this is a good practice
+            sound: sound,
+        };
+
+        try{
+            if (animalId) {
+                // If editing, add the id to the animal object
+                animal.id = animalId;
+                 // Call updateAnimal
+                await updateAnimal(animal);
+            } else {
+                // If adding, call addAnimal
+                await addAnimal(animal);
+            }
+            window.location.href = 'list.html'; // Redirect to list page
+        }catch(error){
+            console.error('Error adding/updating animal:', error);
+            alert('Failed to add/update animal. Please try again.');
+        }
     });
-}
-
-// Function to get the list of animals from API
-export async function getAnimals() {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(API_URL, { headers });
-                if (!response.ok) throw new Error('Failed to fetch animals');
-                resolve(await response.json());
-            } catch (error) {
-                reject(new Error(`Error getting animals: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to add a new animal via API
-export async function addAnimal(animal) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify(animal),
-                });
-
-                if (!response.ok) throw new Error('Failed to add animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error adding animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to delete an animal via API
-export async function deleteAnimal(animalId) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}/${animalId}`, {
-                    method: 'DELETE',
-                    headers
-                });
-
-                if (!response.ok) throw new Error('Failed to delete animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error deleting animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to find an animal by name via API
-export async function findAnimal(animalName) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            if (!animalName) {
-                reject(new Error('Animal Name is required.'));
-                return; // Exit the function early
-            }
-            try {
-                // Construct the URL with the animal name as a query parameter
-                const response = await fetch(`${API_URL}?name=${animalName}`, { headers });
-
-                if (!response.ok) {
-                    if (response.status === 404) {
-                      reject(new Error('Animal not found'));
-                    } else {
-                      reject(new Error('Failed to get animal'));
-                    }
-                    return;
-                  }
-                  //check if there is data in the response
-                  const data = await response.json();
-
-                  if (data.length === 0) {
-                    reject(new Error('Animal not found'));
-                    return;
-                  }
-                resolve(data[0]); // Resolve with the first animal found (assuming uniqueness)
-            } catch (error) {
-                reject(new Error(`Error finding animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to update an animal via API
-export async function updateAnimal(updatedAnimal) {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_URL}`, { //change the end of the url to be the base
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify(updatedAnimal), //now the id is part of the body
-                });
-
-                if (!response.ok) throw new Error('Failed to update animal');
-                resolve();
-            } catch (error) {
-                reject(new Error(`Error updating animal: ${error.message}`));
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to prefill the edit form
-async function loadAnimalForEditName(animalName) {
-  try {
-    const animal = await findAnimal(animalName);
-    populateEditForm(animal);
-  } catch (error) {
-    console.error("Error loading animal for edit:", error);
-  }
-}
-
-// Function to populate the edit form
-function populateEditForm(animal) {
-  document.getElementById('animal-name').value = animal.name;
-  document.getElementById('animal-breed').value = animal.breed;
-  document.getElementById('animal-eyes').value = animal.eyes;
-  document.getElementById('animal-legs').value = animal.legs;
-  document.getElementById('animal-sound').value = animal.sound;
-  // ... populate other form fields ...
-}
-
-// Function to handle form submission
-document.getElementById('animal-form').addEventListener('submit', async (event) => {
-  event.preventDefault(); // Prevent the default form submission
-
-  // Get the data from the form
-  const updatedAnimal = {
-    id: null, //set the id to null since it's not used anymore
-    name: document.getElementById('animal-name').value,
-    breed: document.getElementById('animal-breed').value,
-    eyes: document.getElementById('animal-eyes').value,
-    legs: document.getElementById('animal-legs').value,
-    sound: document.getElementById('animal-sound').value,
-    // ... get other form fields ...
-  };
-  //check if the name is in the url
-  const urlParams = new URLSearchParams(window.location.search);
-  const animalName = urlParams.get('name'); // Get the 'name' query parameter
-  //if yes, it means you want to edit, if no it means you want to add
-  if(animalName){
-      try {
-        const animal = await findAnimal(animalName);
-        updatedAnimal.id = animal.id;
-        await updateAnimal(updatedAnimal);
-        console.log('Animal updated successfully!');
-        // Redirect or update the UI as needed
-      } catch (error) {
-        console.error('Error updating animal:', error);
-      }
-  } else {
-      //if no, you add
-      try{
-          await addAnimal(updatedAnimal);
-          console.log("Animal added");
-      } catch (error){
-          console.error("Error adding animal", error);
-      }
-  }
 });
-
-// Example of how to call loadAnimalForEdit
-// (You'd get the animalName from somewhere, like a list of animals)
-const urlParams = new URLSearchParams(window.location.search);
-const animalName = urlParams.get('name'); // Get the 'name' query parameter
-
-if(animalName){
-  loadAnimalForEditName(animalName);
-  document.getElementById('saveAnimal').textContent = "Update Animal";
-}
