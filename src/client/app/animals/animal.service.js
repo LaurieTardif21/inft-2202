@@ -101,6 +101,10 @@ export async function deleteAnimal(animalId) {
 export async function findAnimal(animalId) {
     return new Promise((resolve, reject) => {
         setTimeout(async () => {
+             if (!animalId) {
+                reject(new Error('Animal ID is required.'));
+                return; // Exit the function early
+            }
             try {
                 const response = await fetch(`${API_URL}/${animalId}`, { headers });
 
