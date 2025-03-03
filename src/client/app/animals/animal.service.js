@@ -44,6 +44,44 @@ export async function getAnimals(page, perPage) {
         };
     }
 }
+// Function to get one page of animals
+export async function getAnimalPage(page, perPage) {
+    console.log("getAnimalPage called with", page, perPage);
+    try {
+        const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
+        if (!response.ok) {
+            throw new Error('Failed to fetch animals');
+        }
+
+        // Get total number of records from response headers
+        const totalRecords = response.headers.get('X-Total-Count');
+        const totalPages = Math.ceil(totalRecords / perPage);
+        console.log("getAnimalPage totalRecords", totalRecords);
+        console.log("getAnimalPage totalPages", totalPages);
+        // Parse the JSON data from the response
+        const data = await response.json();
+        console.log("getAnimalPage data", data);
+        return {
+            records: data,
+            pagination: {
+                pages: totalPages,
+                page: page,
+                perPage: perPage
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching animals:', error);
+        return {
+            records: [],
+            pagination: {
+                pages: 0,
+                page: 0,
+                perPage: 0
+            }
+        };
+    }
+}
+
 // Function to add a new animal via API
 export async function addAnimal(animal) {
     try {
