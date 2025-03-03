@@ -357,7 +357,8 @@ document.getElementById('confirmDeleteButton').addEventListener('click', async (
         const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
         const modal = bootstrap.Modal.getInstance(deleteConfirmationModal);
         modal.hide();
-        //manage aria-hidden
+        deleteConfirmationModal.blur();
+         //manage aria-hidden
         setModalAriaHidden(deleteConfirmationModal, true);
         checkIfListIsEmpty(false);
     }
