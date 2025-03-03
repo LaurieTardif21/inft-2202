@@ -55,6 +55,7 @@ async function populateAnimalTable(animals) {
         return;
     }
     manageNoServiceMessage(false);
+    manageLoadingMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
     tableBody.innerHTML = ''; // Clear existing rows
@@ -123,6 +124,14 @@ function checkIfListIsEmpty(isLoading) {
     }
 }
 
+// Function to get the animals for the current page
+function getCurrentPageAnimals() {
+    console.log("getCurrentPageAnimals called");
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    return animalsArray.animals.slice(start, end);
+}
+
 // Function to manage pagination
 async function managePagination() {
     console.log("managePagination called");
@@ -158,6 +167,7 @@ async function managePagination() {
             event.preventDefault();
             manageLoadingPagination(true);
             manageNoServiceMessage(false);
+            manageLoadingMessage(true);
             currentPage = i;
             const response = await getAnimalsWithDelay(currentPage, perPage);
             if (!response) {
@@ -185,6 +195,7 @@ async function managePagination() {
             event.preventDefault();
             manageLoadingPagination(true);
             manageNoServiceMessage(false);
+            manageLoadingMessage(true);
             currentPage--;
             const response = await getAnimalsWithDelay(currentPage, perPage);
             if (!response) {
@@ -209,6 +220,7 @@ async function managePagination() {
             event.preventDefault();
             manageLoadingPagination(true);
             manageNoServiceMessage(false);
+            manageLoadingMessage(true);
             currentPage++;
             const response = await getAnimalsWithDelay(currentPage, perPage);
             if (!response) {
@@ -257,106 +269,25 @@ function manageNoServiceMessage(show) {
         noServiceMessageBox.classList.add('d-none');
     }
 }
-
+// Function to manage the loading message
+function manageLoadingMessage(isLoading) {
+    const loadingMessageBox = document.getElementById('loading-message-box');
+    if (loadingMessageBox) {
+        if (isLoading) {
+            loadingMessageBox.classList.remove('d-none');
+        } else {
+            loadingMessageBox.classList.add('d-none');
+        }
+    }
+}
 // Function to manage the loading message for pagination
 function manageLoadingPagination(isLoading) {
     const loadingPaginationMessageBox = document.getElementById('loading-pagination-message-box');
-    const paginationContainer = document.getElementById('paginationContainer');
-    if (isLoading) {
-        paginationContainer.classList.add('d-none');
-        loadingPaginationMessageBox.classList.remove('d-none');
-    } else {
-        paginationContainer.classList.remove('d-none');
-        loadingPaginationMessageBox.classList.add('d-none');
-    }
-}
-
-// Function to manage the main loading message
-function manageLoadingMessage(isLoading) {
-    const loadingMessageBox = document.getElementById('loading-message-box');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const animalListTable = document.getElementById('animals-list');
-    if (isLoading) {
-        loadingMessageBox.classList.remove('d-none');
-        loadingSpinner.classList.remove('d-none');
-        animalListTable.classList.add('d-none');
-    } else {
-        loadingMessageBox.classList.add('d-none');
-        loadingSpinner.classList.add('d-none');
-        animalListTable.classList.remove('d-none');
-    }
-}
-
-// Function to get the animals for the current page
-function getCurrentPageAnimals() {
-    if (!animalsArray.animals) {
-        console.log("getCurrentPageAnimals: No animals array");
-        return [];
-    }
-    const start = (currentPage - 1) * perPage;
-    const end = start + perPage;
-    console.log("getCurrentPageAnimals:", animalsArray.animals.slice(start, end));
-    return animalsArray.animals.slice(start, end);
-}
-
-// Delete confirmation logic
-document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
-    manageLoadingMessage(true);
-    manageNoServiceMessage(false);
-    checkIfListIsEmpty(true);
-    try {
-        await deleteAnimal(animalIdToDelete);
-        const rowToRemove = document.getElementById(`animal-${animalIdToDelete}`);
-        if (rowToRemove) {
-            rowToRemove.remove();
+    if (loadingPaginationMessageBox) {
+        if (isLoading) {
+            loadingPaginationMessageBox.classList.remove('d-none');
+        } else {
+            loadingPaginationMessageBox.classList.add('d-none');
         }
-        const response = await getAnimalsWithDelay(currentPage, perPage);
-        if (!response) {
-            manageNoServiceMessage(true);
-            manageLoadingMessage(false);
-            return;
-        }
-        animalsArray = response;
-        perPage = response.pagination.perPage;
-        currentPage = response.pagination.page;
-        const tableBody = document.querySelector('#animals-list tbody');
-        tableBody.innerHTML = '';
-        managePagination();
-        populateAnimalTable(getCurrentPageAnimals());
-    } catch (error) {
-        console.error('Error deleting animal:', error);
-        manageNoServiceMessage(true);
-    } finally {
-        const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
-        const modal = bootstrap.Modal.getInstance(deleteConfirmationModal);
-
-        deleteConfirmationModal.addEventListener('hidden.bs.modal', function () {
-            setModalAriaHidden(deleteConfirmationModal, true);
-        }, { once: true });
-        document.activeElement.blur();
-        modal.hide();
-        checkIfListIsEmpty(false);
     }
-});
-
-// Initial data load
-(async () => {
-    manageLoadingMessage(true);
-    manageNoServiceMessage(false);
-    checkIfListIsEmpty(true);
-    console.log("Starting initial data load");
-    const response = await getAnimalsWithDelay(currentPage, perPage);
-    console.log("Initial data load response:", response);
-    if (!response) {
-        manageNoServiceMessage(true);
-        manageLoadingMessage(false);
-        return;
-    }
-    animalsArray = response;
-    perPage = response.pagination.perPage;
-    currentPage = response.pagination.page;
-    console.log("animalsArray after initial load:", animalsArray);
-    managePagination();
-    populateAnimalTable(getCurrentPageAnimals());
-    manageLoadingMessage(false);
-})();
+}
