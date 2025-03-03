@@ -8,7 +8,7 @@ const API_DELAY = 2000;
 // Common headers for API requests
 const headers = {
     'Content-Type': 'application/json',
-    'x-apikey': API_KEY
+    'apiKey': API_KEY //changed x-apikey to apiKey
 };
 
 // Function to get one page of animals
@@ -36,6 +36,21 @@ export function getAnimalPage(page, perPage) {
                         perPage: perPage
                     }
                 });
+            } catch (error) {
+                reject(new Error(`Error getting animals: ${error.message}`));
+            }
+        }, API_DELAY);
+    });
+}
+
+// Function to get the list of animals from API
+export async function getAnimals() {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            try {
+                const response = await fetch(API_URL, { headers });
+                if (!response.ok) throw new Error('Failed to fetch animals');
+                resolve(await response.json());
             } catch (error) {
                 reject(new Error(`Error getting animals: ${error.message}`));
             }
