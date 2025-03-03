@@ -246,11 +246,11 @@ async function getAnimalsWithDelay(page, perPage) {
         const response = await getAnimals(page, perPage);
         console.log("getAnimalsWithDelay response:", response);
         if (response && response.records && response.pagination) {
-            const newResponse = {
+            
+            return {
                 animals: response.records,
                 pagination: response.pagination
             };
-            return newResponse;
         }
         console.log("getAnimalsWithDelay returning empty data");
         return { animals: [], pagination: { pages: 0, page: 0, perPage: 0 } };
