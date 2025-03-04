@@ -111,24 +111,23 @@ export async function findAnimal(animalName) {
 }
 
 // Function to update an animal via API
-export async function updateAnimal(updatedAnimal) {
+export async function updateAnimal(updatedAnimal, animalName) {
     return new Promise(async (resolve, reject) => {
         try {
-            const animalToUpdate = {
-                name: updatedAnimal.name, // name is the key, so we keep it
-                breed: updatedAnimal.breed,
-                eyes: updatedAnimal.eyes,
-                legs: updatedAnimal.legs,
-                sound: updatedAnimal.sound,
-            };
+            // Check if updatedAnimal is an array and take only the first record
+            if (!Array.isArray(updatedAnimal) || updatedAnimal.length === 0) {
+                throw new Error(`updatedAnimal should be an array with a minimum of one object`);
+            }
+
+            const animalToUpdate = updatedAnimal[0]; // Get the first animal from the array
 
             // Modify the API URL to include the animal's name as a query parameter
-            const url = `${API_URL}?name=${encodeURIComponent(updatedAnimal.name)}`;
+            const url = `${API_URL}?name=${encodeURIComponent(animalName)}`;
 
             const response = await fetch(url, {
-                method: 'POST', // Using POST to update/overwrite
+                method: 'PATCH', // Changed to PATCH
                 headers,
-                body: JSON.stringify(animalToUpdate),
+                body: JSON.stringify(animalToUpdate), // Use the correct object
             });
 
             if (!response.ok) {
