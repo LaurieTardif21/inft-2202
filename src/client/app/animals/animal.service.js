@@ -114,20 +114,27 @@ export async function findAnimal(animalName) {
 export async function updateAnimal(updatedAnimal) {
     return new Promise(async (resolve, reject) => {
         try {
-            const animalToUpdate = { //create a new object without the id
-                name: updatedAnimal.name,
+            const animalToUpdate = {
+                name: updatedAnimal.name, // name is the key, so we keep it
                 breed: updatedAnimal.breed,
                 eyes: updatedAnimal.eyes,
                 legs: updatedAnimal.legs,
                 sound: updatedAnimal.sound,
-            }
-            const response = await fetch(API_URL, { //fetch all animals
-                method: 'POST', //since there is no put, we will use post to overwrite
+            };
+
+            // Modify the API URL to include the animal's name as a query parameter
+            const url = `${API_URL}?name=${encodeURIComponent(updatedAnimal.name)}`;
+
+            const response = await fetch(url, {
+                method: 'POST', // Using POST to update/overwrite
                 headers,
                 body: JSON.stringify(animalToUpdate),
             });
 
-            if (!response.ok) throw new Error('Failed to update animal');
+            if (!response.ok) {
+                const errorText = await response.text(); // Get error message from the API
+                throw new Error(`Failed to update animal: ${errorText}`);
+            }
             resolve();
         } catch (error) {
             reject(new Error(`Error updating animal: ${error.message}`));
