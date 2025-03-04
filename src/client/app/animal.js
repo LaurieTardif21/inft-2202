@@ -9,12 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const eyesInput = document.getElementById('animal-eyes');
     const legsInput = document.getElementById('animal-legs');
     const soundInput = document.getElementById('animal-sound');
-    // Errors
-    const breedError = document.getElementById('breedError');
-    const eyesError = document.getElementById('eyesError');
-    const legsError = document.getElementById('legsError');
-    const soundError = document.getElementById('soundError');
-    const nameError = document.getElementById('nameError');
+     // Errors
+     const breedError = document.getElementById('breedError');
+     const eyesError = document.getElementById('eyesError');
+     const legsError = document.getElementById('legsError');
+     const soundError = document.getElementById('soundError');
+     const nameError = document.getElementById('nameError');
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
