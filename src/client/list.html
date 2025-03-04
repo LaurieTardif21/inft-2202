@@ -117,7 +117,7 @@
 
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true" inert>
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true" inert aria-modal="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -163,6 +163,7 @@
         deleteConfirmationModal.addEventListener('show.bs.modal', () => {
             deleteConfirmationModal.removeAttribute('inert');
             deleteConfirmationModal.removeAttribute('aria-hidden');
+            animalList.focus();
         });
 
         // After the transition is finished
