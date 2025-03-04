@@ -119,13 +119,15 @@ export async function updateAnimal(updatedAnimal, animalName) {
                 throw new Error(`updatedAnimal should be an array with a minimum of one object`);
             }
 
-            const animalToUpdate = updatedAnimal[0]; // Get the first animal from the array
+            const animalToUpdate = {
+              ...updatedAnimal[0]
+            }; // Get the first animal from the array, we put all the data in the body.
 
             // Modify the API URL to include the animal's name as a query parameter
             const url = `${API_URL}?name=${encodeURIComponent(animalName)}`;
 
             const response = await fetch(url, {
-                method: 'PATCH', // Changed to PATCH
+                method: 'PUT', // Changed to PUT
                 headers,
                 body: JSON.stringify(animalToUpdate), // Use the correct object
             });
