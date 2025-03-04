@@ -126,7 +126,7 @@ export async function updateAnimal(updatedAnimal) {
             const url = `${API_URL}?name=${encodeURIComponent(updatedAnimal.name)}`;
 
             const response = await fetch(url, {
-                method: 'PATCH', // Using PATCH to update/overwrite
+                method: 'POST', // Using POST to update/overwrite
                 headers,
                 body: JSON.stringify(animalToUpdate),
             });
