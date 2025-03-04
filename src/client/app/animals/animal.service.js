@@ -96,7 +96,8 @@ export async function findAnimal(animalName) {
         try {
             const response = await fetch(API_URL, { headers });// fetch all animals
             if (!response.ok) throw new Error('Failed to fetch animals');
-            const animals = await response.json(); // Parse JSON response
+            const data = await response.json(); // Parse JSON response
+            const animals = data.records; // access the array of anmals
 
             const animal = animals.find(a => a.name === animalName); // Search for the animal by name
             if (!animal) {
