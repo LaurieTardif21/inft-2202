@@ -149,8 +149,9 @@
 
         const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
         const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+        const animalList = document.getElementById('animals-list');
 
-        // Add inert when the modal is hidden
+        // Add inert and aria-hidden when the modal is hidden
         deleteConfirmationModal.addEventListener('hidden.bs.modal', () => {
             deleteConfirmationModal.setAttribute('inert', '');
             deleteConfirmationModal.setAttribute('aria-hidden', 'true');
@@ -161,9 +162,13 @@
             deleteConfirmationModal.removeAttribute('inert');
             deleteConfirmationModal.removeAttribute('aria-hidden');
         });
-
-        // Remove focus from delete button before closing modal
-        confirmDeleteButton.addEventListener('click', () => {
+        // Move focus before modal starts to hide
+        deleteConfirmationModal.addEventListener('hide.bs.modal', () => {
+            // Move focus to the animal list table
+            animalList.focus();
+        });
+         // Remove focus from delete button before closing modal
+         confirmDeleteButton.addEventListener('click', () => {
             confirmDeleteButton.blur(); // Remove focus
         });
     });
