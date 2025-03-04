@@ -1,4 +1,4 @@
-import { addAnimal, findAnimal, updateAnimal } from './animals/animal.service.js';
+import { addAnimal, findAnimal, updateAnimal,deleteAnimal } from './animals/animal.service.js'; //You will also need to import delete animal.
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('animal-form');
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
     const animalName = urlParams.get('name'); // Get the animal's name from the URL
-    let animalId;//Declare the variable
+    //Declare the variable
 
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const animal = await findAnimal(animalName); // Search by name
             if (animal) {
                 // Pre-fill the form
-                animalId = animal.id;//Save the id for later
                 nameInput.value = animal.name;
                 breedInput.value = animal.breed;
                 eyesInput.value = animal.eyes;
@@ -87,6 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!sound) {
                 throw new Error('Sound is required.');
             }
+             if (!name) {
+                throw new Error('Name is required.');
+            }
         } catch (error) {
             //Error handling
             if (error.message === 'Breed is required.') {
@@ -94,7 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (error.message === 'Input must be a non-negative number.') {
                 eyesError.textContent = (eyesError.textContent) ? eyesError.textContent : error.message;
                 legsError.textContent = (legsError.textContent) ? legsError.textContent : error.message;
-            } else if (error.message) {
+            }else if (error.message === 'Name is required.') {
+                nameError.textContent = error.message;
+            }
+            else if (error.message) {
                 console.log(error.message);
             }
             return;
@@ -106,12 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
             eyes: parseInt(eyes), // convert to an int, this is a good practice
             legs: parseInt(legs), // convert to an int, this is a good practice
             sound: sound,
+             user: "00000",//Add the user
         };
 
         try {
             if (animalName) {
-                // If editing, add the id to the animal object
-                animal.id = animalId; //We use the id saved from the animal
                 // Call updateAnimal
                 await updateAnimal(animal);
             } else {
@@ -121,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'list.html'; // Redirect to list page
         } catch (error) {
             console.error('Error adding/updating animal:', error);
-            alert('Failed to add/update animal. Please try again.');
+            alert(error);//Show the full error to the user
         }
     });
 });
