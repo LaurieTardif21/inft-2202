@@ -116,8 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (animalName) {
-                // Call updateAnimal
-                await updateAnimal({...animal, name});
+                // Call updateAnimal and put the data inside an array.
+                const animalData = [{...animal, name}];
+                await updateAnimal(animalData, animalName);
             } else {
                 // If adding, call addAnimal
                 await addAnimal({...animal, name});
