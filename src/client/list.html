@@ -155,6 +155,8 @@
         deleteConfirmationModal.addEventListener('hidden.bs.modal', () => {
             deleteConfirmationModal.setAttribute('inert', '');
             deleteConfirmationModal.setAttribute('aria-hidden', 'true');
+             // Move focus to the animal list table
+             animalList.focus();
         });
 
         // Remove inert and aria-hidden when the modal is shown
