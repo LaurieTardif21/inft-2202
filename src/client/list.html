@@ -117,7 +117,7 @@
 
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true" inert>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -145,6 +145,26 @@
                 link.classList.add('active');
                 link.setAttribute('aria-current', 'page');
             }
+        });
+
+        const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
+        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+
+        // Add inert when the modal is hidden
+        deleteConfirmationModal.addEventListener('hidden.bs.modal', () => {
+            deleteConfirmationModal.setAttribute('inert', '');
+            deleteConfirmationModal.setAttribute('aria-hidden', 'true');
+        });
+
+        // Remove inert and aria-hidden when the modal is shown
+        deleteConfirmationModal.addEventListener('show.bs.modal', () => {
+            deleteConfirmationModal.removeAttribute('inert');
+            deleteConfirmationModal.removeAttribute('aria-hidden');
+        });
+
+        // Remove focus from delete button before closing modal
+        confirmDeleteButton.addEventListener('click', () => {
+            confirmDeleteButton.blur(); // Remove focus
         });
     });
 </script>
