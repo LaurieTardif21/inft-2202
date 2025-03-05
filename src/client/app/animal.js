@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Create the animal object
         const animal = {
+            name: name,
             breed: breed,
             eyes: parseInt(eyes), // convert to an int, this is a good practice
             legs: parseInt(legs), // convert to an int, this is a good practice
@@ -117,11 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (animalName) {
                 // Call updateAnimal and put the data inside an array.
-                const animalData = [{...animal, name}];
+                const animalData = [{...animal}];
                 await updateAnimal(animalData, animalName);
             } else {
                 // If adding, call addAnimal
-                await addAnimal({...animal, name});
+                await addAnimal(animal);
             }
             window.location.href = 'list.html'; // Redirect to list page
         } catch (error) {
