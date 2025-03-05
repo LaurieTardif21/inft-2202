@@ -68,14 +68,14 @@
     <div id="error-message-box" class="alert alert-danger text-center d-none" role="alert">
     </div>
 
-        <!-- No Service message box -->
-        <div id="no-service-message-box" class="alert alert-danger text-center d-none" role="alert">
-            <i class="fa fa-exclamation-triangle fa-5x"></i>
-            <div>No service available at this time. Please try again later.</div>
-        </div>
+    <!-- No Service message box -->
+    <div id="no-service-message-box" class="alert alert-danger text-center d-none" role="alert">
+        <i class="fa fa-exclamation-triangle fa-5x"></i>
+        <div>No service available at this time. Please try again later.</div>
+    </div>
 
     <!--loading for pagination-->
-    <div id="loading-pagination-message-box" class="alert alert-info text-center d-none" role="alert">
+    <div id="loading-pagination" class="alert alert-info text-center d-none" role="alert">
         Loading...
     </div>
 
@@ -103,18 +103,18 @@
         </tbody>
     </table>
 
-        <!-- Pagination -->
-        <nav aria-label="Animal navigation" class="mt-4 d-none" id="paginationContainer">
-            <ul class="pagination justify-content-center" id="pagination">
-                <li class="page-item disabled" id="previousPage">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                </li>
-                <!-- Page links will be added here -->
-                <li class="page-item" id="nextPage">
-                    <a class="page-link" href="#">Next</a>
-                </li>
-            </ul>
-        </nav>
+    <!-- Pagination -->
+    <nav aria-label="Animal navigation" class="mt-4 d-none" id="paginationContainer">
+        <ul class="pagination justify-content-center" id="pagination">
+            <li class="page-item disabled" id="previousPage">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <!-- Page links will be added here -->
+            <li class="page-item" id="nextPage">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
 </main>
 
 
@@ -151,7 +151,6 @@
 
         const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
         const animalList = document.getElementById('animals-list');
-        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
 
         // Remove inert and aria-hidden when the modal is shown
         deleteConfirmationModal.addEventListener('show.bs.modal', () => {
@@ -168,13 +167,6 @@
         // When the modal is completely hidden
         deleteConfirmationModal.addEventListener('hidden.bs.modal', () => {
             animalList.focus();
-        });
-
-        // When the button is clicked, we close the modal
-        confirmDeleteButton.addEventListener('click', () => {
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(deleteConfirmationModal);
-            modal.hide();
         });
     });
 </script>
