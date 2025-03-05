@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await updateAnimal(animalData, animalName);
             } else {
                 // If adding, call addAnimal
-                await addAnimal(animal);
+                await addAnimal([animal]); // THIS LINE IS CORRECT NOW!
             }
             window.location.href = 'list.html'; // Redirect to list page
         } catch (error) {
