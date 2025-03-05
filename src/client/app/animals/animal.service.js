@@ -9,7 +9,7 @@ const headers = {
 };
 
 // Function to get one page of animals
-export function getAnimalPage(page, perPage) {
+export function getAnimals(page, perPage) { //changed name
     return new Promise(async (resolve, reject) => {
         try {
             const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
@@ -38,19 +38,6 @@ export function getAnimalPage(page, perPage) {
     });
 }
 
-// Function to get the list of animals from API
-export async function getAnimals() {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(API_URL, { headers });
-            if (!response.ok) throw new Error('Failed to fetch animals');
-            resolve(await response.json());
-        } catch (error) {
-            reject(new Error(`Error getting animals: ${error.message}`));
-        }
-    });
-}
-
 // Function to add a new animal via API
 export async function addAnimal(animal) {
     return new Promise(async (resolve, reject) => {
@@ -70,10 +57,11 @@ export async function addAnimal(animal) {
 }
 
 // Function to delete an animal via API
-export async function deleteAnimal(animalId) {
+export async function deleteAnimal(animalName) { // now we have animal name
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await fetch(`${API_URL}/${animalId}`, {
+            const url = `${API_URL}?name=${encodeURIComponent(animalName)}`; // We are sending name as query parameter
+            const response = await fetch(url, {
                 method: 'DELETE',
                 headers
             });
@@ -94,10 +82,11 @@ export async function findAnimal(animalName) {
             return; // Exit the function early
         }
         try {
-            const response = await fetch(API_URL, { headers });// fetch all animals
+            const url = `${API_URL}?name=${encodeURIComponent(animalName)}`; //change URL
+            const response = await fetch(url, { headers });// fetch all animals
             if (!response.ok) throw new Error('Failed to fetch animals');
             const data = await response.json(); // Parse JSON response
-            const animals = data.records; // access the array of anmals
+            const animals = data; // data is already an array
 
             const animal = animals.find(a => a.name === animalName); // Search for the animal by name
             if (!animal) {
