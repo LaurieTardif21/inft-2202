@@ -336,4 +336,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     managePagination();
     manageLoadingMessage(false);
 });
-initializePage();
