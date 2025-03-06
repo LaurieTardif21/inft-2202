@@ -51,6 +51,11 @@ async function populateAnimalTable(animals) {
         //do something
         return;
     }
+    // Check if animals is an array before proceeding
+    if (!Array.isArray(animals)) {
+        console.error("populateAnimalTable: animals is not an array", animals);
+        return;
+    }
     manageNoServiceMessage(false);
     manageNoAnimalMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
@@ -105,21 +110,21 @@ async function populateAnimalTable(animals) {
 
 }
 
-function checkIfListIsEmpty(isLoading) {
+function checkIfListIsEmpty() {
     const tableBody = document.querySelector('#animals-list tbody');
     const messageBox = document.getElementById('message-box');
     const animalListTable = document.getElementById('animals-list');
     const errorMessagebox = document.getElementById('error-message-box');
-        if (tableBody.children.length === 0) {
-            if (errorMessagebox.classList.contains('d-none')) {
-                animalListTable.classList.add('d-none');
-                messageBox.classList.remove('d-none');
-            }
-
-        } else {
-            animalListTable.classList.remove('d-none');
-            messageBox.classList.add('d-none');
+    if (tableBody.children.length === 0) {
+        if (errorMessagebox.classList.contains('d-none')) {
+            animalListTable.classList.add('d-none');
+            messageBox.classList.remove('d-none');
         }
+
+    } else {
+        animalListTable.classList.remove('d-none');
+        messageBox.classList.add('d-none');
+    }
 }
 // Function to create and manage the pagination
 async function managePagination() {
@@ -159,7 +164,7 @@ async function managePagination() {
         //manage the click event
         pageNumberLink.addEventListener('click', async (event) => {
             event.preventDefault();
-           
+
             //hide no service message
             manageNoServiceMessage(false);
             manageNoAnimalMessage(false)
@@ -173,11 +178,11 @@ async function managePagination() {
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
-           
+
             populateAnimalTable(getCurrentPageAnimals());
-            
+
             managePagination(); // Update the pagination
-           
+
         });
 
         //append the elements
@@ -193,7 +198,7 @@ async function managePagination() {
         previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
         previousPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
-            
+
             //hide no service message
             manageNoServiceMessage(false);
             manageNoAnimalMessage(false)
@@ -207,11 +212,11 @@ async function managePagination() {
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
-            
+
             populateAnimalTable(getCurrentPageAnimals());
-            
+
             managePagination();
-           
+
         });
     }
 
@@ -223,7 +228,7 @@ async function managePagination() {
         nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
         nextPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
-            
+
             //hide no service message
             manageNoServiceMessage(false);
             manageNoAnimalMessage(false);
@@ -237,15 +242,15 @@ async function managePagination() {
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
-           
+
             populateAnimalTable(getCurrentPageAnimals());
-            
+
             managePagination();
         });
     }
     //hide loading div
     manageLoadingPagination(false);
-    checkIfListIsEmpty(false);
+    checkIfListIsEmpty();
 }
 
 // Add event listener for the modal's "Delete" button
@@ -343,6 +348,7 @@ window.addEventListener('load', async () => {
     if (!response) {
         manageNoServiceMessage(true);
         manageLoadingMessage(false);
+        checkIfListIsEmpty();
         return;
     }
     animalsArray = response;
@@ -351,9 +357,10 @@ window.addEventListener('load', async () => {
 
     //popuate the list
     populateAnimalTable(getCurrentPageAnimals());
-    
+
     //manage the pagination
     managePagination();
-   
+
     manageLoadingMessage(false);
+    checkIfListIsEmpty();
 });
