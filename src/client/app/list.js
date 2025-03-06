@@ -52,8 +52,8 @@ async function populateAnimalTable(animals) {
         return;
     }
     // Check if animals is an array before proceeding
-    if (!Array.isArray(animals)) {
-        console.error("populateAnimalTable: animals is not an array", animals);
+    if (!Array.isArray(animals.records)) {
+        console.error("populateAnimalTable: animals.records is not an array", animals);
         return;
     }
     manageNoServiceMessage(false);
@@ -62,12 +62,12 @@ async function populateAnimalTable(animals) {
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
     tableBody.innerHTML = '';
-    if (animals.length === 0) {
+    if (animals.records.length === 0) {
         manageNoAnimalMessage(true);
         return;
     }
 
-    animals.forEach((animal) => {
+    animals.records.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
         row.id = `animal-${animal.name}`; // Assign an name to the row for easy removal later
@@ -179,7 +179,7 @@ async function managePagination() {
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
 
-            populateAnimalTable(getCurrentPageAnimals());
+            populateAnimalTable(animalsArray);
 
             managePagination(); // Update the pagination
 
@@ -213,7 +213,7 @@ async function managePagination() {
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
 
-            populateAnimalTable(getCurrentPageAnimals());
+            populateAnimalTable(animalsArray);
 
             managePagination();
 
@@ -243,7 +243,7 @@ async function managePagination() {
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
 
-            populateAnimalTable(getCurrentPageAnimals());
+            populateAnimalTable(animalsArray);
 
             managePagination();
         });
@@ -286,13 +286,6 @@ async function getAnimalsWithDelay(page, perPage) {
         return null;
     }
 
-}
-
-function getCurrentPageAnimals() {
-    if (!animalsArray.records) {
-        return [];
-    }
-    return animalsArray.records;
 }
 
 function manageNoServiceMessage(show) {
@@ -356,7 +349,7 @@ window.addEventListener('load', async () => {
     currentPage = response.pagination.page;
 
     //popuate the list
-    populateAnimalTable(getCurrentPageAnimals());
+    populateAnimalTable(animalsArray);
 
     //manage the pagination
     managePagination();
