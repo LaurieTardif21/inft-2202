@@ -110,7 +110,6 @@ function checkIfListIsEmpty(isLoading) {
     const messageBox = document.getElementById('message-box');
     const animalListTable = document.getElementById('animals-list');
     const errorMessagebox = document.getElementById('error-message-box');
-    if (!isLoading) {
         if (tableBody.children.length === 0) {
             if (errorMessagebox.classList.contains('d-none')) {
                 animalListTable.classList.add('d-none');
@@ -121,7 +120,6 @@ function checkIfListIsEmpty(isLoading) {
             animalListTable.classList.remove('d-none');
             messageBox.classList.add('d-none');
         }
-    }
 }
 // Function to create and manage the pagination
 async function managePagination() {
@@ -161,8 +159,7 @@ async function managePagination() {
         //manage the click event
         pageNumberLink.addEventListener('click', async (event) => {
             event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
+           
             //hide no service message
             manageNoServiceMessage(false);
             manageNoAnimalMessage(false)
@@ -178,7 +175,7 @@ async function managePagination() {
             currentPage = response.pagination.page;
            
             populateAnimalTable(getCurrentPageAnimals());
-            checkIfListIsEmpty(false);
+            
             managePagination(); // Update the pagination
            
         });
@@ -196,8 +193,7 @@ async function managePagination() {
         previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
         previousPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
+            
             //hide no service message
             manageNoServiceMessage(false);
             manageNoAnimalMessage(false)
@@ -213,7 +209,7 @@ async function managePagination() {
             currentPage = response.pagination.page;
             
             populateAnimalTable(getCurrentPageAnimals());
-            checkIfListIsEmpty(false);
+            
             managePagination();
            
         });
@@ -227,8 +223,7 @@ async function managePagination() {
         nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
         nextPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
+            
             //hide no service message
             manageNoServiceMessage(false);
             manageNoAnimalMessage(false);
@@ -244,10 +239,13 @@ async function managePagination() {
             currentPage = response.pagination.page;
            
             populateAnimalTable(getCurrentPageAnimals());
-            checkIfListIsEmpty(false);
+            
             managePagination();
         });
     }
+    //hide loading div
+    manageLoadingPagination(false);
+    checkIfListIsEmpty(false);
 }
 
 // Add event listener for the modal's "Delete" button
@@ -312,19 +310,23 @@ function manageNoAnimalMessage(show) {
 
 function manageLoadingPagination(isLoading) {
     const loadingDiv = document.getElementById('loadingPagination');
-    if (isLoading) {
-        loadingDiv.classList.remove('d-none');
-    } else {
-        loadingDiv.classList.add('d-none');
+    if (loadingDiv) {
+        if (isLoading) {
+            loadingDiv.classList.remove('d-none');
+        } else {
+            loadingDiv.classList.add('d-none');
+        }
     }
 }
 
 function manageLoadingMessage(isLoading) {
     const loadingDiv = document.getElementById('loadingMessage');
-    if (isLoading) {
-        loadingDiv.classList.remove('d-none');
-    } else {
-        loadingDiv.classList.add('d-none');
+    if (loadingDiv) {
+        if (isLoading) {
+            loadingDiv.classList.remove('d-none');
+        } else {
+            loadingDiv.classList.add('d-none');
+        }
     }
 }
 
@@ -346,14 +348,12 @@ window.addEventListener('load', async () => {
     animalsArray = response;
     perPage = response.pagination.perPage;
     currentPage = response.pagination.page;
-    
+
     //popuate the list
     populateAnimalTable(getCurrentPageAnimals());
-    //check if the list is empty
-    checkIfListIsEmpty(false);
+    
     //manage the pagination
     managePagination();
-    //hide loading div
-    manageLoadingPagination(false);
+   
     manageLoadingMessage(false);
 });
