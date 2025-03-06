@@ -51,23 +51,31 @@ async function populateAnimalTable(animals) {
         //do something
         return;
     }
-    // Check if animals is an array before proceeding
-    if (!Array.isArray(animals.records.animals)) {
-        console.error("populateAnimalTable: animals.records.animals is not an array", animals);
+    let animalList = [];
+    // Check if animals.records is an array or an object
+    if (Array.isArray(animals.records)) {
+        // If it's an array, use it directly
+        animalList = animals.records;
+    } else if (animals.records.animals) {
+        // If it's an object with an "animals" property, use that array
+        animalList = animals.records.animals;
+    } else {
+        console.error("populateAnimalTable: animals.records is not an array and do not contain animals property", animals);
         return;
     }
+
     manageNoServiceMessage(false);
     manageNoAnimalMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
     tableBody.innerHTML = '';
-    if (animals.records.animals.length === 0) {
+    if (animalList.length === 0) {
         manageNoAnimalMessage(true);
         return;
     }
 
-    animals.records.animals.forEach((animal) => {
+    animalList.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
         row.id = `animal-${animal.name}`; // Assign an name to the row for easy removal later
@@ -137,9 +145,12 @@ async function managePagination() {
     // Remove previous page link
     paginationUl.querySelectorAll('.page-number').forEach(li => li.remove());
     // Calculate the number of pages
-    const numberOfPages = animalsArray.pagination.pages;
+    let numberOfPages = animalsArray.pagination.pages;
 
     //check if there is more than 5 animals
+    if (numberOfPages === 0){
+        numberOfPages = 1;
+    }
     if (numberOfPages > 1) {
         paginationContainer.classList.remove('d-none');
     } else {
