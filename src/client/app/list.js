@@ -1,7 +1,7 @@
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
-// Global variable to store the animalId to delete
-let animalIdToDelete = null;
+// Global variable to store the animalName to delete
+let animalNameToDelete = null;
 // global variable for the current page
 let currentPage = 1;
 // Global variable for the number of entries per page
@@ -26,7 +26,7 @@ function createEditButton(animal) {
     return button;
 }
 
-function createDeleteButton(animalId) {
+function createDeleteButton(animalName) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-danger', 'btn-sm');
     button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
@@ -38,7 +38,7 @@ function createDeleteButton(animalId) {
     button.appendChild(icon);
     button.addEventListener('click', () => {
         // Set the animal ID to delete in the global variable
-        animalIdToDelete = animalId;
+        animalNameToDelete = animalName;
         // Show the confirmation modal
         const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
         deleteConfirmationModal.show();
