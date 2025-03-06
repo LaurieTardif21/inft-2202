@@ -9,7 +9,7 @@ const headers = {
 };
 
 // Function to get one page of animals
-export function getAnimalPage(page, perPage) {
+export async function getAnimals(page, perPage) {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
@@ -18,11 +18,8 @@ export function getAnimalPage(page, perPage) {
             // Get total number of records from response headers
             const totalRecords = response.headers.get('X-Total-Count');
             const totalPages = Math.ceil(totalRecords / perPage);
-            console.log("getAnimals totalRecords", totalRecords);
-            console.log("getAnimals totalPages", totalPages);
             // Parse the JSON data from the response
             const data = await response.json();
-            console.log("getAnimals data", data);
 
             resolve({
                 records: data,
@@ -32,19 +29,6 @@ export function getAnimalPage(page, perPage) {
                     perPage: perPage
                 }
             });
-        } catch (error) {
-            reject(new Error(`Error getting animals: ${error.message}`));
-        }
-    });
-}
-
-// Function to get the list of animals from API
-export async function getAnimals() {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(API_URL, { headers });
-            if (!response.ok) throw new Error('Failed to fetch animals');
-            resolve(await response.json());
         } catch (error) {
             reject(new Error(`Error getting animals: ${error.message}`));
         }
@@ -79,7 +63,7 @@ export async function deleteAnimal(animalName) {
             });
 
             if (!response.ok) throw new Error('Failed to delete animal');
-            resolve();
+            resolve(true);
         } catch (error) {
             reject(new Error(`Error deleting animal: ${error.message}`));
         }
@@ -94,15 +78,10 @@ export async function findAnimal(animalName) {
             return; // Exit the function early
         }
         try {
-            const response = await fetch(API_URL, { headers });// fetch all animals
+            const response = await fetch(`${API_URL}/${animalName}`, { headers });// fetch the animal
             if (!response.ok) throw new Error('Failed to fetch animals');
-            const data = await response.json(); // Parse JSON response
-            const animals = data.records; // access the array of anmals
+            const animal = await response.json(); // get the data
 
-            const animal = animals.find(a => a.name === animalName); // Search for the animal by name
-            if (!animal) {
-                throw new Error('Animal not found');
-            }
             resolve(animal); // Return the found animal
         } catch (error) {
             reject(new Error(`Error finding animal: ${error.message}`));
@@ -120,7 +99,7 @@ export async function updateAnimal(updatedAnimal, animalName) {
             }
 
             const animalToUpdate = {
-              ...updatedAnimal[0]
+                ...updatedAnimal[0]
             }; // Get the first animal from the array, we put all the data in the body.
 
             // Modify the API URL to include the animal's name as a query parameter
