@@ -52,7 +52,7 @@ async function populateAnimalTable(animals) {
         return;
     }
     // Check if animals is an array before proceeding
-    if (!Array.isArray(animals.records)) {
+    if (!Array.isArray(animals.records.animals)) {
         console.error("populateAnimalTable: animals.records is not an array", animals);
         return;
     }
@@ -62,12 +62,12 @@ async function populateAnimalTable(animals) {
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
     tableBody.innerHTML = '';
-    if (animals.records.length === 0) {
+    if (animals.records.animals.length === 0) {
         manageNoAnimalMessage(true);
         return;
     }
 
-    animals.records.forEach((animal) => {
+    animals.records.animals.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
         row.id = `animal-${animal.name}`; // Assign an name to the row for easy removal later
