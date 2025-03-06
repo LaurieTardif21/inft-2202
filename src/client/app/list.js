@@ -52,9 +52,15 @@ async function populateAnimalTable(animals) {
         return;
     }
     manageNoServiceMessage(false);
+    manageNoAnimalMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
+
+    if (animals.length === 0) {
+        manageNoAnimalMessage(true);
+        return;
+    }
 
     animals.forEach((animal) => {
         // ... other code to create the row
@@ -141,8 +147,8 @@ async function managePagination() {
         return;
     }
     const tableBody = document.querySelector('#animals-list tbody');
-     // Create the page number
-     for (let i = 1; i <= numberOfPages; i++) {
+    // Create the page number
+    for (let i = 1; i <= numberOfPages; i++) {
         //create the li
         const pageNumberLi = document.createElement('li');
         pageNumberLi.classList.add('page-item', 'page-number');
@@ -162,13 +168,14 @@ async function managePagination() {
             manageLoadingPagination(true);
             //hide no service message
             manageNoServiceMessage(false);
+            manageNoAnimalMessage(false)
             currentPage = i;
             const response = await getAnimalsWithDelay(currentPage, perPage);
-            if (!response) {
+             if(!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
-            }
+             }
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
@@ -195,13 +202,14 @@ async function managePagination() {
             manageLoadingPagination(true);
             //hide no service message
             manageNoServiceMessage(false);
+            manageNoAnimalMessage(false)
             currentPage--;
             const response = await getAnimalsWithDelay(currentPage, perPage);
-            if (!response) {
+             if(!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
-            }
+             }
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
@@ -224,13 +232,14 @@ async function managePagination() {
             manageLoadingPagination(true);
             //hide no service message
             manageNoServiceMessage(false);
+            manageNoAnimalMessage(false);
             currentPage++;
             const response = await getAnimalsWithDelay(currentPage, perPage);
-            if (!response) {
+             if(!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
-            }
+             }
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
@@ -265,10 +274,14 @@ confirmDeleteButton.addEventListener('click', async () => {
 
 async function getAnimalsWithDelay(page, perPage) {
     try{
-        const response = await getAnimalPage(page, perPage);
+        const response = await await getAnimalPage(page, perPage);
+         if (!response){
+            return null;
+        }
         return response;
     } catch(error){
         console.error('Error getting animals:', error);
+        return null;
     }
     
 }
@@ -286,6 +299,15 @@ function manageNoServiceMessage(show) {
         noServiceMessageBox.classList.remove('d-none');
     } else {
         noServiceMessageBox.classList.add('d-none');
+    }
+}
+
+function manageNoAnimalMessage(show) {
+    const noAnimalMessageBox = document.getElementById('message-box');
+    if (show) {
+        noAnimalMessageBox.classList.remove('d-none');
+    } else {
+        noAnimalMessageBox.classList.add('d-none');
     }
 }
 
@@ -311,8 +333,10 @@ function manageLoadingMessage(isLoading) {
 window.addEventListener('load', async () => {
     //show loading div
     manageLoadingPagination(true);
+    manageLoadingMessage(true);
     //hide no service message
     manageNoServiceMessage(false);
+    manageNoAnimalMessage(false);
     //get animals
     const response = await getAnimalsWithDelay(currentPage, perPage);
     if (!response) {
@@ -326,9 +350,13 @@ window.addEventListener('load', async () => {
     //check if the list is empty
     checkIfListIsEmpty(false);
     //popuate the list
-    populateAnimalTable(getCurrentPageAnimals());
+    if (getCurrentPageAnimals().length !== 0){
+         populateAnimalTable(getCurrentPageAnimals());
+    }
+   
     //manage the pagination
     managePagination();
     //hide loading div
     manageLoadingPagination(false);
+    manageLoadingMessage(false);
 });
