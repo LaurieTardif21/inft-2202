@@ -84,7 +84,7 @@ function createDeleteButton(animal) {
 }
 
 async function populateAnimalTable(animals) {
-    if (!animals || !animals.records) {
+    if (!animals) {
         //do something
         return;
     }
