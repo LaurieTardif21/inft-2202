@@ -2,8 +2,8 @@ import { getAnimalPage, deleteAnimal, getAnimals } from './animals/animal.servic
 
 // Selectors for DOM elements
 const tableBody = document.querySelector('#animal-table tbody');
-const previousButton = document.getElementById('previous-button');
-const nextButton = document.getElementById('next-button');
+const previousPage = document.getElementById('previousPage');
+const nextPage = document.getElementById('nextPage');
 const currentPageSpan = document.getElementById('current-page');
 const noServiceMessage = document.getElementById('no-service-message');
 const noAnimalMessage = document.getElementById('no-animals-message');
@@ -46,8 +46,20 @@ function checkIfListIsEmpty(show) {
 
 // Function to manage pagination
 function managePagination() {
-    previousButton.disabled = currentPage === 1;
-    nextButton.disabled = currentPage >= animalsArray.pagination.pages;
+    previousPage.classList.remove('disabled');
+    nextPage.classList.remove('disabled');
+    previousPage.firstElementChild.setAttribute('aria-disabled','false');
+    nextPage.firstElementChild.setAttribute('aria-disabled','false');
+    if(currentPage === 1)
+    {
+        previousPage.classList.add('disabled');
+        previousPage.firstElementChild.setAttribute('aria-disabled','true');
+    }
+    if(currentPage >= animalsArray.pagination.pages)
+    {
+        nextPage.classList.add('disabled');
+        nextPage.firstElementChild.setAttribute('aria-disabled','true');
+    }
     currentPageSpan.textContent = currentPage;
 }
 
@@ -151,7 +163,7 @@ function createDeleteButton(animal) {
     return deleteButton;
 }
 // Event listener for delete confirmation
-document.getElementById('confirmDelete').addEventListener('click', async () => {
+document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
     if (animalIdToDelete) {
         manageLoadingMessage(true);
         await deleteAnimal(animalIdToDelete);
@@ -209,7 +221,8 @@ async function initializePage() {
 document.addEventListener('DOMContentLoaded', () => {
     initializePage();
     // Function to handle previous button click
-    previousButton.addEventListener('click', async () => {
+    previousPage.addEventListener('click', async (e) => {
+        e.preventDefault();
         if (currentPage > 1) {
             currentPage--;
             await initializePage(); // Re-initialize the page with the new data
@@ -217,7 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Function to handle next button click
-    nextButton.addEventListener('click', async () => {
+    nextPage.addEventListener('click', async (e) => {
+        e.preventDefault();
         if (currentPage < animalsArray.pagination.pages) {
             currentPage++;
             await initializePage(); // Re-initialize the page with the new data
