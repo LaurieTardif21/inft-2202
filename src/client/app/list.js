@@ -94,7 +94,7 @@ async function populateAnimalTable(animals) {
     tableBody.innerHTML = '';
     manageLoadingPagination(false);
 
-    animals.records.forEach((animal) => {
+    animals.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
         row.id = `animal-${animal.name}`; // Assign an ID to the row for easy removal later
