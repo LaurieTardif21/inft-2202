@@ -78,8 +78,7 @@ export async function deleteAnimal(animalId) {
                 headers
             });
 
-            if (!response.ok) throw new Error('Failed to delete animal');
-            resolve();
+            resolve(response);
         } catch (error) {
             reject(new Error(`Error deleting animal: ${error.message}`));
         }
