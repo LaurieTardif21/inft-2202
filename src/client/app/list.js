@@ -102,7 +102,6 @@ async function populateAnimalTable(animals) {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-    checkIfListIsEmpty(false);
 
 }
 
@@ -111,9 +110,7 @@ function checkIfListIsEmpty(isLoading) {
     const messageBox = document.getElementById('message-box');
     const animalListTable = document.getElementById('animals-list');
     const errorMessagebox = document.getElementById('error-message-box');
-    if (isLoading) {
-        messageBox.classList.add('d-none');
-    } else {
+    if (!isLoading) {
         if (tableBody.children.length === 0) {
             if (errorMessagebox.classList.contains('d-none')) {
                 animalListTable.classList.add('d-none');
@@ -179,10 +176,11 @@ async function managePagination() {
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
-            checkIfListIsEmpty(false);
-            tableBody.innerHTML = '';
-            managePagination(); // Update the pagination
+           
             populateAnimalTable(getCurrentPageAnimals());
+            checkIfListIsEmpty(false);
+            managePagination(); // Update the pagination
+           
         });
 
         //append the elements
@@ -213,10 +211,11 @@ async function managePagination() {
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
-            checkIfListIsEmpty(false);
-            tableBody.innerHTML = '';
-            managePagination();
+            
             populateAnimalTable(getCurrentPageAnimals());
+            checkIfListIsEmpty(false);
+            managePagination();
+           
         });
     }
 
@@ -243,10 +242,10 @@ async function managePagination() {
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
-            checkIfListIsEmpty(false);
-            tableBody.innerHTML = '';
-            managePagination();
+           
             populateAnimalTable(getCurrentPageAnimals());
+            checkIfListIsEmpty(false);
+            managePagination();
         });
     }
 }
@@ -347,14 +346,11 @@ window.addEventListener('load', async () => {
     animalsArray = response;
     perPage = response.pagination.perPage;
     currentPage = response.pagination.page;
+    
+    //popuate the list
+    populateAnimalTable(getCurrentPageAnimals());
     //check if the list is empty
     checkIfListIsEmpty(false);
-
-    //popuate the list
-    if (getCurrentPageAnimals().length !== 0) {
-        populateAnimalTable(getCurrentPageAnimals());
-    }
-
     //manage the pagination
     managePagination();
     //hide loading div
