@@ -18,6 +18,10 @@ let animalsArray = [];
 // Function to manage the loading message
 function manageLoadingMessage(isLoading) {
     console.log("manageLoadingMessage:", isLoading); // Check if the function is called and what value
+    if(!loadingMessage){
+        console.error("loadingMessage is null");
+        return;
+    }
     if (isLoading) {
         loadingMessage.classList.remove('d-none');
     } else {
@@ -27,6 +31,10 @@ function manageLoadingMessage(isLoading) {
 
 // Function to manage the "no service" message
 function manageNoServiceMessage(show) {
+    if(!noServiceMessage){
+        console.error("noServiceMessage is null");
+        return;
+    }
     if (show) {
         noServiceMessage.classList.remove('d-none');
     } else {
@@ -214,6 +222,10 @@ async function initializePage() {
         }
     } catch (error) {
         const errorMessagebox = document.getElementById('error-message-box');
+        if (!errorMessagebox){
+            console.error("errorMessagebox is null");
+            return;
+        }
         errorMessagebox.classList.remove('d-none');
         console.error('Error fetching animals:', error);
     } finally {
