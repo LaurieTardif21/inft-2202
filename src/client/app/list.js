@@ -1,7 +1,7 @@
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
-// Global variable to store the animalName to delete
-let animalNameToDelete = null;
+// Global variable to store the animalId to delete
+let animalIdToDelete = null;
 // global variable for the current page
 let currentPage = 1;
 // Global variable for the number of entries per page
@@ -26,7 +26,7 @@ function createEditButton(animal) {
     return button;
 }
 
-function createDeleteButton(animalName) {
+function createDeleteButton(animalId) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-danger', 'btn-sm');
     button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
@@ -37,8 +37,8 @@ function createDeleteButton(animalName) {
     icon.classList.add('fas', 'fa-trash-alt'); // Delete icon
     button.appendChild(icon);
     button.addEventListener('click', () => {
-        // Set the animal Name to delete in the global variable
-        animalNameToDelete = animalName;
+        // Set the animal ID to delete in the global variable
+        animalIdToDelete = animalId;
         // Show the confirmation modal
         const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
         deleteConfirmationModal.show();
@@ -59,7 +59,7 @@ async function populateAnimalTable(animals) {
     animals.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
-        row.name = `animal-${animal.name}`; // Assign a name to the row for easy removal later
+        row.id = `animal-${animal.id}`; // Assign an ID to the row for easy removal later
 
         const nameCell = document.createElement('td');
         nameCell.textContent = animal.name; // Accessing the 'name' property
@@ -82,9 +82,9 @@ async function populateAnimalTable(animals) {
         row.appendChild(soundCell);
 
         const actionsCell = document.createElement('td');
-        const editButton = createEditButton(animal); // Pass the animal name to the edit button
+        const editButton = createEditButton(animal); // Pass the animal ID to the edit button
         actionsCell.appendChild(editButton);
-        const deleteButton = createDeleteButton(animal); // Pass the animal name to the delete button
+        const deleteButton = createDeleteButton(animal.id); // Pass the animal ID to the delete button
         actionsCell.appendChild(deleteButton);
         row.appendChild(actionsCell);
 
