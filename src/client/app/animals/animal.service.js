@@ -70,10 +70,10 @@ export async function addAnimal(animal) {
 }
 
 // Function to delete an animal via API
-export async function deleteAnimal(animalName) {
+export async function deleteAnimal(animalId) {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await fetch(`${API_URL}/${animalName}`, {
+            const response = await fetch(`${API_URL}/${animalId}`, {
                 method: 'DELETE',
                 headers
             });
