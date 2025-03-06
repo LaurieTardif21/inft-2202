@@ -78,16 +78,10 @@ export async function deleteAnimal(animalId) {
                 headers
             });
 
-            if (!response.ok) {
-                // If response is not ok reject with false
-                reject(false);
-                return;
-            }
-            // Resolve with true to indicate success
-            resolve(true);
+            if (!response.ok) throw new Error('Failed to delete animal');
+            resolve();
         } catch (error) {
-            //reject with false if there is an error
-            reject(false);
+            reject(new Error(`Error deleting animal: ${error.message}`));
         }
     });
 }
