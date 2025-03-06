@@ -17,6 +17,7 @@ let animalsArray = [];
 
 // Function to manage the loading message
 function manageLoadingMessage(isLoading) {
+    console.log("manageLoadingMessage:", isLoading); // Check if the function is called and what value
     if (isLoading) {
         loadingMessage.classList.remove('d-none');
     } else {
@@ -35,6 +36,7 @@ function manageNoServiceMessage(show) {
 
 //Function to manage the no animal message
 function checkIfListIsEmpty(show) {
+    console.log("checkIfListIsEmpty:", show); // Check if the function is called and what value
     if (show) {
         noAnimalMessage.classList.remove('d-none');
     } else {
@@ -47,24 +49,7 @@ function managePagination() {
     previousButton.disabled = currentPage === 1;
     nextButton.disabled = currentPage >= animalsArray.pagination.pages;
     currentPageSpan.textContent = currentPage;
-    checkIfListIsEmpty(false);
 }
-
-// Function to handle previous button click
-previousButton.addEventListener('click', async () => {
-    if (currentPage > 1) {
-        currentPage--;
-        await initializePage(); // Re-initialize the page with the new data
-    }
-});
-
-// Function to handle next button click
-nextButton.addEventListener('click', async () => {
-    if (currentPage < animalsArray.pagination.pages) {
-        currentPage++;
-        await initializePage(); // Re-initialize the page with the new data
-    }
-});
 
 // Function to get animals with delay
 async function getAnimalsWithDelay(page, perPage) {
@@ -87,6 +72,9 @@ async function populateAnimalTable(animals) {
         console.error("records is not an array")
         return;
     }
+    //remove all the data in the table
+    const tableBody = document.querySelector('#animal-table tbody');
+    tableBody.innerHTML = '';
     //if the array is empty. the for each will not execute
     animals.records.forEach((animal) => {
         // ... other code to create the row
@@ -128,7 +116,6 @@ async function populateAnimalTable(animals) {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-    checkIfListIsEmpty(false);
 
 }
 
@@ -200,9 +187,15 @@ async function initializePage() {
 
         console.log("animalsArray");
         console.log(animalsArray);
-        checkIfListIsEmpty(false);
         managePagination();
         populateAnimalTable(animalsArray);
+        //check if there is animal in the table
+        if (animalsArray.records.length == 0) {
+            checkIfListIsEmpty(true);
+        }
+        else {
+            checkIfListIsEmpty(false);
+        }
     } catch (error) {
         const errorMessagebox = document.getElementById('error-message-box');
         errorMessagebox.classList.remove('d-none');
@@ -212,6 +205,22 @@ async function initializePage() {
         manageLoadingMessage(false);
     }
 }
-
 // Initialize the page when the DOM is loaded
-document.addEventListener('DOMContentLoaded', initializePage);
+document.addEventListener('DOMContentLoaded', () => {
+    initializePage();
+    // Function to handle previous button click
+    previousButton.addEventListener('click', async () => {
+        if (currentPage > 1) {
+            currentPage--;
+            await initializePage(); // Re-initialize the page with the new data
+        }
+    });
+
+    // Function to handle next button click
+    nextButton.addEventListener('click', async () => {
+        if (currentPage < animalsArray.pagination.pages) {
+            currentPage++;
+            await initializePage(); // Re-initialize the page with the new data
+        }
+    });
+});
