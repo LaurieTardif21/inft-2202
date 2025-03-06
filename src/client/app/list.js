@@ -56,7 +56,7 @@ async function populateAnimalTable(animals) {
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
-
+    tableBody.innerHTML = '';
     if (animals.length === 0) {
         manageNoAnimalMessage(true);
         return;
@@ -171,11 +171,11 @@ async function managePagination() {
             manageNoAnimalMessage(false)
             currentPage = i;
             const response = await getAnimalsWithDelay(currentPage, perPage);
-             if(!response) {
+            if (!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
-             }
+            }
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
@@ -205,11 +205,11 @@ async function managePagination() {
             manageNoAnimalMessage(false)
             currentPage--;
             const response = await getAnimalsWithDelay(currentPage, perPage);
-             if(!response) {
+            if (!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
-             }
+            }
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
@@ -235,11 +235,11 @@ async function managePagination() {
             manageNoAnimalMessage(false);
             currentPage++;
             const response = await getAnimalsWithDelay(currentPage, perPage);
-             if(!response) {
+            if (!response) {
                 manageNoServiceMessage(true);
                 manageLoadingMessage(false);
                 return;
-             }
+            }
             animalsArray = response;
             perPage = response.pagination.perPage;
             currentPage = response.pagination.page;
@@ -273,21 +273,21 @@ confirmDeleteButton.addEventListener('click', async () => {
 });
 
 async function getAnimalsWithDelay(page, perPage) {
-    try{
+    try {
         const response = await await getAnimalPage(page, perPage);
-         if (!response){
+        if (!response) {
             return null;
         }
         return response;
-    } catch(error){
+    } catch (error) {
         console.error('Error getting animals:', error);
         return null;
     }
-    
+
 }
 
 function getCurrentPageAnimals() {
-    if(!animalsArray.records){
+    if (!animalsArray.records) {
         return [];
     }
     return animalsArray.records;
@@ -349,11 +349,12 @@ window.addEventListener('load', async () => {
     currentPage = response.pagination.page;
     //check if the list is empty
     checkIfListIsEmpty(false);
+
     //popuate the list
-    if (getCurrentPageAnimals().length !== 0){
-         populateAnimalTable(getCurrentPageAnimals());
+    if (getCurrentPageAnimals().length !== 0) {
+        populateAnimalTable(getCurrentPageAnimals());
     }
-   
+
     //manage the pagination
     managePagination();
     //hide loading div
