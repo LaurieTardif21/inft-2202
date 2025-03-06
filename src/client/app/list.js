@@ -56,13 +56,14 @@ async function populateAnimalTable(animals) {
     if (Array.isArray(animals.records)) {
         // If it's an array, use it directly
         animalList = animals.records;
-    } else if (animals.records && animals.records.animals) {
+    } else if (animals.records.animals) {
         // If it's an object with an "animals" property, use that array
         animalList = animals.records.animals;
     } else {
         console.error("populateAnimalTable: animals.records is not an array and do not contain animals property", animals);
         return;
     }
+
     manageNoServiceMessage(false);
     manageNoAnimalMessage(false);
     await new Promise(resolve => setTimeout(resolve, 0));
@@ -145,8 +146,9 @@ async function managePagination() {
     paginationUl.querySelectorAll('.page-number').forEach(li => li.remove());
     // Calculate the number of pages
     let numberOfPages = animalsArray.pagination.pages;
+
     //check if there is more than 5 animals
-    if (numberOfPages === 0) {
+    if (numberOfPages === 0){
         numberOfPages = 1;
     }
     if (numberOfPages > 1) {
