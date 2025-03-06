@@ -48,7 +48,7 @@ function checkIfListIsEmpty(noAnimalMessage, show) {
 
 // Function to manage pagination
 function managePagination(previousPage, nextPage, currentPageSpan) {
-    if(!previousPage || !nextPage || !currentPageSpan){
+    if (!previousPage || !nextPage || !currentPageSpan) {
         console.error("variable is null");
         return;
     }
@@ -170,12 +170,12 @@ function createDeleteButton(animal) {
     return deleteButton;
 }
 // Event listener for delete confirmation
-function confirmDelete(manageLoadingMessage, deleteAnimal) {
+function confirmDelete(manageLoadingMessage, deleteAnimal, loadingMessage) {
     document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
         if (animalIdToDelete) {
-            manageLoadingMessage(true);
+            manageLoadingMessage(loadingMessage, true);
             await deleteAnimal(animalIdToDelete);
-            manageLoadingMessage(false);
+            manageLoadingMessage(loadingMessage, false);
             const rowToDelete = document.getElementById(`animal-${animalIdToDelete}`);
             if (rowToDelete) {
                 rowToDelete.remove();
@@ -242,23 +242,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const noServiceMessage = document.getElementById('no-service-message');
     const noAnimalMessage = document.getElementById('no-animals-message');
     const loadingMessage = document.getElementById('loading-message');
-    initializePage(tableBody, previousPage, nextPage, currentPageSpan, noServiceMessage, noAnimalMessage, loadingMessage);
-    confirmDelete(manageLoadingMessage, deleteAnimal);
-    // Function to handle previous button click
-    previousPage.addEventListener('click', async (e) => {
-        e.preventDefault();
-        if (currentPage > 1) {
-            currentPage--;
-            await initializePage(tableBody, previousPage, nextPage, currentPageSpan, noServiceMessage, noAnimalMessage, loadingMessage); // Re-initialize the page with the new data
-        }
+    //call the function confirmDelete
+    confirmDelete(manageLoadingMessage, deleteAnimal, loadingMessage);
+    // call the function initialize page
+    initializePage(tableBody, previousPage, nextPage, currentPageSpan, noServiceMessage, noAnimalMessage, loadingMessage).then(() => {
+        // Function to handle previous button click
+        previousPage.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                await initializePage(tableBody, previousPage, nextPage, currentPageSpan, noServiceMessage, noAnimalMessage, loadingMessage); // Re-initialize the page with the new data
+            }
+        });
+
+        // Function to handle next button click
+        nextPage.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (currentPage < animalsArray.pagination.pages) {
+                currentPage++;
+                await initializePage(tableBody, previousPage, nextPage, currentPageSpan, noServiceMessage, noAnimalMessage, loadingMessage); // Re-initialize the page with the new data
+            }
+        });
     });
 
-    // Function to handle next button click
-    nextPage.addEventListener('click', async (e) => {
-        e.preventDefault();
-        if (currentPage < animalsArray.pagination.pages) {
-            currentPage++;
-            await initializePage(tableBody, previousPage, nextPage, currentPageSpan, noServiceMessage, noAnimalMessage, loadingMessage); // Re-initialize the page with the new data
-        }
-    });
 });
