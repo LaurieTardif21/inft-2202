@@ -21,7 +21,7 @@ function createEditButton(animal) {
     button.appendChild(icon);
     button.addEventListener('click', () => {
         // Redirect to animal.html with the animalname as a query parameter
-        window.location.href = `animal.html?name=${animal.name}`;
+        window.location.href = `/inft-2202/src/client/animal.html?name=${animal.name}`
     });
     return button;
 }
