@@ -290,6 +290,13 @@ function manageLoadingMessage(show) {
         animalListTable.classList.remove('d-none');
     }
 }
+
+function onDeleteButtonClick(animal){
+    return event => {
+        animalService.deleteAnimal(animal.name).then(() => { window.location.reload(); })
+    }
+}
+
 async function initializePage() {
     checkIfListIsEmpty(true);
     // show loading message
