@@ -53,7 +53,7 @@ async function populateAnimalTable(animals) {
     }
     // Check if animals is an array before proceeding
     if (!Array.isArray(animals.records.animals)) {
-        console.error("populateAnimalTable: animals.records is not an array", animals);
+        console.error("populateAnimalTable: animals.records.animals is not an array", animals);
         return;
     }
     manageNoServiceMessage(false);
