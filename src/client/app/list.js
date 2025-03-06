@@ -1,4 +1,4 @@
-import { getAnimals, deleteAnimal } from './animals/animal.service.js';
+import { getAnimals,getAnimalPage, deleteAnimal } from './animals/animal.service.js';
 
 // Global variable to store the animalName to delete
 let animalNameToDelete = null;
@@ -59,7 +59,7 @@ async function populateAnimalTable(animals) {
     animals.forEach((animal) => {
         // ... other code to create the row
         const row = document.createElement('tr');
-        row.id = `animal-${animal.id}`; // Assign an ID to the row for easy removal later
+        row.id = `animal-${animal.name}`; // Assign an ID to the row for easy removal later
 
         const nameCell = document.createElement('td');
         nameCell.textContent = animal.name; // Accessing the 'name' property
@@ -84,7 +84,7 @@ async function populateAnimalTable(animals) {
         const actionsCell = document.createElement('td');
         const editButton = createEditButton(animal); // Pass the animal ID to the edit button
         actionsCell.appendChild(editButton);
-        const deleteButton = createDeleteButton(animal.id); // Pass the animal ID to the delete button
+        const deleteButton = createDeleteButton(animal.name); // Pass the animal ID to the delete button
         actionsCell.appendChild(deleteButton);
         row.appendChild(actionsCell);
 
