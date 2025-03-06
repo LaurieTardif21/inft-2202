@@ -15,15 +15,12 @@ export function getAnimalPage(page, perPage) {
             const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
             if (!response.ok) throw new Error('Failed to fetch animals');
 
-            // Get total number of records from response headers
-            const totalRecords = response.headers.get('X-Total-Count');
-            const totalPages = Math.ceil(totalRecords / perPage);
-            console.log("getAnimals totalRecords", totalRecords);
-            console.log("getAnimals totalPages", totalPages);
             // Parse the JSON data from the response
-            const data = await response.json();
+            const allData = await response.json();
+            const data = allData.records;
             console.log("getAnimals data", data);
-
+            const totalRecords = allData.pagination.count
+            const totalPages = allData.pagination.pages
             resolve({
                 records: data,
                 pagination: {
@@ -44,7 +41,17 @@ export async function getAnimals() {
         try {
             const response = await fetch(API_URL, { headers });
             if (!response.ok) throw new Error('Failed to fetch animals');
-            resolve(await response.json());
+            const allData = await response.json();
+            const data = allData.records;
+            console.log("getAnimals data", data);
+            resolve({
+                records: data,
+                pagination: {
+                    pages: allData.pagination.pages,
+                    page: allData.pagination.page,
+                    perPage: allData.pagination.perPage
+                }
+            });
         } catch (error) {
             reject(new Error(`Error getting animals: ${error.message}`));
         }
@@ -120,7 +127,7 @@ export async function updateAnimal(updatedAnimal, animalName) {
             }
 
             const animalToUpdate = {
-              ...updatedAnimal[0]
+                ...updatedAnimal[0]
             }; // Get the first animal from the array, we put all the data in the body.
 
             // Modify the API URL to include the animal's name as a query parameter
