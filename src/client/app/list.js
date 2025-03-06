@@ -37,6 +37,10 @@ function manageNoServiceMessage(show) {
 //Function to manage the no animal message
 function checkIfListIsEmpty(show) {
     console.log("checkIfListIsEmpty:", show); // Check if the function is called and what value
+    if (!noAnimalMessage){
+        console.error("noAnimalMessage is null");
+        return;
+    }
     if (show) {
         noAnimalMessage.classList.remove('d-none');
     } else {
