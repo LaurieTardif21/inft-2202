@@ -30,63 +30,57 @@ function createEditButton(animal) {
 
 
 
-// Global variable for the confirmation modal
-let deleteConfirmationModal;
 
-function createDeleteButton(animalId) {
-    const button = document.createElement('button');
-    button.classList.add('btn', 'btn-danger', 'btn-sm');
-    button.setAttribute('data-bs-toggle', 'tooltip');
-    button.setAttribute('data-bs-placement', 'top');
-    button.setAttribute('title', 'Delete Animal');
-    
-    const icon = document.createElement('i');
-    icon.classList.add('fas', 'fa-trash-alt');
-    button.appendChild(icon);
-    
-    button.addEventListener('click', () => {
-        // Set the animal ID to delete
-        animalIdToDelete = animalId;
-        // Show the confirmation modal
-        if (!deleteConfirmationModal) {
-            deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-        }
-        deleteConfirmationModal.show();
-    });
 
-    return button;
-}
-
-// Simplified confirmation logic
+// Event listener for confirmDeleteButton outside of button creation logic
 document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
-    if (!animalIdToDelete) return;
-    try {
-        await confirmDeleteAnimal(animalIdToDelete); // Perform the deletion
-        deleteConfirmationModal.hide();
-    } catch (error) {
-        console.error('Error deleting animal:', error);
-        alert('Failed to delete animal. Please try again.');
+    if (animalIdToDelete !== null) {
+        try {
+            await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+        } catch (error) {
+            console.error('Error during deletion', error);
+        } finally {
+            // Close the modal after deletion
+            const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+            deleteConfirmationModal.hide();
+        }
     }
 });
 
+// Create the delete button function
+function createDeleteButton(animalId) {
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-danger', 'btn-sm');
+    button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
+    button.setAttribute('data-bs-placement', 'top'); // Set tooltip placement
+    button.setAttribute('title', 'Delete Animal'); // Set tooltip text
 
+    // Add icon
+    const icon = document.createElement('i');
+    icon.classList.add('fas', 'fa-trash-alt'); // Delete icon
+    button.appendChild(icon);
 
+    button.addEventListener('click', () => {
+        // Set the animal ID to delete in the global variable
+        animalIdToDelete = animalId;
+        
+        // Show the confirmation modal
+        const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+        deleteConfirmationModal.show();
+    });
+    
+    return button;
+}
 
-
-
-
-
-
-
-
-async function confirmDeleteAnimal() {
-    if (!animalIdToDelete) return;
+// Confirm the delete operation
+async function confirmDeleteAnimal(animalId) {
+    if (!animalId) return;
 
     try {
-        await deleteAnimal(animalIdToDelete); // Call delete function
+        await deleteAnimal(animalId); // Call the delete function
 
-        // Remove row from the table
-        const deletedRow = document.getElementById(`row-${animalIdToDelete}`);
+        // Remove the row from the table after successful deletion
+        const deletedRow = document.getElementById(`animal-${animalId}`);
         if (deletedRow) {
             deletedRow.remove();
         }
@@ -94,17 +88,14 @@ async function confirmDeleteAnimal() {
         // Reset the global delete variable
         animalIdToDelete = null;
 
-        // Hide the modal
-        const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
-        deleteConfirmationModal.hide();
-
         // Check if the list is empty and update UI
-        checkIfListIsEmpty();
+        checkIfListIsEmpty(false);
     } catch (error) {
         console.error("Error deleting animal:", error);
         alert("Failed to delete animal. Please try again.");
     }
 }
+
 
 
 
