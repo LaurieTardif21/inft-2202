@@ -46,6 +46,50 @@ function createDeleteButton(animalId) {
     return button;
 }
 
+
+
+
+
+
+
+
+
+async function confirmDeleteAnimal() {
+    if (!animalIdToDelete) return;
+
+    try {
+        // Call the delete function from animal.service.js
+        await deleteAnimal(animalIdToDelete);
+
+        // Remove the deleted row from the table
+        const deletedRow = document.getElementById(`row-${animalIdToDelete}`);
+        if (deletedRow) {
+            deletedRow.remove();
+        }
+
+        // Reset the global delete variable
+        animalIdToDelete = null;
+
+        // Hide the modal
+        const deleteConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
+        deleteConfirmationModal.hide();
+
+        // Check if the list is empty and update UI
+        checkIfListIsEmpty(false);
+    } catch (error) {
+        console.error("Error deleting animal:", error);
+        alert("Failed to delete animal. Please try again.");
+    }
+}
+
+
+
+
+
+
+
+
+
 async function populateAnimalTable(animals) {
     if (!animals) {
         //do something
