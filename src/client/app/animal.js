@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // If adding, call addAnimal
                 await addAnimal([animal]); // THIS LINE IS CORRECT NOW!
             }
-            window.location.href = 'list.html'; // Redirect to list page
+            window.location.href = '/inft-2202/src/client/public/list.html'; // Redirect to list page
         } catch (error) {
             console.error('Error adding/updating animal:', error);
             alert(error);//Show the full error to the user
