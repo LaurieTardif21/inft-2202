@@ -42,9 +42,27 @@ function createDeleteButton(animalId) {
         // Show the confirmation modal
         const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
         deleteConfirmationModal.show();
+
+        // Global variable to store the ID of the animal to delete
+    let animalIdToDelete;
+
+    document.getElementById('confirmDeleteButton').addEventListener('click', () => {
+    // Check if confirmDeleteAnimal is defined and call it with the animalIdToDelete
+    if (typeof confirmDeleteAnimal === 'function') {
+        confirmDeleteAnimal(animalIdToDelete); // Handle the deletion process
+    } else {
+        console.error('confirmDeleteAnimal function is not defined.');
+    }
+
+    // Close the modal after the deletion
+    const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+    deleteConfirmationModal.hide();
+});
     });
     return button;
 }
+
+
 
 
 
