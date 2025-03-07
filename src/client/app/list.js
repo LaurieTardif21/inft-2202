@@ -58,10 +58,9 @@ async function confirmDeleteAnimal() {
     if (!animalIdToDelete) return;
 
     try {
-        // Call the delete function from animal.service.js
-        await deleteAnimal(animalIdToDelete);
+        await deleteAnimal(animalIdToDelete); // Call delete function
 
-        // Remove the deleted row from the table
+        // Remove row from the table
         const deletedRow = document.getElementById(`row-${animalIdToDelete}`);
         if (deletedRow) {
             deletedRow.remove();
@@ -75,7 +74,7 @@ async function confirmDeleteAnimal() {
         deleteConfirmationModal.hide();
 
         // Check if the list is empty and update UI
-        checkIfListIsEmpty(false);
+        checkIfListIsEmpty();
     } catch (error) {
         console.error("Error deleting animal:", error);
         alert("Failed to delete animal. Please try again.");

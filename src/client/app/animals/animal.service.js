@@ -71,19 +71,21 @@ export async function addAnimal(animal) {
 
 // Function to delete an animal via API
 export async function deleteAnimal(animalId) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(`${API_URL}/${animalId}`, {
-                method: 'DELETE',
-                headers
-            });
+    try {
+        const response = await fetch(`${API_URL}/${animalId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-            if (!response.ok) throw new Error('Failed to delete animal');
-            resolve();
-        } catch (error) {
-            reject(new Error(`Error deleting animal: ${error.message}`));
-        }
-    });
+        if (!response.ok) throw new Error('Failed to delete animal');
+
+        return response.json(); // Return response if needed
+    } catch (error) {
+        console.error("Error deleting animal:", error);
+        throw error; // Rethrow error for handling in `list.js`
+    }
 }
 
 // Function to find an animal by name via API
