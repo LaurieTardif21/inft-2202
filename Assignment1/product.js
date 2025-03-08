@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stock: parseInt(stock),
             price: parseFloat(price),
         };
+        let productToUse = {...product} // make a copy of the object
 
         try {
             if (productId) {
@@ -166,11 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // Generate a client-side ID
                 productId = uuidv4();
-                product.id = productId;
+                productToUse.id = productId; // add the id in the copy of the object
                 // save the product with the id on the API
                 await addProduct(product);
             }
-            console.log(product); // Show the product object in console
+            console.log(productToUse); // Show the product object in console
             window.location.href = 'list.html';
         } catch (error) {
             console.error('Error adding/updating product:', error);
