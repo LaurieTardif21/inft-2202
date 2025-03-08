@@ -157,17 +157,20 @@ document.addEventListener('DOMContentLoaded', () => {
             description: description,
             stock: parseInt(stock),
             price: parseFloat(price),
+            user: "00000" // add the user
         };
         let productToUse = {...product} // make a copy of the object
 
         try {
             if (productId) {
                 product.id = productId;
-                await updateProduct(product, productId); // update with the id
+                await updateProduct(product); // update with the id
             } else {
                 // Generate a client-side ID
-                productId = uuidv4();
+                const now = Date.now();
+                productId = name + '-' + now;
                 productToUse.id = productId; // add the id in the copy of the object
+                productToUse.createTime = now;
                 // save the product with the id on the API
                 await addProduct(product);
             }

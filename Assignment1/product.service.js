@@ -1,13 +1,105 @@
-// API Base URL
-const API_URL = "https://inft2202-server.onrender.com/api/products";
-const API_KEY = "7bfa2060-9d12-42fe-8549-cf9205d269a0";
+// name: laurie tardif
+// date: 02/09/2025
+// filename: product.service.js
+// course: inft 2202
+// description: product service functions
+
+const API_KEY = '1|inft2202-2024|tardif';
+const API_URL = 'https://inft2202-server.onrender.com/api/products';
 
 // Common headers for API requests
 const headers = {
     "Content-Type": "application/json",
-    "apiKey": API_KEY
+    "Authorization": `Bearer ${API_KEY}`
 };
 
+// Function to add a product
+export async function addProduct(product) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(product)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to add product: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw new Error(`Error adding product: ${error}`);
+    }
+}
+
+// Function to find a product by createTime and name
+export async function findProduct(productId) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'GET',
+            headers
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to find product: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data && data.records) {
+            const product = data.records.find(record => record.createTime === Number(productId.split('-')[1]) && record.name === productId.split('-')[0] ); // find the product with the create time and the name
+            if (product) {
+                return product;
+            } else {
+                throw new Error(`Product with id ${productId} not found`);
+            }
+        }
+    } catch (error) {
+        throw new Error(`Error finding product: ${error}`);
+    }
+}
+
+// Function to update a product
+export async function updateProduct(product) {
+    try {
+        // find the id
+        const responseFind = await fetch(API_URL, {
+            method: 'GET',
+            headers
+        });
+        if (!responseFind.ok) {
+            throw new Error(`Failed to find product: ${responseFind.status}`);
+        }
+
+        const dataFind = await responseFind.json();
+        const productToUpdate = dataFind.records.find(record => record.createTime === Number(product.id.split('-')[1]) && record.name === product.id.split('-')[0] );// find the product with the create time and the name
+        if (!productToUpdate) {
+            throw new Error(`Product with id ${product.id} not found`);
+        }
+        // delete old product
+        const responseDelete = await fetch(`${API_URL}/${productToUpdate.createTime}`, {
+            method: 'DELETE',
+            headers
+        });
+        if (!responseDelete.ok) {
+            throw new Error(`Failed to delete product: ${responseDelete.status}`);
+        }
+        // add the new product
+        const responseAdd = await fetch(API_URL, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(product)
+        });
+
+        if (!responseAdd.ok) {
+            throw new Error(`Failed to add product: ${responseAdd.status}`);
+        }
+
+        const dataAdd = await responseAdd.json();
+        return dataAdd;
+    } catch (error) {
+        throw new Error(`Error updating product: ${error}`);
+    }
+}
 // Function to get paginated products
 export async function getProductPage(page, perPage) {
     try {
@@ -49,31 +141,12 @@ export async function getProducts() {
     }
 }
 
-// Function to add a new product
-export async function addProduct(product) {
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(product),
-        });
-
-        if (!response.ok) throw new Error("Failed to add product");
-        const data = await response.json()
-        return data;
-    } catch (error) {
-        throw new Error(`Error adding product: ${error.message}`);
-    }
-}
-
 // Function to delete a product by ID
 export async function deleteProduct(productId) {
     try {
         const response = await fetch(`${API_URL}/${productId}`, {
             method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers
         });
 
         if (!response.ok) throw new Error("Failed to delete product");
@@ -83,45 +156,5 @@ export async function deleteProduct(productId) {
     } catch (error) {
         console.error("Error deleting product:", error);
         throw error;
-    }
-}
-
-// Function to find a product by ID
-export async function findProduct(productId) {
-    try {
-        const url = `${API_URL}/${productId}`;
-        const response = await fetch(url, { headers });
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Failed to fetch products: ${errorMessage}`);
-        }
-        const product = await response.json();
-        return product;
-    } catch (error) {
-        throw new Error(`Error finding product: ${error.message}`);
-    }
-}
-
-// Function to update a product
-export async function updateProduct(updatedProduct, productId) {
-    try {
-        if (typeof updatedProduct !== "object" || Array.isArray(updatedProduct)) {
-            throw new Error(`updatedProduct should be an object`);
-        }
-        const url = `${API_URL}/${productId}`;
-        const response = await fetch(url, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(updatedProduct),
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to update product: ${errorText}`);
-        }
-        const product = await response.json();
-        return product;
-    } catch (error) {
-        throw new Error(`Error updating product: ${error.message}`);
     }
 }
