@@ -1,274 +1,184 @@
-//import section
-import { getProducts, deleteProduct } from './product.service.js';
+// name: laurie tardif
+// date: 02/09/2025
+// filename: list.js
+// course: inft 2202
+// description: list functions
 
-// const section
-const productsList = document.getElementById('products-list');
-const messageBox = document.getElementById('message-box');
-const loadingMessageBox = document.getElementById('loading-message-box');
-const errorMessage = document.getElementById('error-message-box');
-const noServiceMessage = document.getElementById('no-service-message-box');
-const loadingPaginationMessageBox = document.getElementById('loading-pagination-message-box');
+// Import section
+import { getProducts, deleteProduct, getProductPage } from './product.service.js';
 
-const pagination = document.getElementById('pagination');
-const previousPage = document.getElementById('previousPage');
-const nextPage = document.getElementById('nextPage');
-const paginationContainer = document.getElementById('paginationContainer');
+document.addEventListener('DOMContentLoaded', async () => {
+    const productsList = document.getElementById('products-list');
+    const messageBox = document.getElementById('message-box');
+    const loadingMessageBox = document.getElementById('loading-message-box');
+    const errorMessagebox = document.getElementById('error-message-box');
+    const noServiceMessagebox = document.getElementById('no-service-message-box');
+    const loadingPaginationMessageBox = document.getElementById('loading-pagination-message-box');
+    const paginationContainer = document.getElementById('paginationContainer');
+    const pagination = document.getElementById('pagination');
+    const previousPage = document.getElementById('previousPage');
+    const nextPage = document.getElementById('nextPage');
+    let currentPage = 1; // Initialize the current page
+    let perPage = 5; // Initialize the per page value
+    let totalPages; // Initialize the totalPages
 
-// pagination
-let currentPage = 1;
-const productsPerPage = 8;
-
-// show message box function
-function showMessageBox(message) {
-    messageBox.textContent = message;
-    messageBox.classList.remove('d-none');
-    productsList.classList.add('d-none');
-}
-
-//loading message
-function showLoadingMessage() {
-    loadingMessageBox.classList.remove('d-none');
-    productsList.classList.add('d-none');
-}
-
-// hide message
-function hideMessages() {
-    messageBox.classList.add('d-none');
-    loadingMessageBox.classList.add('d-none');
-    errorMessage.classList.add('d-none');
-    noServiceMessage.classList.add('d-none');
-    loadingPaginationMessageBox.classList.add('d-none');
-}
-//display errors
-function displayError(error) {
-    hideMessages();
-    errorMessage.textContent = error;
-    errorMessage.classList.remove('d-none');
-}
-// display no service
-function displayNoService() {
-    hideMessages();
-    noServiceMessage.classList.remove('d-none');
-}
-//loading pagination
-function showLoadingPagination() {
-    hideMessages();
-    loadingPaginationMessageBox.classList.remove('d-none');
-    paginationContainer.classList.add('d-none');
-}
-
-// Function to create a product card
-function createProductCard(product) {
-    // ADDED: Log the product object to the console
-    console.log({
-        "name": product.name,
-        "description": product.description,
-        "stock": product.stock,
-        "price": product.price
-    });
-    const card = document.createElement('div');
-    card.classList.add('card', 'mb-3');
-
-    // Card Image
-    const img = document.createElement('img');
-    img.src = 'https://via.placeholder.com/300x200?text=Product'; // Placeholder image
-    img.classList.add('card-img-top');
-    img.alt = product.name;
-    card.appendChild(img);
-
-    // Card Body
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body');
-
-    // Product Name
-    const title = document.createElement('h5');
-    title.classList.add('card-title');
-    title.textContent = product.name;
-    cardBody.appendChild(title);
-
-    // Product Description
-    const description = document.createElement('p');
-    description.classList.add('card-text');
-    description.textContent = `Description: ${product.description}`;
-    cardBody.appendChild(description);
-
-    // Product Stock
-    const stock = document.createElement('p');
-    stock.classList.add('card-text');
-    stock.textContent = `Stock: ${product.stock}`;
-    cardBody.appendChild(stock);
-
-    // Product Price
-    const price = document.createElement('p');
-    price.classList.add('card-text');
-    price.textContent = `Price: $${product.price.toFixed(2)}`;
-    cardBody.appendChild(price);
-
-    // Buttons container
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.classList.add('gap-2');
-    // Edit Button
-    const editButton = document.createElement('a');
-    editButton.href = `product.html?id=${product.id}`;
-    editButton.classList.add('btn', 'btn-primary');
-    editButton.setAttribute('data-bs-toggle', 'tooltip');
-    editButton.setAttribute('title', 'Edit');
-    editButton.innerHTML = '<i class="fas fa-edit"></i>'; // Font Awesome icon
-    buttonsContainer.appendChild(editButton);
-
-    // Delete Button
-    const deleteButton = document.createElement('button');
-    deleteButton.classList.add('btn', 'btn-danger');
-    deleteButton.setAttribute('data-bs-toggle', 'tooltip');
-    deleteButton.setAttribute('title', 'Delete');
-    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome icon
-    deleteButton.addEventListener('click', () => openDeleteModal(product.id));
-    buttonsContainer.appendChild(deleteButton);
-
-    // Add to cart Button
-    const addToCartButton = document.createElement('button');
-    addToCartButton.classList.add('btn', 'btn-success');
-    addToCartButton.setAttribute('data-bs-toggle', 'tooltip');
-    addToCartButton.setAttribute('title', 'Add to Cart');
-    addToCartButton.innerHTML = '<i class="fas fa-cart-plus"></i>'; // Font Awesome icon
-    buttonsContainer.appendChild(addToCartButton);
-
-    cardBody.appendChild(buttonsContainer);
-    card.appendChild(cardBody);
-    return card;
-}
-function openDeleteModal(productId) {
-    const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-
-    confirmDeleteButton.onclick = async () => {
+    // function to delete the product
+    const deleteProductHandler = async (productId) => {
         try {
             await deleteProduct(productId);
-            deleteConfirmationModal.hide();
-            loadProducts(currentPage);
+            // Remove product from the DOM
+            const productElement = document.querySelector(`[data-id="${productId}"]`);
+            if (productElement) {
+                productElement.remove();
+            }
+
+            // refresh the list of products
+            await showProducts(currentPage, perPage);
         } catch (error) {
-            displayError(`Failed to delete product: ${error.message}`);
+            console.error('Error deleting product:', error);
+            errorMessagebox.textContent = 'Error deleting product. Please try again.';
+            errorMessagebox.classList.remove('d-none');
         }
     };
-    deleteConfirmationModal.show();
-}
-function updatePagination(totalPages, currentPage) {
-    pagination.innerHTML = ''; // Clear existing pagination
 
-    // Previous page button
-    const prevLi = document.createElement('li');
-    prevLi.classList.add('page-item');
-    prevLi.id = 'previousPage';
-    const prevLink = document.createElement('a');
-    prevLink.classList.add('page-link');
-    prevLink.href = '#';
-    prevLink.textContent = 'Previous';
-    prevLi.appendChild(prevLink);
-    pagination.appendChild(prevLi);
+    // function to show the products
+    const showProducts = async (page, perPage) => {
+        // show loading
+        productsList.classList.add('d-none');
+        loadingMessageBox.classList.remove('d-none');
+        errorMessagebox.classList.add('d-none');
+        noServiceMessagebox.classList.add('d-none');
+        // hide pagination
+        paginationContainer.classList.add('d-none');
 
-    // Handle Previous button click
-    prevLink.addEventListener('click', (event) => {
+        // Clear previous products
+        productsList.innerHTML = '';
+        // hide message
+        messageBox.classList.add('d-none');
+        try {
+            // Get the products
+            const productsData = await getProductPage(page, perPage);
+            // Get the products and pagination information
+            const products = productsData.records;
+            totalPages = productsData.pagination.pages;
+
+            // if there is no product, show message
+            if (products.length === 0) {
+                messageBox.classList.remove('d-none');
+            } else {
+                // if there is products, hide message
+                messageBox.classList.add('d-none');
+                // Display the products
+                products.forEach(product => {
+                    // get id
+                    const productId = `${product.name}-${product.createTime}`;
+                    // Create the card
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('card');
+                    productCard.setAttribute('data-id', productId); // set id
+                    productCard.innerHTML = `
+                        <img src="https://picsum.photos/200/200" class="card-img-top" alt="${product.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text">${product.description}</p>
+                            <p class="card-text">Stock: ${product.stock}</p>
+                            <p class="card-text">Price: ${product.price}</p>
+                            <div class="d-flex justify-content-around mt-3">
+                                <a href="product.html?id=${productId}" class="btn btn-primary">Edit</a>
+                                <button class="btn btn-danger delete-button">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                    productsList.appendChild(productCard);
+                });
+            }
+            // hide loading
+            loadingMessageBox.classList.add('d-none');
+            productsList.classList.remove('d-none');
+            //Show pagination
+            paginationContainer.classList.remove('d-none');
+            // Update pagination
+            updatePagination();
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            errorMessagebox.textContent = 'Error fetching products. Please try again.';
+            errorMessagebox.classList.remove('d-none');
+            // hide loading
+            loadingMessageBox.classList.add('d-none');
+        }
+    };
+
+    // event listener for the delete button
+    productsList.addEventListener('click', (event) => {
+        const deleteButton = event.target.closest('.delete-button');
+        if (deleteButton) {
+            const productCard = deleteButton.closest('.card');
+            const productId = productCard.getAttribute('data-id');
+            // Show the confirmation modal
+            const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+            deleteConfirmationModal.show();
+
+            // Attach the delete event listener to the confirm button
+            const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+            confirmDeleteButton.onclick = async () => {
+                await deleteProductHandler(productId);
+                // Hide the modal
+                deleteConfirmationModal.hide();
+            };
+        }
+    });
+
+    // Function to update the pagination UI
+    function updatePagination() {
+        // Clear existing page links
+        pagination.querySelectorAll('.page-item:not(#previousPage):not(#nextPage)').forEach(item => item.remove());
+
+        // Add new page links
+        for (let i = 1; i <= totalPages; i++) {
+            const pageItem = document.createElement('li');
+            pageItem.classList.add('page-item');
+            if (i === currentPage) {
+                pageItem.classList.add('active');
+            }
+
+            const pageLink = document.createElement('a');
+            pageLink.classList.add('page-link');
+            pageLink.href = '#';
+            pageLink.textContent = i;
+            pageLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                currentPage = i;
+                showProducts(currentPage, perPage);
+            });
+
+            pageItem.appendChild(pageLink);
+            pagination.insertBefore(pageItem, nextPage);
+        }
+
+        // Update "Previous" button state
+        previousPage.classList.toggle('disabled', currentPage === 1);
+        // Update "Next" button state
+        nextPage.classList.toggle('disabled', currentPage === totalPages);
+    }
+
+    // Previous page event listener
+    previousPage.addEventListener('click', (event) => {
         event.preventDefault();
         if (currentPage > 1) {
             currentPage--;
-            loadProducts(currentPage);
+            showProducts(currentPage, perPage);
         }
     });
 
-    // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        const pageLi = document.createElement('li');
-        pageLi.classList.add('page-item');
-        if (i === currentPage) {
-            pageLi.classList.add('active');
-        }
-        const pageLink = document.createElement('a');
-        pageLink.classList.add('page-link');
-        pageLink.href = '#';
-        pageLink.textContent = i;
-        pageLi.appendChild(pageLink);
-        pagination.appendChild(pageLi);
-
-        // Handle page number click
-        pageLink.addEventListener('click', (event) => {
-            event.preventDefault();
-            currentPage = i;
-            loadProducts(currentPage);
-        });
-    }
-
-    // Next page button
-    const nextLi = document.createElement('li');
-    nextLi.classList.add('page-item');
-    nextLi.id = 'nextPage';
-    const nextLink = document.createElement('a');
-    nextLink.classList.add('page-link');
-    nextLink.href = '#';
-    nextLink.textContent = 'Next';
-    nextLi.appendChild(nextLink);
-    pagination.appendChild(nextLi);
-
-    // Handle Next button click
-    nextLink.addEventListener('click', (event) => {
+    // Next page event listener
+    nextPage.addEventListener('click', (event) => {
         event.preventDefault();
         if (currentPage < totalPages) {
             currentPage++;
-            loadProducts(currentPage);
+            showProducts(currentPage, perPage);
         }
     });
 
-    // Disable/Enable previous and next buttons based on current page
-    prevLi.classList.toggle('disabled', currentPage === 1);
-    nextLi.classList.toggle('disabled', currentPage === totalPages);
-}
-
-async function loadProducts(page) {
-    hideMessages();
-    showLoadingMessage();
-    showLoadingPagination();
-    try {
-        const response = await getProducts(); // response is now an array.
-
-        if (response) {
-            const startIndex = (page - 1) * productsPerPage;
-            const endIndex = startIndex + productsPerPage;
-            const paginatedProducts = response.slice(startIndex, endIndex);
-            if (response.length === 0) { // Change from response.length ===0
-                showMessageBox('No products in the list. Add some products!');
-                loadingMessageBox.classList.add('d-none');
-                loadingPaginationMessageBox.classList.add('d-none');
-                paginationContainer.classList.add('d-none');
-            } else {
-                const totalPages = Math.ceil(response.length / productsPerPage); // Change from response.length
-                if (totalPages === 1) {
-                    paginationContainer.classList.add('d-none');
-                } else {
-                    paginationContainer.classList.remove('d-none');
-                }
-                hideMessages();
-                productsList.innerHTML = ''; // Clear existing products
-                paginatedProducts.forEach(product => {
-                    const card = createProductCard(product);
-                    productsList.appendChild(card);
-                });
-                productsList.classList.remove('d-none');
-
-                updatePagination(totalPages, page);
-                enableTooltips();// moved here
-            }
-
-        } else {
-            displayNoService();
-        }
-
-    } catch (error) {
-        displayError(`Error loading products: ${error.message}`);
-    }
-}
-// Function to enable tooltips
-function enableTooltips() {
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-}
-
-loadProducts(currentPage);
+    // Load the first page of products
+    await showProducts(currentPage, perPage);
+});
