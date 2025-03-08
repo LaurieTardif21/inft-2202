@@ -34,6 +34,7 @@ export async function addProduct(product) {
 
 // Function to find a product by createTime and name
 export async function findProduct(productId) {
+    if (!productId) throw new Error(`Error finding product: Product id must be set.`);
     try {
         const response = await fetch(API_URL, {
             method: 'GET',
@@ -52,6 +53,8 @@ export async function findProduct(productId) {
             } else {
                 throw new Error(`Product with id ${productId} not found`);
             }
+        } else {
+            throw new Error(`Error finding product: No records found.`);
         }
     } catch (error) {
         throw new Error(`Error finding product: ${error}`);
@@ -60,6 +63,7 @@ export async function findProduct(productId) {
 
 // Function to update a product
 export async function updateProduct(product) {
+    if (!product || !product.id) throw new Error(`Error updating product: Product or ID not set.`);
     try {
         // find the id
         const responseFind = await fetch(API_URL, {
@@ -75,27 +79,18 @@ export async function updateProduct(product) {
         if (!productToUpdate) {
             throw new Error(`Product with id ${product.id} not found`);
         }
-        // delete old product
-        const responseDelete = await fetch(`${API_URL}/${productToUpdate.createTime}`, {
-            method: 'DELETE',
-            headers
-        });
-        if (!responseDelete.ok) {
-            throw new Error(`Failed to delete product: ${responseDelete.status}`);
-        }
-        // add the new product
-        const responseAdd = await fetch(API_URL, {
-            method: 'POST',
+        // update the product
+         const responseUpdate = await fetch(`${API_URL}/${productToUpdate.createTime}`, {
+            method: 'PUT',
             headers,
             body: JSON.stringify(product)
         });
-
-        if (!responseAdd.ok) {
-            throw new Error(`Failed to add product: ${responseAdd.status}`);
+        if (!responseUpdate.ok) {
+            throw new Error(`Failed to update product: ${responseUpdate.status}`);
         }
-
-        const dataAdd = await responseAdd.json();
-        return dataAdd;
+        // add the new product
+        const dataUpdate = await responseUpdate.json();
+        return dataUpdate;
     } catch (error) {
         throw new Error(`Error updating product: ${error}`);
     }
