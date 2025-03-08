@@ -7,11 +7,6 @@
 // Import section
 import { addProduct, findProduct, updateProduct } from './product.service.js';
 
-// Add uuid library from CDN
-const script = document.createElement('script');
-script.src = 'https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js';
-document.head.appendChild(script);
-
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('product-form');
@@ -159,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             price: parseFloat(price),
             user: "00000" // add the user
         };
-        let productToUse = {...product} // make a copy of the object
+        let productToUse = { ...product } // make a copy of the object
 
         try {
             if (productId) {
@@ -168,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // Generate a client-side ID
                 const now = Date.now();
-                productId = name + '-' + now;
+                productId = name + '-' + now; // update the id to have the id for the next creation
                 productToUse.id = productId; // add the id in the copy of the object
                 productToUse.createTime = now;
                 // save the product with the id on the API
