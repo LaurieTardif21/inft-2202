@@ -109,7 +109,8 @@ function createProductCard(product) {
     buttonsContainer.classList.add('gap-2');
     // Edit Button
     const editButton = document.createElement('a');
-    editButton.href = `product.html?id=${product.id}`;
+    const compositeId = `${product.name}-${product.createTime}`;// add composite ID
+    editButton.href = `product.html?id=${compositeId}`; // Use the composite ID
     editButton.classList.add('btn', 'btn-primary');
     editButton.setAttribute('data-bs-toggle', 'tooltip');
     editButton.setAttribute('title', 'Edit');
