@@ -110,7 +110,7 @@ function createProductCard(product) {
     // Edit Button
     const editButton = document.createElement('a');
     const compositeId = `${product.name}-${product.createTime}`;// add composite ID
-    editButton.href = `product.html?id=${compositeId}`; // Use the composite ID
+    editButton.href = `product.html?id=${product.createTime}`;
     editButton.classList.add('btn', 'btn-primary');
     editButton.setAttribute('data-bs-toggle', 'tooltip');
     editButton.setAttribute('title', 'Edit');
