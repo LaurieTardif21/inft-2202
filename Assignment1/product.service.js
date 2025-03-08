@@ -8,60 +8,60 @@ const headers = {
     "apiKey": API_KEY
 };
 
+// Function to generate a unique ID without UUID
+function generateId() {
+    return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+}
+
 // Function to get paginated products
 export async function getProductPage(page, perPage) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
-            if (!response.ok) throw new Error("Failed to fetch products");
+    try {
+        const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch products");
 
-            const totalRecords = response.headers.get("X-Total-Count");
-            const totalPages = Math.ceil(totalRecords / perPage);
-            const data = await response.json();
+        const totalRecords = response.headers.get("X-Total-Count") || 0;
+        const totalPages = Math.ceil(totalRecords / perPage);
+        const data = await response.json();
 
-            resolve({
-                records: data,
-                pagination: {
-                    pages: totalPages,
-                    page: page,
-                    perPage: perPage
-                }
-            });
-        } catch (error) {
-            reject(new Error(`Error getting products: ${error.message}`));
-        }
-    });
+        return {
+            records: data,
+            pagination: {
+                pages: totalPages || 1,
+                page,
+                perPage
+            }
+        };
+    } catch (error) {
+        throw new Error(`Error getting products: ${error.message}`);
+    }
 }
 
 // Function to get all products
 export async function getProducts() {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(API_URL, { headers });
-            if (!response.ok) throw new Error("Failed to fetch products");
-            resolve(await response.json());
-        } catch (error) {
-            reject(new Error(`Error getting products: ${error.message}`));
-        }
-    });
+    try {
+        const response = await fetch(API_URL, { headers });
+        if (!response.ok) throw new Error("Failed to fetch products");
+        return await response.json();
+    } catch (error) {
+        throw new Error(`Error getting products: ${error.message}`);
+    }
 }
 
 // Function to add a new product
 export async function addProduct(product) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers,
-                body: JSON.stringify(product),
-            });
+    try {
+        const newProduct = { id: generateId(), ...product };
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(newProduct),
+        });
 
-            if (!response.ok) throw new Error("Failed to add product");
-            resolve();
-        } catch (error) {
-            reject(new Error(`Error adding product: ${error.message}`));
-        }
-    });
+        if (!response.ok) throw new Error("Failed to add product");
+        return await response.json();
+    } catch (error) {
+        throw new Error(`Error adding product: ${error.message}`);
+    }
 }
 
 // Function to delete a product by ID
@@ -73,41 +73,35 @@ export async function deleteProduct(productId) {
         });
 
         if (!response.ok) throw new Error("Failed to delete product");
-
-        return response.json();
+        return await response.json();
     } catch (error) {
-        console.error("Error deleting product:", error);
-        throw error;
+        throw new Error(`Error deleting product: ${error.message}`);
     }
 }
 
 // Function to find a product by ID
 export async function findProduct(productId) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(`${API_URL}/${productId}`, { headers });
-            if (!response.ok) throw new Error("Product not found");
-            resolve(await response.json());
-        } catch (error) {
-            reject(new Error(`Error finding product: ${error.message}`));
-        }
-    });
+    try {
+        const response = await fetch(`${API_URL}/${productId}`, { headers });
+        if (!response.ok) throw new Error("Product not found");
+        return await response.json();
+    } catch (error) {
+        throw new Error(`Error finding product: ${error.message}`);
+    }
 }
 
 // Function to update a product
 export async function updateProduct(updatedProduct) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch(`${API_URL}/${updatedProduct.id}`, {
-                method: "PUT",
-                headers,
-                body: JSON.stringify(updatedProduct),
-            });
+    try {
+        const response = await fetch(`${API_URL}/${updatedProduct.id}`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify(updatedProduct),
+        });
 
-            if (!response.ok) throw new Error("Failed to update product");
-            resolve();
-        } catch (error) {
-            reject(new Error(`Error updating product: ${error.message}`));
-        }
-    });
+        if (!response.ok) throw new Error("Failed to update product");
+        return await response.json();
+    } catch (error) {
+        throw new Error(`Error updating product: ${error.message}`);
+    }
 }
