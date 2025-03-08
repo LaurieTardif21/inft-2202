@@ -1,116 +1,113 @@
-// Name: Laurie Tardif
-//date: 02/09/2025
-// filename: product.service.js
-// course: inft 2202
-// description: product service functions 
+// API Base URL
+const API_URL = "https://inft2202-server.onrender.com/api/products";
+const API_KEY = "7bfa2060-9d12-42fe-8549-cf9205d269a0";
 
-// Function to generate a unique ID without uuid
-function generateId() {
-    return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-}
+// Common headers for API requests
+const headers = {
+    "Content-Type": "application/json",
+    "apiKey": API_KEY
+};
 
-// Simulate API delay (adjust to 2 seconds)
-const API_DELAY = 2000; // 2 second
+// Function to get paginated products
+export async function getProductPage(page, perPage) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
+            if (!response.ok) throw new Error("Failed to fetch products");
 
-// Function to get the list of products (from localStorage)
-export function getProducts() {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                // Fetch from localStorage
-                const products = JSON.parse(localStorage.getItem('products')) || [];
+            const totalRecords = response.headers.get("X-Total-Count");
+            const totalPages = Math.ceil(totalRecords / perPage);
+            const data = await response.json();
 
-                // Ensure each product has a unique 'id'
-                products.forEach((product) => {
-                    if (!product.id) {
-                        // Assign a unique ID if not present
-                        product.id = generateId();
-                    }
-                });
-
-                resolve(products);
-            } catch (error) {
-                reject(error);
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to add a new product to the list (to localStorage)
-export function addProduct(product) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                // Add to localStorage
-                const products = JSON.parse(localStorage.getItem('products')) || [];
-                product.id = generateId(); // Ensure unique ID for each product
-                products.push(product); // Add the new product to the array
-                localStorage.setItem('products', JSON.stringify(products)); // Save to localStorage
-                resolve(product);
-            } catch (error) {
-                reject(error);
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to delete an product by ID (from localStorage)
-export function deleteProduct(productId) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                // Remove from localStorage
-                const products = JSON.parse(localStorage.getItem('products')) || [];
-                const updatedProducts = products.filter(product => product.id !== productId); // Filter out the deleted product  by ID
-                localStorage.setItem('products', JSON.stringify(updatedProducts)); // Save to localStorage
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        }, API_DELAY);
-    });
-}
-
-// Function to find an product by ID (Checks Local Storage)
-export function findProduct(productId) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                // Check Local Storage
-                const products = JSON.parse(localStorage.getItem('products')) || [];
-                const product = products.find(p => p.id === productId);
-
-                if (!product) {
-                    reject(new Error(`Error finding product: product not found`)); // Changed from throw to reject
-                    return; //stops the function
+            resolve({
+                records: data,
+                pagination: {
+                    pages: totalPages,
+                    page: page,
+                    perPage: perPage
                 }
-                resolve(product); // Found in local storage
-            } catch (error) {
-                reject(error);
-            }
-        }, API_DELAY);
+            });
+        } catch (error) {
+            reject(new Error(`Error getting products: ${error.message}`));
+        }
     });
 }
 
-// Function to update an product (Updates Local Storage)
-export function updateProduct(updatedProduct) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                // Update Local Storage
-                const products = JSON.parse(localStorage.getItem('products')) || [];
-                const index = products.findIndex(p => p.id === updatedProduct.id);
+// Function to get all products
+export async function getProducts() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(API_URL, { headers });
+            if (!response.ok) throw new Error("Failed to fetch products");
+            resolve(await response.json());
+        } catch (error) {
+            reject(new Error(`Error getting products: ${error.message}`));
+        }
+    });
+}
 
-                if (index === -1) {
-                    reject(new Error('Product not found in local storage')); // Changed from throw to reject
-                    return; //stops the function
-                }
-                products[index] = updatedProduct;
-                localStorage.setItem('products', JSON.stringify(products));
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        }, API_DELAY);
+// Function to add a new product
+export async function addProduct(product) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers,
+                body: JSON.stringify(product),
+            });
+
+            if (!response.ok) throw new Error("Failed to add product");
+            resolve();
+        } catch (error) {
+            reject(new Error(`Error adding product: ${error.message}`));
+        }
+    });
+}
+
+// Function to delete a product by ID
+export async function deleteProduct(productId) {
+    try {
+        const response = await fetch(`${API_URL}/${productId}`, {
+            method: "DELETE",
+            headers
+        });
+
+        if (!response.ok) throw new Error("Failed to delete product");
+
+        return response.json();
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        throw error;
+    }
+}
+
+// Function to find a product by ID
+export async function findProduct(productId) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(`${API_URL}/${productId}`, { headers });
+            if (!response.ok) throw new Error("Product not found");
+            resolve(await response.json());
+        } catch (error) {
+            reject(new Error(`Error finding product: ${error.message}`));
+        }
+    });
+}
+
+// Function to update a product
+export async function updateProduct(updatedProduct) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(`${API_URL}/${updatedProduct.id}`, {
+                method: "PUT",
+                headers,
+                body: JSON.stringify(updatedProduct),
+            });
+
+            if (!response.ok) throw new Error("Failed to update product");
+            resolve();
+        } catch (error) {
+            reject(new Error(`Error updating product: ${error.message}`));
+        }
     });
 }
