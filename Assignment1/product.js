@@ -87,13 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to fill the form
-    async function fillForm() {
+ // Function to fill the form
+ async function fillForm() {
+    try {
+      if (!productId) return
         // Editing a product
         pageTitle.textContent = 'Edit Product'; // Change page title to Edit Product
         saveButton.textContent = 'Update'; // Change button text to Update
         nameInput.disabled = true; // Disable name input in edit mode
-        try {
             const product = await findProduct(productId);
             // Pre-fill the form
             nameInput.value = product.name;
@@ -104,19 +105,20 @@ document.addEventListener('DOMContentLoaded', () => {
             setValid(descriptionInput);
             setValid(stockInput);
             setValid(priceInput);
-        } catch (error) {
-            console.error('Error fetching product:', error);
-        }
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        alert('Failed to load product. Check the console for details'); // Provide user feedback
     }
+}
 
-    if (productId) {
-        fillForm();
-    } else {
-        // Adding a new product
-        pageTitle.textContent = 'Add Product'; // Change page title to Add Product
-        saveButton.textContent = 'Add Product';
-        nameInput.disabled = false;
-    }
+if (productId) {
+    fillForm();
+} else {
+    // Adding a new product
+    pageTitle.textContent = 'Add Product'; // Change page title to Add Product
+    saveButton.textContent = 'Add Product';
+    nameInput.disabled = false;
+}
 
     // event listener for submit
     form.addEventListener('submit', async (event) => {
