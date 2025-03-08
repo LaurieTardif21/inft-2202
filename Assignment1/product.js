@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
+    let productId = urlParams.get('id'); // make product id let, to be able to modify it later
 
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
-        return  !isNaN(num) && num >= 0;
+        return !isNaN(num) && num >= 0;
     }
     // Helper function to validate if an input is a valid stock
     function isValidStock(value) {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     // function to hide errors
-        function hideError(input, errorElement) {
+    function hideError(input, errorElement) {
         input.classList.remove('is-invalid');
         errorElement.textContent = '';
         errorElement.style.display = 'none';
@@ -159,8 +159,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 product.id = productId;
                 await updateProduct(product);
             } else {
-                await addProduct(product);
+                const newProduct = await addProduct(product);
+                // capture new id
+                productId = newProduct.id;
+                product.id = productId; // add id to the product object
             }
+            console.log(product); // Show the product object in console
             window.location.href = 'list.html';
         } catch (error) {
             console.error('Error adding/updating product:', error);
@@ -168,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-     // event listeners for the input
+    // event listeners for the input
     nameInput.addEventListener('input', () => {
         validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
     });
