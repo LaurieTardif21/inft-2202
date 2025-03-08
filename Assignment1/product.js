@@ -1,5 +1,5 @@
 //import section
-import { getProductPage, deleteProduct } from './product.service.js';
+import { getProducts, deleteProduct } from './product.service.js';
 
 // const section
 const productsList = document.getElementById('products-list');
@@ -16,8 +16,7 @@ const paginationContainer = document.getElementById('paginationContainer');
 
 // pagination
 let currentPage = 1;
-let perPage = 8;// added this
-const productsPerPage = 8; // keep this for now
+const productsPerPage = 8;
 
 // show message box function
 function showMessageBox(message) {
@@ -228,40 +227,41 @@ async function loadProducts(page) {
     showLoadingMessage();
     showLoadingPagination();
     try {
-        const response = await getProductPage(page, perPage);
-        console.log("Raw response from getProductPage:", response); // Log the raw response
-        console.log("Type of response:", typeof response); // Log the type
-        console.log("Is response an array?", Array.isArray(response)); // Check if it's an array
-        if (!response) {
-            displayNoService();
-            return;
-        }
-       if (response.records.length === 0) {
-            showMessageBox('No products in the list. Add some products!');
-            loadingMessageBox.classList.add('d-none');
-            loadingPaginationMessageBox.classList.add('d-none');
-            paginationContainer.classList.add('d-none');
-        } else {
-            const totalPages = response.pagination.pages;
-            if (totalPages === 1) {
+        const response = await getProducts(); // response is now an array.
+
+        if (response) {
+            const startIndex = (page - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const paginatedProducts = response.slice(startIndex, endIndex);
+            if (response.length === 0) { // Change from response.length ===0
+                showMessageBox('No products in the list. Add some products!');
+                loadingMessageBox.classList.add('d-none');
+                loadingPaginationMessageBox.classList.add('d-none');
                 paginationContainer.classList.add('d-none');
             } else {
-                paginationContainer.classList.remove('d-none');
-            }
-            hideMessages();
-            productsList.innerHTML = ''; // Clear existing products
-            response.records.forEach(product => {
-                const card = createProductCard(product);
-                productsList.appendChild(card);
-            });
-            productsList.classList.remove('d-none');
+                const totalPages = Math.ceil(response.length / productsPerPage); // Change from response.length
+                if (totalPages === 1) {
+                    paginationContainer.classList.add('d-none');
+                } else {
+                    paginationContainer.classList.remove('d-none');
+                }
+                hideMessages();
+                productsList.innerHTML = ''; // Clear existing products
+                paginatedProducts.forEach(product => {
+                    const card = createProductCard(product);
+                    productsList.appendChild(card);
+                });
+                productsList.classList.remove('d-none');
 
-            updatePagination(totalPages, page);
-            enableTooltips();
+                updatePagination(totalPages, page);
+                enableTooltips();// moved here
+            }
+
+        } else {
+            displayNoService();
         }
 
     } catch (error) {
-        console.log("Error from loadProduct:", error)
         displayError(`Error loading products: ${error.message}`);
     }
 }

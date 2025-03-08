@@ -13,9 +13,9 @@ export async function getProductPage(page, perPage) {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
-             if (!response.ok) {
+            if (!response.ok) {
                 const errorMessage = await response.text();
-                 throw new Error(`Failed to fetch products: ${errorMessage}`);
+                throw new Error(`Failed to fetch products: ${errorMessage}`);
             }
 
             const totalRecords = response.headers.get("X-Total-Count");
@@ -23,7 +23,7 @@ export async function getProductPage(page, perPage) {
             const data = await response.json();
 
             resolve({
-                records: data,
+                records: data.records, //changed to data.records
                 pagination: {
                     pages: totalPages,
                     page: page,
@@ -38,14 +38,14 @@ export async function getProductPage(page, perPage) {
 
 // Function to get all products
 export async function getProducts() {
-      try {
+    try {
         const response = await fetch(API_URL, { headers });
         if (!response.ok) {
-             const errorMessage = await response.text();
-             throw new Error(`Failed to fetch products: ${errorMessage}`);
+            const errorMessage = await response.text();
+            throw new Error(`Failed to fetch products: ${errorMessage}`);
         }
-        const data = await response.json(); 
-        return data;
+        const data = await response.json();
+        return data.records; // Changed to return data.records
     } catch (error) {
         throw new Error(`Error getting products: ${error.message}`);
     }
@@ -75,13 +75,14 @@ export async function deleteProduct(productId) {
         const response = await fetch(`${API_URL}/${productId}`, {
             method: "DELETE",
             headers: {
-                 'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
             }
         });
 
         if (!response.ok) throw new Error("Failed to delete product");
 
-        return response.json();
+        //Changed to return nothing as most APIs do not return anything on a delete.
+        return;
     } catch (error) {
         console.error("Error deleting product:", error);
         throw error;
@@ -92,13 +93,13 @@ export async function deleteProduct(productId) {
 export async function findProduct(productId) {
     return new Promise(async (resolve, reject) => {
         try {
-             const url = `${API_URL}/${productId}`; 
+            const url = `${API_URL}/${productId}`;
             const response = await fetch(url, { headers });
             if (!response.ok) {
-                 const errorMessage = await response.text();
+                const errorMessage = await response.text();
                 throw new Error(`Failed to fetch products: ${errorMessage}`);
             }
-             const product = await response.json();
+            const product = await response.json();
             resolve(product);
         } catch (error) {
             reject(new Error(`Error finding product: ${error.message}`));
@@ -110,7 +111,7 @@ export async function findProduct(productId) {
 export async function updateProduct(updatedProduct, productId) {
     return new Promise(async (resolve, reject) => {
         try {
-            if (typeof updatedProduct !== "object" || Array.isArray(updatedProduct) ) {
+            if (typeof updatedProduct !== "object" || Array.isArray(updatedProduct)) {
                 throw new Error(`updatedProduct should be an object`);
             }
             const url = `${API_URL}/${productId}`;
