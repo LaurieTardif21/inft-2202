@@ -149,13 +149,11 @@ if (productId) {
             return;
         }
 
-        //changed here
         const product = {
             name: name,
             description: description,
             stock: parseInt(stock),
             price: parseFloat(price),
-            id: `${name}-${Date.now()}` // ADDED: Set the composite ID
         };
 
         try {
