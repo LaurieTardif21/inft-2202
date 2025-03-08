@@ -4,10 +4,15 @@
 // course: inft 2202
 // description: product functions
 
-//import section
+// Import section
 import { addProduct, findProduct, updateProduct } from './product.service.js';
 
-// event listeners
+// Add uuid library from CDN
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js';
+document.head.appendChild(script);
+
+// Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('product-form');
     const saveButton = form.querySelector('button[type="submit"]');
@@ -25,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
-    let productId = urlParams.get('id'); // make product id let, to be able to modify it later
+    let productId = urlParams.get('id'); // Use let to allow modification
 
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
@@ -157,12 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (productId) {
                 product.id = productId;
-                await updateProduct(product);
+                await updateProduct(product, productId); // update with the id
             } else {
-                const newProduct = await addProduct(product);
-                // capture new id
-                productId = newProduct.id;
-                product.id = productId; // add id to the product object
+                // Generate a client-side ID
+                productId = uuidv4();
+                product.id = productId;
+                // save the product with the id on the API
+                await addProduct(product);
             }
             console.log(product); // Show the product object in console
             window.location.href = 'list.html';
