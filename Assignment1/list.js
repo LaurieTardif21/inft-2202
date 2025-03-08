@@ -227,19 +227,19 @@ async function loadProducts(page) {
     showLoadingMessage();
     showLoadingPagination();
     try {
-        const response = await getProducts();
+        const response = await getProducts(); // response is now an array.
 
         if (response) {
             const startIndex = (page - 1) * productsPerPage;
             const endIndex = startIndex + productsPerPage;
             const paginatedProducts = response.slice(startIndex, endIndex);
-            if (response.length === 0) {
+            if (response.length === 0) { // Change from response.length ===0
                 showMessageBox('No products in the list. Add some products!');
-                loadingMessageBox.classList.add('d-none'); // Add this line
-                loadingPaginationMessageBox.classList.add('d-none');// Add this line
+                loadingMessageBox.classList.add('d-none');
+                loadingPaginationMessageBox.classList.add('d-none');
                 paginationContainer.classList.add('d-none');
             } else {
-                const totalPages = Math.ceil(response.length / productsPerPage);
+                const totalPages = Math.ceil(response.length / productsPerPage); // Change from response.length
                 if (totalPages === 1) {
                     paginationContainer.classList.add('d-none');
                 } else {
@@ -252,7 +252,7 @@ async function loadProducts(page) {
                     productsList.appendChild(card);
                 });
                 productsList.classList.remove('d-none');
-                
+
                 updatePagination(totalPages, page);
                 enableTooltips();// moved here
             }
