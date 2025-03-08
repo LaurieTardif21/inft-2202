@@ -4,10 +4,10 @@
 // course: inft 2202
 // description: product functions
 
-// Import section
+//import section
 import { addProduct, findProduct, updateProduct } from './product.service.js';
 
-// Event listeners
+// event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('product-form');
     const saveButton = form.querySelector('button[type="submit"]');
@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
-    let productId = urlParams.get('id'); // Use let to allow modification
+    const productId = urlParams.get('id');
 
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
-        return !isNaN(num) && num >= 0;
+        return  !isNaN(num) && num >= 0;
     }
     // Helper function to validate if an input is a valid stock
     function isValidStock(value) {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     // function to hide errors
-    function hideError(input, errorElement) {
+        function hideError(input, errorElement) {
         input.classList.remove('is-invalid');
         errorElement.textContent = '';
         errorElement.style.display = 'none';
@@ -152,24 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
             description: description,
             stock: parseInt(stock),
             price: parseFloat(price),
-            user: "00000" // add the user
         };
-        let productToUse = { ...product } // make a copy of the object
 
         try {
             if (productId) {
                 product.id = productId;
-                await updateProduct(product); // update with the id
+                await updateProduct(product);
             } else {
-                // Generate a client-side ID
-                const now = Date.now();
-                productId = name + '-' + now; // update the id to have the id for the next creation
-                productToUse.id = productId; // add the id in the copy of the object
-                productToUse.createTime = now;
-                // save the product with the id on the API
                 await addProduct(product);
             }
-            console.log(productToUse); // Show the product object in console
             window.location.href = 'list.html';
         } catch (error) {
             console.error('Error adding/updating product:', error);
@@ -177,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // event listeners for the input
+     // event listeners for the input
     nameInput.addEventListener('input', () => {
         validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
     });

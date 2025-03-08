@@ -1,160 +1,116 @@
-// name: laurie tardif
-// date: 02/09/2025
+// Name: Laurie Tardif
+//date: 02/09/2025
 // filename: product.service.js
 // course: inft 2202
-// description: product service functions
+// description: product service functions 
 
-const API_KEY = '1|inft2202-2024|tardif';
-const API_URL = 'https://inft2202-server.onrender.com/api/products';
-
-// Common headers for API requests
-const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${API_KEY}`
-};
-
-// Function to add a product
-export async function addProduct(product) {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(product)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to add product: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        throw new Error(`Error adding product: ${error}`);
-    }
+// Function to generate a unique ID without uuid
+function generateId() {
+    return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 }
 
-// Function to find a product by createTime and name
-export async function findProduct(productId) {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'GET',
-            headers
-        });
+// Simulate API delay (adjust to 2 seconds)
+const API_DELAY = 2000; // 2 second
 
-        if (!response.ok) {
-            throw new Error(`Failed to find product: ${response.status}`);
-        }
+// Function to get the list of products (from localStorage)
+export function getProducts() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                // Fetch from localStorage
+                const products = JSON.parse(localStorage.getItem('products')) || [];
 
-        const data = await response.json();
-        if (data && data.records) {
-            const product = data.records.find(record => record.createTime === Number(productId.split('-')[1]) && record.name === productId.split('-')[0] ); // find the product with the create time and the name
-            if (product) {
-                return product;
-            } else {
-                throw new Error(`Product with id ${productId} not found`);
+                // Ensure each product has a unique 'id'
+                products.forEach((product) => {
+                    if (!product.id) {
+                        // Assign a unique ID if not present
+                        product.id = generateId();
+                    }
+                });
+
+                resolve(products);
+            } catch (error) {
+                reject(error);
             }
-        }
-    } catch (error) {
-        throw new Error(`Error finding product: ${error}`);
-    }
+        }, API_DELAY);
+    });
 }
 
-// Function to update a product
-export async function updateProduct(product) {
-    try {
-        // find the id
-        const responseFind = await fetch(API_URL, {
-            method: 'GET',
-            headers
-        });
-        if (!responseFind.ok) {
-            throw new Error(`Failed to find product: ${responseFind.status}`);
-        }
-
-        const dataFind = await responseFind.json();
-        const productToUpdate = dataFind.records.find(record => record.createTime === Number(product.id.split('-')[1]) && record.name === product.id.split('-')[0] );// find the product with the create time and the name
-        if (!productToUpdate) {
-            throw new Error(`Product with id ${product.id} not found`);
-        }
-        // delete old product
-        const responseDelete = await fetch(`${API_URL}/${productToUpdate.createTime}`, {
-            method: 'DELETE',
-            headers
-        });
-        if (!responseDelete.ok) {
-            throw new Error(`Failed to delete product: ${responseDelete.status}`);
-        }
-        // add the new product
-        const responseAdd = await fetch(API_URL, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(product)
-        });
-
-        if (!responseAdd.ok) {
-            throw new Error(`Failed to add product: ${responseAdd.status}`);
-        }
-
-        const dataAdd = await responseAdd.json();
-        return dataAdd;
-    } catch (error) {
-        throw new Error(`Error updating product: ${error}`);
-    }
-}
-// Function to get paginated products
-export async function getProductPage(page, perPage) {
-    try {
-        const response = await fetch(`${API_URL}?page=${page}&perPage=${perPage}`, { headers });
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Failed to fetch products: ${errorMessage}`);
-        }
-
-        const totalRecords = response.headers.get("X-Total-Count");
-        const totalPages = Math.ceil(totalRecords / perPage);
-        const data = await response.json();
-
-        return {
-            records: data.records, //changed to data.records
-            pagination: {
-                pages: totalPages,
-                page: page,
-                perPage: perPage
+// Function to add a new product to the list (to localStorage)
+export function addProduct(product) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                // Add to localStorage
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                product.id = generateId(); // Ensure unique ID for each product
+                products.push(product); // Add the new product to the array
+                localStorage.setItem('products', JSON.stringify(products)); // Save to localStorage
+                resolve(product);
+            } catch (error) {
+                reject(error);
             }
-        };
-    } catch (error) {
-        throw new Error(`Error getting products: ${error.message}`);
-    }
+        }, API_DELAY);
+    });
 }
 
-// Function to get all products
-export async function getProducts() {
-    try {
-        const response = await fetch(API_URL, { headers });
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Failed to fetch products: ${errorMessage}`);
-        }
-        const data = await response.json();
-        return data.records; // Changed to return data.records
-    } catch (error) {
-        throw new Error(`Error getting products: ${error.message}`);
-    }
+// Function to delete an product by ID (from localStorage)
+export function deleteProduct(productId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                // Remove from localStorage
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                const updatedProducts = products.filter(product => product.id !== productId); // Filter out the deleted product  by ID
+                localStorage.setItem('products', JSON.stringify(updatedProducts)); // Save to localStorage
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        }, API_DELAY);
+    });
 }
 
-// Function to delete a product by ID
-export async function deleteProduct(productId) {
-    try {
-        const response = await fetch(`${API_URL}/${productId}`, {
-            method: "DELETE",
-            headers
-        });
+// Function to find an product by ID (Checks Local Storage)
+export function findProduct(productId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                // Check Local Storage
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                const product = products.find(p => p.id === productId);
 
-        if (!response.ok) throw new Error("Failed to delete product");
+                if (!product) {
+                    reject(new Error(`Error finding product: product not found`)); // Changed from throw to reject
+                    return; //stops the function
+                }
+                resolve(product); // Found in local storage
+            } catch (error) {
+                reject(error);
+            }
+        }, API_DELAY);
+    });
+}
 
-        //Changed to return nothing as most APIs do not return anything on a delete.
-        return;
-    } catch (error) {
-        console.error("Error deleting product:", error);
-        throw error;
-    }
+// Function to update an product (Updates Local Storage)
+export function updateProduct(updatedProduct) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                // Update Local Storage
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                const index = products.findIndex(p => p.id === updatedProduct.id);
+
+                if (index === -1) {
+                    reject(new Error('Product not found in local storage')); // Changed from throw to reject
+                    return; //stops the function
+                }
+                products[index] = updatedProduct;
+                localStorage.setItem('products', JSON.stringify(products));
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        }, API_DELAY);
+    });
 }
