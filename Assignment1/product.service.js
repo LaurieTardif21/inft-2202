@@ -15,37 +15,35 @@ const headers = {
 
 // Function to add a product
 export async function addProduct(product) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const payload = {
-                pagination: {
-                    page: 1, // Default to page 1
-                    perPage: 1, // Assuming we add one product at a time
-                    count: 1, // Adding one product
-                    pages: 1 // Default to one page
-                },
-                records: [
-                    {
-                        ...product
-                    }
-                ]
-            };
-
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(payload), // Send the structured payload
-            });
-             const responseData = await response.json();
-
-            if (!response.ok) throw new Error('Failed to add product');
-            resolve(responseData);
-        } catch (error) {
-            reject(new Error(`Error adding product: ${error.message}`));
-        }
-    });
-}
-
+    try {
+      const payload = {
+        name: product.name,
+        description: product.description,
+        stock: product.stock,
+        price: product.price
+      };
+  
+      console.log('Payload:', JSON.stringify(payload, null, 2)); // Debugging log
+  
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        console.error('Error Response:', errorMessage); // Debugging log
+        throw new Error(`Failed to add product: ${errorMessage}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error adding product:', error); // Debugging log
+      throw new Error(`Error adding product: ${error.message}`);
+    }
+  }
+  
 // Function to find a product by createTime
 export async function findProduct(createTime) {
     if (!createTime) throw new Error(`Error finding product: Create time must be set.`);
