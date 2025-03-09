@@ -82,14 +82,16 @@ export async function updateProduct(product) {
     if (!product || !product.createTime) throw new Error(`Error updating product: Product or createTime not set.`);
     try {
         const payload = {
-            ...product,
-            updateTime: Math.floor(Date.now() / 1000) // Update the timestamp
+            name: product.name,
+            description: product.description,
+            stock: product.stock,
+            price: product.price
         };
 
         console.log('Updating Product:', payload); // Debugging log
 
         const responseUpdate = await fetch(API_URL, {
-            method: 'PUT',
+            method: 'Put',
             headers,
             body: JSON.stringify(payload)
         });
@@ -99,12 +101,12 @@ export async function updateProduct(product) {
         }
 
         const dataUpdate = await responseUpdate.json();
+        console.log("update response data", dataUpdate);
         return dataUpdate;
     } catch (error) {
         throw new Error(`Error updating product: ${error}`);
     }
 }
-
 
 
 // Function to get paginated products
