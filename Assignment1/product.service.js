@@ -28,7 +28,7 @@ export async function addProduct(product) {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers,
-      body: JSON.stringify(payload)
+      body: JSON.stringify(product) 
     });
 
     if (!response.ok) {
