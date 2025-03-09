@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             descriptionInput.value = product.description;
             stockInput.value = product.stock;
             priceInput.value = product.price;
+            nameInput.dataset.createTime = product.createTime;
 
             setValid(nameInput);
             setValid(descriptionInput);
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (productId) {
-                product.id = productId;
+                product.createTime = nameInput.dataset.createTime;
                 await updateProduct(product);
             } else {
                 await addProduct(product);
