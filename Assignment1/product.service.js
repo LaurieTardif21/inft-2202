@@ -76,6 +76,7 @@ export async function findProduct(createTime) {
     }
 }
 
+
 // Function to update a product
 export async function updateProduct(product) {
     if (!product || !product.createTime) throw new Error(`Error updating product: Product or createTime not set.`);
@@ -103,6 +104,8 @@ export async function updateProduct(product) {
         throw new Error(`Error updating product: ${error}`);
     }
 }
+
+
 
 // Function to get paginated products
 export async function getProductPage(page, perPage) {
