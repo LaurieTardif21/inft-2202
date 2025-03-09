@@ -5,7 +5,7 @@
 // description: product functions
 
 // Import section
-import { addProduct, findProduct, updateProduct } from './product.service.js';
+import { addProduct, findProduct, updateProduct, getProducts } from './product.service.js';
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if we're editing or adding
     const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
+    const createTime = urlParams.get('id');
+
+    console.log('Create Time:', createTime); // Debugging log
 
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
@@ -92,20 +94,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to fill the form when editing a product
     async function fillForm() {
         try {
-            if (!productId) return;
+            if (!createTime) return;
             // Editing a product
             pageTitle.textContent = 'Edit Product';
             saveButton.textContent = 'Update';
             nameInput.disabled = true; // Disable name input in edit mode
 
-            const product = await findProduct(productId);
+            // Fetch all products to find the one with the matching createTime
+            const products = await getProducts();
+            const product = products.find(p => p.createTime === Number(createTime));
+
+            if (!product) {
+                throw new Error(`Product with id ${createTime} not found`);
+            }
+
+            console.log('Fetched Product:', product); // Debugging log
 
             // Pre-fill the form
             nameInput.value = product.name;
             descriptionInput.value = product.description;
             stockInput.value = product.stock;
             priceInput.value = product.price;
-            nameInput.dataset.createTime = product.createTime;
 
             setValid(nameInput);
             setValid(descriptionInput);
@@ -117,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (productId) {
+    if (createTime) {
         fillForm();
     } else {
         // Adding a new product
@@ -160,18 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
             name,
             description,
             stock: parseInt(stock),
-            price: parseFloat(price)
+            price: parseFloat(price),
+            createTime: createTime ? Number(createTime) : Math.floor(Date.now() / 1000) // Ensure the createTime is included for updates
         };
 
-        console.log('Product being sent:', product); // Log the product before the request
-        console.log("Name", name);
-        console.log("Description", description);
-        console.log("Stock", stock);
-        console.log("Price", price);
-
         try {
-            if (productId) {
-                product.createTime = nameInput.dataset.createTime;
+            if (createTime) {
                 await updateProduct(product);
             } else {
                 await addProduct(product);
