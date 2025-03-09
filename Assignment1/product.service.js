@@ -90,7 +90,7 @@ export async function updateProduct(product) {
 
         console.log('Updating Product:', payload); // Debugging log
 
-        const responseUpdate = await fetch(`${API_URL}/${product.createTime}`, {
+        const responseUpdate = await fetch(API_URL, {
             method: 'PUT',
             headers,
             body: JSON.stringify(payload)
