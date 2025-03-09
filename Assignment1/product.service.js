@@ -16,100 +16,70 @@ const headers = {
 // Function to add a product
 export async function addProduct(product) {
     try {
-        const payload = {
-            pagination: {
-                page: 1, // Adjust these values based on your application's requirements
-                perPage: 5,
-                count: 1, // Assuming you're adding one product
-                pages: 1
-            },
-            records: [
-                {
-                    name: product.name,
-                    description: product.description,
-                    stock: product.stock,
-                    price: product.price,
-                    user: "00000", // Replace with appropriate user ID if applicable
-                    createTime: Math.floor(Date.now() / 1000), // Generate a Unix timestamp
-                    updateTime: null
-                }
-            ]
-        };
-
-        console.log('Payload:', JSON.stringify(payload, null, 2)); // Debugging log
-
+        console.log('Adding Product:', product);
+        const payload = [product]; // Wrap the product in an array
         const response = await fetch(API_URL, {
             method: 'POST',
             headers,
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload) // Send the array as the body
         });
 
         if (!response.ok) {
             const errorMessage = await response.text();
-            console.error('Error Response:', errorMessage); // Debugging log
+            console.error('Error Response:', errorMessage);
             throw new Error(`Failed to add product: ${errorMessage}`);
         }
         const data = await response.json();
+        console.log('Product added:', data);
         return data;
     } catch (error) {
-        console.error('Error adding product:', error); // Debugging log
+        console.error('Error adding product:', error);
         throw new Error(`Error adding product: ${error.message}`);
     }
 }
 
-// Function to find a product by createTime
-export async function findProduct(createTime) {
-    if (!createTime) throw new Error(`Error finding product: Create time must be set.`);
+// Function to get a product by id
+export async function getProduct(createTime) {
+    if (!createTime) throw new Error(`Error getting product: create time must be set.`);
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(`${API_URL}/${createTime}`, {
             method: 'GET',
             headers
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to find product: ${response.status}`);
+            const errorMessage = await response.text();
+            console.error('Error Response:', errorMessage);
+            throw new Error(`Failed to get product: ${errorMessage}`);
         }
 
         const data = await response.json();
-        if (data && data.records) {
-            const product = data.records.find(record => record.createTime === Number(createTime));
-            if (product) {
-                return product;
-            } else {
-                throw new Error(`Product with create time ${createTime} not found`);
-            }
-        } else {
-            throw new Error(`Error finding product: No records found.`);
-        }
+        return data;
     } catch (error) {
-        throw new Error(`Error finding product: ${error}`);
+        console.error(`Error getting product:`, error);
+        throw new Error(`Error getting product: ${error}`);
     }
 }
-
 // Function to update a product
 export async function updateProduct(product) {
     if (!product || !product.createTime) throw new Error(`Error updating product: Product or createTime not set.`);
     try {
-        const payload = {
-            ...product,
-            updateTime: Math.floor(Date.now() / 1000) // Update the timestamp
-        };
-
-        console.log('Updating Product:', payload); // Debugging log
-
-        const responseUpdate = await fetch(API_URL, {
+        const response = await fetch(`${API_URL}/${product.createTime}`, {
             method: 'PUT',
             headers,
-            body: JSON.stringify(payload)
+            body: JSON.stringify(product)
         });
-        if (!responseUpdate.ok) {
-            const errorMessage = await responseUpdate.text();
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            console.error('Error Response:', errorMessage);
             throw new Error(`Failed to update product: ${errorMessage}`);
         }
-
-        const dataUpdate = await responseUpdate.json();
-        return dataUpdate;
+        const data = await response.json();
+        console.log('Product updated:', data);
+        return data;
     } catch (error) {
+        console.error('Error updating product:', error);
         throw new Error(`Error updating product: ${error}`);
     }
 }
@@ -121,7 +91,7 @@ export async function getProductPage(page, perPage) {
         if (!response.ok) {
             const errorMessage = await response.text();
             throw new Error(`Failed to fetch products: ${errorMessage}`);
-        }
+}
 
         const totalRecords = response.headers.get("X-Total-Count");
         const totalPages = Math.ceil(totalRecords / perPage);
