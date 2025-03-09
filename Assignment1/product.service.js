@@ -13,30 +13,13 @@ const headers = {
     "Authorization": `Bearer ${API_KEY}`
 };
 
-// Function to add a product with pagination and records structure
+// Function to add a product
 export async function addProduct(product) {
     try {
-        const payload = {
-            pagination: {
-                page: 1, // Adjust these values based on your application's requirements
-                perPage: 5,
-                count: 1, // Assuming you're adding one product
-                pages: 1
-            },
-            records: [
-                {
-                    ...product, // Spread the product object (e.g., name, description, stock, price)
-                    user: "00000", // Replace with appropriate user ID if applicable
-                    createTime: Math.floor(Date.now() / 1000), // Generate a Unix timestamp
-                    updateTime: null
-                }
-            ]
-        };
-
         const response = await fetch(API_URL, {
             method: 'POST',
             headers,
-            body: JSON.stringify(payload)
+            body: JSON.stringify(product)
         });
 
         if (!response.ok) {
