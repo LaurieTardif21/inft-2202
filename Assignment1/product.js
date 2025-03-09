@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             description,
             stock: parseInt(stock),
             price: parseFloat(price),
-            id: createTime // Ensure the ID is included for updates
+            createTime: createTime ? Number(createTime) : Math.floor(Date.now() / 1000) // Ensure the createTime is included for updates
         };
 
         try {

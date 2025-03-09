@@ -81,7 +81,7 @@ export async function findProduct(createTime) {
 
 // Function to update a product
 export async function updateProduct(product) {
-    if (!product || !product.id) throw new Error(`Error updating product: Product or ID not set.`);
+    if (!product || !product.createTime) throw new Error(`Error updating product: Product or createTime not set.`);
     try {
         const payload = {
             ...product,
@@ -90,7 +90,7 @@ export async function updateProduct(product) {
 
         console.log('Updating Product:', payload); // Debugging log
 
-        const responseUpdate = await fetch(`${API_URL}/${product.id}`, {
+        const responseUpdate = await fetch(`${API_URL}/${product.createTime}`, {
             method: 'PUT',
             headers,
             body: JSON.stringify(payload)
@@ -148,10 +148,10 @@ export async function getProducts() {
     }
 }
 
-// Function to delete a product by ID
-export async function deleteProduct(productId) {
+// Function to delete a product by createTime
+export async function deleteProduct(createTime) {
     try {
-        const response = await fetch(`${API_URL}/${productId}`, {
+        const response = await fetch(`${API_URL}/${createTime}`, {
             method: "DELETE",
             headers
         });
