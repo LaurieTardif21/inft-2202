@@ -25,7 +25,10 @@ export async function addProduct(product) {
             },
             records: [
                 {
-                    ...product, // Spread the product object (e.g., name, description, stock, price)
+                    name: product.name,
+                    description: product.description,
+                    stock: product.stock,
+                    price: product.price,
                     user: "00000", // Replace with appropriate user ID if applicable
                     createTime: Math.floor(Date.now() / 1000), // Generate a Unix timestamp
                     updateTime: null
