@@ -4,10 +4,10 @@
 // course: inft 2202
 // description: product functions
 
-//import section
+// Import section
 import { addProduct, findProduct, updateProduct } from './product.service.js';
 
-// event listeners
+// Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('product-form');
     const saveButton = form.querySelector('button[type="submit"]');
@@ -30,8 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to validate if an input is a non-negative number
     function isValidNonNegativeNumber(value) {
         const num = Number(value);
-        return  !isNaN(num) && num >= 0;
+        return !isNaN(num) && num >= 0;
     }
+
     // Helper function to validate if an input is a valid stock
     function isValidStock(value) {
         const num = Number(value);
@@ -50,13 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
             input.classList.remove('is-invalid', 'is-valid');
         });
     }
-    // function to hide errors
-        function hideError(input, errorElement) {
+
+    // Function to hide errors
+    function hideError(input, errorElement) {
         input.classList.remove('is-invalid');
         errorElement.textContent = '';
         errorElement.style.display = 'none';
     }
-    // function to display errors
+
+    // Function to display errors
     function displayError(input, errorElement, message) {
         input.classList.add('is-invalid');
         input.classList.remove('is-valid');
@@ -64,13 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
         errorElement.style.display = 'block';
     }
 
-    // function to set validation
+    // Function to set validation
     function setValid(input) {
         input.classList.remove('is-invalid');
         input.classList.add('is-valid');
     }
 
-    // function to validate
+    // Function to validate fields
     function validateField(input, errorElement, validationFunction, errorMessage) {
         const value = input.value.trim();
         if (value === '') {
@@ -79,48 +82,50 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (!validationFunction(value)) {
             displayError(input, errorElement, errorMessage);
             return false;
-        }
-        else {
-            hideError(input, errorElement)
+        } else {
+            hideError(input, errorElement);
             setValid(input);
             return true;
         }
     }
 
- // Function to fill the form
- async function fillForm() {
-    try {
-      if (!productId) return
-        // Editing a product
-        pageTitle.textContent = 'Edit Product'; // Change page title to Edit Product
-        saveButton.textContent = 'Update'; // Change button text to Update
-        nameInput.disabled = true; // Disable name input in edit mode
+    // Function to fill the form when editing a product
+    async function fillForm() {
+        try {
+            if (!productId) return;
+            // Editing a product
+            pageTitle.textContent = 'Edit Product';
+            saveButton.textContent = 'Update';
+            nameInput.disabled = true; // Disable name input in edit mode
+
             const product = await findProduct(productId);
+
             // Pre-fill the form
             nameInput.value = product.name;
             descriptionInput.value = product.description;
             stockInput.value = product.stock;
             priceInput.value = product.price;
+
             setValid(nameInput);
             setValid(descriptionInput);
             setValid(stockInput);
             setValid(priceInput);
-    } catch (error) {
-        console.error('Error fetching product:', error);
-        alert('Failed to load product. Check the console for details'); // Provide user feedback
+        } catch (error) {
+            console.error('Error fetching product:', error);
+            alert('Failed to load product. Check the console for details.');
+        }
     }
-}
 
-if (productId) {
-    fillForm();
-} else {
-    // Adding a new product
-    pageTitle.textContent = 'Add Product'; // Change page title to Add Product
-    saveButton.textContent = 'Add Product';
-    nameInput.disabled = false;
-}
+    if (productId) {
+        fillForm();
+    } else {
+        // Adding a new product
+        pageTitle.textContent = 'Add Product';
+        saveButton.textContent = 'Add Product';
+        nameInput.disabled = false;
+    }
 
-    // event listener for submit
+    // Event listener for form submission
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         clearErrors();
@@ -131,11 +136,10 @@ if (productId) {
         const price = priceInput.value.trim();
         let isValid = true;
 
-        // ensure form is filled out
+        // Validate inputs
         if (!validateField(nameInput, nameError, (value) => value !== '', 'Name is required.')) {
             isValid = false;
         }
-
         if (!validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.')) {
             isValid = false;
         }
@@ -145,15 +149,17 @@ if (productId) {
         if (!validateField(priceInput, priceError, isValidNonNegativeNumber, 'Price must be a non-negative number.')) {
             isValid = false;
         }
+
         if (!isValid) {
             return;
         }
 
+        // Create product object
         const product = {
-            name: name,
-            description: description,
+            name,
+            description,
             stock: parseInt(stock),
-            price: parseFloat(price),
+            price: parseFloat(price)
         };
 
         try {
@@ -170,19 +176,16 @@ if (productId) {
         }
     });
 
-     // event listeners for the input
+    // Event listeners for real-time input validation
     nameInput.addEventListener('input', () => {
         validateField(nameInput, nameError, (value) => value !== '', 'Name is required.');
     });
-
     descriptionInput.addEventListener('input', () => {
         validateField(descriptionInput, descriptionError, (value) => value !== '', 'Description is required.');
     });
-
     stockInput.addEventListener('input', () => {
         validateField(stockInput, stockError, isValidStock, 'Stock must be at least 1.');
     });
-
     priceInput.addEventListener('input', () => {
         validateField(priceInput, priceError, isValidNonNegativeNumber, 'Price must be a non-negative number.');
     });
