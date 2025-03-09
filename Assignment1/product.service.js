@@ -83,13 +83,21 @@ export async function findProduct(createTime) {
 export async function updateProduct(product) {
     if (!product || !product.id) throw new Error(`Error updating product: Product or ID not set.`);
     try {
+        const payload = {
+            ...product,
+            updateTime: Math.floor(Date.now() / 1000) // Update the timestamp
+        };
+
+        console.log('Updating Product:', payload); // Debugging log
+
         const responseUpdate = await fetch(`${API_URL}/${product.id}`, {
             method: 'PUT',
             headers,
-            body: JSON.stringify(product)
+            body: JSON.stringify(payload)
         });
         if (!responseUpdate.ok) {
-            throw new Error(`Failed to update product: ${responseUpdate.status}`);
+            const errorMessage = await responseUpdate.text();
+            throw new Error(`Failed to update product: ${errorMessage}`);
         }
 
         const dataUpdate = await responseUpdate.json();

@@ -169,12 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
             name,
             description,
             stock: parseInt(stock),
-            price: parseFloat(price)
+            price: parseFloat(price),
+            id: createTime // Ensure the ID is included for updates
         };
 
         try {
             if (createTime) {
-                product.id = createTime;
                 await updateProduct(product);
             } else {
                 await addProduct(product);
