@@ -15,39 +15,20 @@ const headers = {
 
 // Function to add a product
 export async function addProduct(product) {
-    try {
-        const payload = {
-            pagination: {
-                page: 1, // Adjust these values based on your application's requirements
-                perPage: 5,
-                count: 1, // Assuming you're adding one product
-                pages: 1
-            },
-            records: [
-                {
-                    ...product, // Spread the product object (e.g., name, description, stock, price)
-                    user: "00000", // Replace with appropriate user ID if applicable
-                    createTime: Math.floor(Date.now() / 1000), // Generate a Unix timestamp
-                    updateTime: null
-                }
-            ]
-        };
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(animal),
+            });
 
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Failed to add product: ${errorMessage}`);
+            if (!response.ok) throw new Error('Failed to add product');
+            resolve();
+        } catch (error) {
+            reject(new Error(`Error adding product: ${error.message}`));
         }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        throw new Error(`Error adding product: ${error.message}`);
-    }
+    });
 }
 
 // Function to find a product by createTime
