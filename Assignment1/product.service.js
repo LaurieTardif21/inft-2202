@@ -33,6 +33,8 @@ export async function addProduct(product) {
             ]
         };
 
+        console.log('Payload:', payload); // Debugging log
+
         const response = await fetch(API_URL, {
             method: 'POST',
             headers,
