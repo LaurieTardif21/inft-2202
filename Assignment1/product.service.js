@@ -50,9 +50,9 @@ export async function addProduct(product) {
     }
 }
 
-// Function to find a product by createTime and name
-export async function findProduct(productId) {
-    if (!productId) throw new Error(`Error finding product: Product id must be set.`);
+// Function to find a product by createTime
+export async function findProduct(createTime) {
+    if (!createTime) throw new Error(`Error finding product: Create time must be set.`);
     try {
         const response = await fetch(API_URL, {
             method: 'GET',
@@ -65,11 +65,11 @@ export async function findProduct(productId) {
 
         const data = await response.json();
         if (data && data.records) {
-            const product = data.records.find(record => record.createTime === Number(productId.split('-')[1]) && record.name === productId.split('-')[0] ); // find the product with the create time and the name
+            const product = data.records.find(record => record.createTime === Number(createTime));
             if (product) {
                 return product;
             } else {
-                throw new Error(`Product with id ${productId} not found`);
+                throw new Error(`Product with create time ${createTime} not found`);
             }
         } else {
             throw new Error(`Error finding product: No records found.`);
@@ -83,23 +83,7 @@ export async function findProduct(productId) {
 export async function updateProduct(product) {
     if (!product || !product.id) throw new Error(`Error updating product: Product or ID not set.`);
     try {
-        // Find the product
-        const responseFind = await fetch(API_URL, {
-            method: 'GET',
-            headers
-        });
-        if (!responseFind.ok) {
-            throw new Error(`Failed to find product: ${responseFind.status}`);
-        }
-
-        const dataFind = await responseFind.json();
-        const productToUpdate = dataFind.records.find(record => record.createTime === Number(product.id.split('-')[1]) && record.name === product.id.split('-')[0] ); // find the product with the create time and the name
-        if (!productToUpdate) {
-            throw new Error(`Product with id ${product.id} not found`);
-        }
-
-        // Update the product
-        const responseUpdate = await fetch(`${API_URL}/${productToUpdate.createTime}`, {
+        const responseUpdate = await fetch(`${API_URL}/${product.id}`, {
             method: 'PUT',
             headers,
             body: JSON.stringify(product)
