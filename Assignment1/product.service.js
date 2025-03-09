@@ -33,7 +33,7 @@ export async function addProduct(product) {
             ]
         };
 
-        console.log('Payload:', payload); // Debugging log
+        console.log('Payload:', JSON.stringify(payload, null, 2)); // Debugging log
 
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -43,11 +43,13 @@ export async function addProduct(product) {
 
         if (!response.ok) {
             const errorMessage = await response.text();
+            console.error('Error Response:', errorMessage); // Debugging log
             throw new Error(`Failed to add product: ${errorMessage}`);
         }
         const data = await response.json();
         return data;
     } catch (error) {
+        console.error('Error adding product:', error); // Debugging log
         throw new Error(`Error adding product: ${error.message}`);
     }
 }
