@@ -159,17 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
             name,
             description,
             stock: parseInt(stock),
-            price: parseFloat(price),
-            user: "00000", // Default user 
-            createTime: Date.now(), // Current timestamp
-            updateTime: null, // No update time yet
+            price: parseFloat(price)
         };
-        
-        console.log('Product being sent:', product); //log the product before the request
+
+        console.log('Product being sent:', product); // Log the product before the request
         console.log("Name", name);
         console.log("Description", description);
-        console.log("stock", stock);
-        console.log("Price", price)
+        console.log("Stock", stock);
+        console.log("Price", price);
 
         try {
             if (productId) {

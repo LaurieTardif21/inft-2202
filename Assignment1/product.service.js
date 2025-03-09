@@ -15,35 +15,35 @@ const headers = {
 
 // Function to add a product
 export async function addProduct(product) {
-    try {
-      const payload = {
-        name: product.name,
-        description: product.description,
-        stock: product.stock,
-        price: product.price
-      };
-  
-      console.log('Payload:', JSON.stringify(payload, null, 2)); // Debugging log
-  
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-  
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        console.error('Error Response:', errorMessage); // Debugging log
-        throw new Error(`Failed to add product: ${errorMessage}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error adding product:', error); // Debugging log
-      throw new Error(`Error adding product: ${error.message}`);
+  try {
+    const payload = {
+      name: product.name,
+      description: product.description,
+      stock: product.stock,
+      price: product.price
+    };
+
+    console.log('Payload:', JSON.stringify(payload, null, 2)); // Debugging log
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      console.error('Error Response:', errorMessage); // Debugging log
+      throw new Error(`Failed to add product: ${errorMessage}`);
     }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error adding product:', error); // Debugging log
+    throw new Error(`Error adding product: ${error.message}`);
   }
-  
+}
+
 // Function to find a product by createTime
 export async function findProduct(createTime) {
     if (!createTime) throw new Error(`Error finding product: Create time must be set.`);
