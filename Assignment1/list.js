@@ -113,7 +113,7 @@ function createProductCard(product) {
     deleteButton.setAttribute('data-bs-toggle', 'tooltip');
     deleteButton.setAttribute('title', 'Delete');
     deleteButton.innerHTML = '<i class="fas fa-trash-alt\"></i>'; // Font Awesome icon
-    deleteButton.dataset.id = product.createTime;
+    deleteButton.dataset.id = product.name;
     deleteButton.addEventListener('click', () => openDeleteModal(product.createTime));
     buttonsContainer.appendChild(deleteButton);
     // Add to cart Button
