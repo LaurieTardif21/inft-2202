@@ -93,7 +93,15 @@ function createProductCard(product) {
     // Product Price
     const price = document.createElement('p');
     price.classList.add('card-text');
-    price.textContent = `Price: $${product.price.toFixed(2)}`;
+   // ***********************************************************************
+    // MINIMAL CHANGE: Check if the price is a number before using toFixed
+    if (typeof product.price === 'number') {
+        price.textContent = `Price: $${product.price.toFixed(2)}`;
+    } else {
+        console.error(`Invalid price for product ${product.name}:`, product.price);
+         price.textContent = `Price: N/A`;
+    }
+    // ***********************************************************************
     cardBody.appendChild(price);
     // Buttons container
     const buttonsContainer = document.createElement('div');
@@ -112,7 +120,7 @@ function createProductCard(product) {
     deleteButton.classList.add('btn', 'btn-danger');
     deleteButton.setAttribute('data-bs-toggle', 'tooltip');
     deleteButton.setAttribute('title', 'Delete');
-    deleteButton.innerHTML = '<i class="fas fa-trash-alt\"></i>'; // Font Awesome icon
+    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome icon
     deleteButton.dataset.id = product.name;
     deleteButton.addEventListener('click', () => openDeleteModal(product.name));
     buttonsContainer.appendChild(deleteButton);
