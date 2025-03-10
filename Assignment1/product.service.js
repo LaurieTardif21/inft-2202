@@ -150,16 +150,24 @@ export async function getProducts() {
     }
 }
 
+
 // Function to delete a product by name
 export async function deleteProduct(name) {
     try {
         const response = await fetch(`${API_URL}?name=${encodeURIComponent(name)}`, {
             method: "DELETE",
-            headers
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json", // Ensure the Accept header is set to expect JSON
+                "Authorization": `Bearer ${API_KEY}`
+            }
         });
+        if (!response.ok) {
+            const errorMessage = await response.text(); // Capture the error message
+            throw new Error(`Failed to delete product: ${errorMessage}`);
+        }
         const data = await response.json(); // Parse the response
         console.log("Delete response:", data); // Log the response
-        if (!response.ok) throw new Error("Failed to delete product");
         return data;
     } catch (error) {
         console.error("Error deleting product:", error);
