@@ -139,14 +139,13 @@ function createProductCard(product) {
     card.appendChild(cardBody);
     return card;
 }
-function openDeleteModal(createTime) {// changed line
-    console.log("createTime:", createTime);//added line
+function openDeleteModal(createTime) {
+    console.log("createTime:", createTime);
     const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-
     confirmDeleteButton.onclick = async () => {
         try {
-            await deleteProduct(createTime);// changed line
+            await deleteProduct(createTime);
             deleteConfirmationModal.hide();
             loadProducts(currentPage);
         } catch (error) {
@@ -155,6 +154,7 @@ function openDeleteModal(createTime) {// changed line
     };
     deleteConfirmationModal.show();
 }
+
 function updatePagination(totalPages, currentPage) {
     pagination.innerHTML = ''; // Clear existing pagination
 
