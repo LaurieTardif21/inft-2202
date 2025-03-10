@@ -58,7 +58,6 @@ function showLoadingPagination() {
 
 // Function to create a product card
 function createProductCard(product) {
-    // ADDED: Log the product object to the console
     console.log({
         "name": product.name,
         "description": product.description,
@@ -67,74 +66,63 @@ function createProductCard(product) {
     });
     const card = document.createElement('div');
     card.classList.add('card', 'mb-3');
-
     // Card Image
     const img = document.createElement('img');
-    img.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`; // Placeholder image
+    img.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`; // Ensure proper URL encoding
     img.classList.add('card-img-top');
     img.alt = product.name;
     card.appendChild(img);
-
     // Card Body
     const cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
-
     // Product Name
     const title = document.createElement('h5');
     title.classList.add('card-title');
     title.textContent = product.name;
     cardBody.appendChild(title);
-
     // Product Description
     const description = document.createElement('p');
     description.classList.add('card-text');
     description.textContent = `Description: ${product.description}`;
     cardBody.appendChild(description);
-
     // Product Stock
     const stock = document.createElement('p');
     stock.classList.add('card-text');
     stock.textContent = `Stock: ${product.stock}`;
     cardBody.appendChild(stock);
-
     // Product Price
     const price = document.createElement('p');
     price.classList.add('card-text');
     price.textContent = `Price: $${product.price.toFixed(2)}`;
     cardBody.appendChild(price);
-
     // Buttons container
     const buttonsContainer = document.createElement('div');
     buttonsContainer.classList.add('gap-2');
     // Edit Button
     const editButton = document.createElement('a');
-    const compositeId = `${product.name}-${product.createTime}`;// add composite ID
     editButton.href = `product.html?id=${product.createTime}`;
-    console.log("editButton.href", editButton.href) // added line
+    console.log("editButton.href", editButton.href);
     editButton.classList.add('btn', 'btn-primary');
     editButton.setAttribute('data-bs-toggle', 'tooltip');
     editButton.setAttribute('title', 'Edit');
     editButton.innerHTML = '<i class="fas fa-edit"></i>'; // Font Awesome icon
     buttonsContainer.appendChild(editButton);
-
     // Delete Button
     const deleteButton = document.createElement('button');
     deleteButton.classList.add('btn', 'btn-danger');
     deleteButton.setAttribute('data-bs-toggle', 'tooltip');
     deleteButton.setAttribute('title', 'Delete');
-    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome icon
-    deleteButton.dataset.createTime = product.createTime;// added line
-    deleteButton.addEventListener('click', () => openDeleteModal(product.createTime));// changed line
+    deleteButton.innerHTML = '<i class="fas fa-trash-alt\"></i>'; // Font Awesome icon
+    deleteButton.dataset.name = product.name; // Use name for deletion
+    deleteButton.addEventListener('click', () => openDeleteModal(product.name)); // Use name for deletion
     buttonsContainer.appendChild(deleteButton);
-
     // Add to cart Button
     const addToCartButton = document.createElement('button');
     addToCartButton.classList.add('btn', 'btn-success');
     addToCartButton.setAttribute('data-bs-toggle', 'tooltip');
     addToCartButton.setAttribute('title', 'Add to Cart');
-    addToCartButton.innerHTML = '<i class="fas fa-cart-plus"></i>'; // Font Awesome icon
+    addToCartButton.innerHTML = '<i class="fas fa-cart-plus\"></i>'; // Font Awesome icon
     buttonsContainer.appendChild(addToCartButton);
-
     cardBody.appendChild(buttonsContainer);
     card.appendChild(cardBody);
     return card;
