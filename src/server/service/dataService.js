@@ -46,7 +46,7 @@ import { MongoClient } from 'mongodb';
         }
     }
     export default dataService;
-    let service = dataService('animal');
-    let ret = await service.load({page: 1, perPage: 15});
-    console.log(ret);
+    //let service = dataService('animal');
+    //let ret = await service.load({page: 1, perPage: 15});
+    //console.log(ret);
                 
