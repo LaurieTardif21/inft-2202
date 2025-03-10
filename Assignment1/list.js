@@ -113,8 +113,8 @@ function createProductCard(product) {
     deleteButton.setAttribute('data-bs-toggle', 'tooltip');
     deleteButton.setAttribute('title', 'Delete');
     deleteButton.innerHTML = '<i class="fas fa-trash-alt\"></i>'; // Font Awesome icon
-    deleteButton.dataset.name = product.name; // Use name for deletion
-    deleteButton.addEventListener('click', () => openDeleteModal(product.name)); // Use name for deletion
+    deleteButton.dataset.id = product.createTime;
+    deleteButton.addEventListener('click', () => openDeleteModal(product.createTime));
     buttonsContainer.appendChild(deleteButton);
     // Add to cart Button
     const addToCartButton = document.createElement('button');
@@ -128,13 +128,13 @@ function createProductCard(product) {
     return card;
 }
 
-function openDeleteModal(name) {
-    console.log("name:", name);
+function openDeleteModal(id) {
+    console.log("id:", id);
     const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
     confirmDeleteButton.onclick = async () => {
         try {
-            const deleteResponse = await deleteProduct(name); // Capture the response
+            const deleteResponse = await deleteProduct(id); // Capture the response
             console.log("Product deleted:", deleteResponse); // Log the response
             deleteConfirmationModal.hide();
             loadProducts(currentPage);
@@ -215,22 +215,22 @@ function updatePagination(totalPages, currentPage) {
     nextLi.classList.toggle('disabled', currentPage === totalPages);
 }
 
-async function loadProducts(page) {//changed line
+async function loadProducts(page) {
     hideMessages();
     showLoadingMessage();
     showLoadingPagination();
     try {
-        const {records, pagination } = await getProductPage(page, productsPerPage);//changed line
+        const { records, pagination } = await getProductPage(page, productsPerPage);
 
-        if (records) {//changed line
-           
-            if (records.length === 0) {//changed line
+        if (records) {
+
+            if (records.length === 0) {
                 showMessageBox('No products in the list. Add some products!');
                 loadingMessageBox.classList.add('d-none'); // Add this line
                 loadingPaginationMessageBox.classList.add('d-none');// Add this line
                 paginationContainer.classList.add('d-none');
             } else {
-                const totalPages = pagination.pages//changed line
+                const totalPages = pagination.pages
                 if (totalPages === 1) {
                     paginationContainer.classList.add('d-none');
                 } else {
@@ -238,12 +238,12 @@ async function loadProducts(page) {//changed line
                 }
                 hideMessages();
                 productsList.innerHTML = ''; // Clear existing products
-                records.forEach(product => {//changed line
+                records.forEach(product => {
                     const card = createProductCard(product);
                     productsList.appendChild(card);
                 });
                 productsList.classList.remove('d-none');
-                
+
                 updatePagination(totalPages, page);
                 enableTooltips();// moved here
             }

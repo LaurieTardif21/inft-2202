@@ -6,6 +6,7 @@
 
 const API_KEY = '1|inft2202-2024|tardif';
 const API_URL = 'https://inft2202-server.onrender.com/api/products';
+const baseUrl = 'https://inft2202-server.onrender.com/api';
 
 // Common headers for API requests
 const headers = {
@@ -152,31 +153,20 @@ export async function getProducts() {
 
 
 
-// Function to delete a product by name
-export async function deleteProduct(name) {
-    try {
-        const response = await fetch(`${API_URL}?name=${encodeURIComponent(name)}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Authorization": `Bearer ${API_KEY}`
-            }
-        });
-        console.log("Delete response status:", response.status); // Log the response status
-        const responseText = await response.text(); // Capture the response text
-        console.log("Delete response text:", responseText); // Log the response text
-        if (!response.ok) throw new Error(`Failed to delete product: ${responseText}`);
-        let data;
-        try {
-            data = JSON.parse(responseText); // Parse the response text as JSON
-        } catch (e) {
-            data = { message: responseText }; // Handle non-JSON response
+// Function to delete a product by id
+export async function deleteProduct(id) { // Change 'name' to 'id'
+    const response = await fetch(`${baseUrl}/products/${id}`, { // Change the URL
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${API_KEY}` // Add your token here
         }
-        console.log("Delete response data:", data); // Log the response data
-        return data;
-    } catch (error) {
-        console.error("Error deleting product:", error);
-        throw error;
+    });
+
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Failed to delete product: ${response.statusText}`);
     }
+    // if you do not have any response, change to:
+    //return;
+    return await response.json();
 }
