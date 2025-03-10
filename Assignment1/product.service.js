@@ -157,9 +157,7 @@ export async function deleteProduct(createTime) {
             method: "DELETE",
             headers
         });
-
         if (!response.ok) throw new Error("Failed to delete product");
-
         return;
     } catch (error) {
         console.error("Error deleting product:", error);
