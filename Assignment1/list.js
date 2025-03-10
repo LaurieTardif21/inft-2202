@@ -15,7 +15,7 @@ const paginationContainer = document.getElementById('paginationContainer');
 
 // pagination
 let currentPage = 1;
-const productsPerPage = 5;
+const productsPerPage = 15;
 
 // show message box function
 function showMessageBox(message) {
