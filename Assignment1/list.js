@@ -1,5 +1,4 @@
-//import section
-import { getProducts, deleteProduct } from './product.service.js';
+import { getProducts, deleteProduct, getProductPage } from './product.service.js';
 
 // const section
 const productsList = document.getElementById('products-list');
@@ -71,7 +70,7 @@ function createProductCard(product) {
 
     // Card Image
     const img = document.createElement('img');
-    img.src = 'https://via.placeholder.com/300x200?text=Product'; // Placeholder image
+    img.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`; // Placeholder image
     img.classList.add('card-img-top');
     img.alt = product.name;
     card.appendChild(img);
@@ -123,7 +122,8 @@ function createProductCard(product) {
     deleteButton.setAttribute('data-bs-toggle', 'tooltip');
     deleteButton.setAttribute('title', 'Delete');
     deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome icon
-    deleteButton.addEventListener('click', () => openDeleteModal(product.id));
+    deleteButton.dataset.createTime = product.createTime;// added line
+    deleteButton.addEventListener('click', () => openDeleteModal(product.createTime));// changed line
     buttonsContainer.appendChild(deleteButton);
 
     // Add to cart Button
@@ -138,13 +138,13 @@ function createProductCard(product) {
     card.appendChild(cardBody);
     return card;
 }
-function openDeleteModal(productId) {
+function openDeleteModal(createTime) {// changed line
     const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
 
     confirmDeleteButton.onclick = async () => {
         try {
-            await deleteProduct(productId);
+            await deleteProduct(createTime);// changed line
             deleteConfirmationModal.hide();
             loadProducts(currentPage);
         } catch (error) {
@@ -223,24 +223,22 @@ function updatePagination(totalPages, currentPage) {
     nextLi.classList.toggle('disabled', currentPage === totalPages);
 }
 
-async function loadProducts(page) {
+async function loadProducts(page) {//changed line
     hideMessages();
     showLoadingMessage();
     showLoadingPagination();
     try {
-        const response = await getProducts();
+        const {records, pagination } = await getProductPage(page, productsPerPage);//changed line
 
-        if (response) {
-            const startIndex = (page - 1) * productsPerPage;
-            const endIndex = startIndex + productsPerPage;
-            const paginatedProducts = response.slice(startIndex, endIndex);
-            if (response.length === 0) {
+        if (records) {//changed line
+           
+            if (records.length === 0) {//changed line
                 showMessageBox('No products in the list. Add some products!');
                 loadingMessageBox.classList.add('d-none'); // Add this line
                 loadingPaginationMessageBox.classList.add('d-none');// Add this line
                 paginationContainer.classList.add('d-none');
             } else {
-                const totalPages = Math.ceil(response.length / productsPerPage);
+                const totalPages = pagination.pages//changed line
                 if (totalPages === 1) {
                     paginationContainer.classList.add('d-none');
                 } else {
@@ -248,7 +246,7 @@ async function loadProducts(page) {
                 }
                 hideMessages();
                 productsList.innerHTML = ''; // Clear existing products
-                paginatedProducts.forEach(product => {
+                records.forEach(product => {//changed line
                     const card = createProductCard(product);
                     productsList.appendChild(card);
                 });
