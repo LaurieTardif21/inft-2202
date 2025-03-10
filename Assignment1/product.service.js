@@ -151,7 +151,7 @@ export async function getProducts() {
 }
 
 
-// Function to delete a product by name
+
 // Function to delete a product by name
 export async function deleteProduct(name) {
     try {
