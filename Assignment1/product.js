@@ -100,13 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
             saveButton.textContent = 'Update';
             nameInput.disabled = true; // Disable name input in edit mode
 
-            // Fetch all products to find the one with the matching createTime
-            const products = await getProducts();
-            const product = products.find(p => p.createTime === Number(createTime));
-
-            if (!product) {
-                throw new Error(`Product with id ${createTime} not found`);
-            }
+            // Fetch the product using findProduct
+            const product = await findProduct(createTime);
 
             console.log('Fetched Product:', product); // Debugging log
 
@@ -115,6 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
             descriptionInput.value = product.description;
             stockInput.value = product.stock;
             priceInput.value = product.price;
+
+            nameInput.dataset.createTime = product.createTime;// added line
 
             setValid(nameInput);
             setValid(descriptionInput);
@@ -170,11 +167,12 @@ document.addEventListener('DOMContentLoaded', () => {
             description,
             stock: parseInt(stock),
             price: parseFloat(price),
-            createTime: createTime ? Number(createTime) : Math.floor(Date.now() / 1000) // Ensure the createTime is included for updates
+            createTime: createTime ? Number(createTime) : Math.floor(Date.now() / 1000)
         };
 
         try {
             if (createTime) {
+               product.createTime = nameInput.dataset.createTime;//added line
                 await updateProduct(product);
             } else {
                 await addProduct(product);
