@@ -110,6 +110,7 @@ function createProductCard(product) {
     const editButton = document.createElement('a');
     const compositeId = `${product.name}-${product.createTime}`;// add composite ID
     editButton.href = `product.html?id=${product.createTime}`;
+    console.log("editButton.href", editButton.href) // added line
     editButton.classList.add('btn', 'btn-primary');
     editButton.setAttribute('data-bs-toggle', 'tooltip');
     editButton.setAttribute('title', 'Edit');
@@ -139,6 +140,7 @@ function createProductCard(product) {
     return card;
 }
 function openDeleteModal(createTime) {// changed line
+    console.log("createTime:", createTime);//added line
     const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
 
