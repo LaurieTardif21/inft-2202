@@ -152,14 +152,14 @@ export async function getProducts() {
 
 
 // Function to delete a product by name
-// Function to delete a product by productId
-export async function deleteProduct(productId) {
+// Function to delete a product by name
+export async function deleteProduct(name) {
     try {
-        const response = await fetch(`${API_URL}/${productId}`, {
+        const response = await fetch(`${API_URL}?name=${encodeURIComponent(name)}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json", // Ensure the Accept header is set to expect JSON
+                "Accept": "application/json",
                 "Authorization": `Bearer ${API_KEY}`
             }
         });
