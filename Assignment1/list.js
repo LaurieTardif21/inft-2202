@@ -121,7 +121,7 @@ function createProductCard(product) {
     addToCartButton.classList.add('btn', 'btn-success');
     addToCartButton.setAttribute('data-bs-toggle', 'tooltip');
     addToCartButton.setAttribute('title', 'Add to Cart');
-    addToCartButton.innerHTML = '<i class="fas fa-cart-plus\"></i>'; // Font Awesome icon
+    addToCartButton.innerHTML = '<i class="fas fa-cart-plus"></i>'; // Font Awesome icon
     buttonsContainer.appendChild(addToCartButton);
     cardBody.appendChild(buttonsContainer);
     card.appendChild(cardBody);
