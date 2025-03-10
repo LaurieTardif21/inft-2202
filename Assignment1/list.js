@@ -139,13 +139,15 @@ function createProductCard(product) {
     card.appendChild(cardBody);
     return card;
 }
-function openDeleteModal(createTime) {
-    console.log("createTime:", createTime);
+
+function openDeleteModal(name) {
+    console.log("name:", name);
     const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
     confirmDeleteButton.onclick = async () => {
         try {
-            await deleteProduct(createTime);
+            const deleteResponse = await deleteProduct(name); // Capture the response
+            console.log("Product deleted:", deleteResponse); // Log the response
             deleteConfirmationModal.hide();
             loadProducts(currentPage);
         } catch (error) {

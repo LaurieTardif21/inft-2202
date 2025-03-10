@@ -150,15 +150,17 @@ export async function getProducts() {
     }
 }
 
-// Function to delete a product by createTime
-export async function deleteProduct(createTime) {
+// Function to delete a product by name
+export async function deleteProduct(name) {
     try {
-        const response = await fetch(`${API_URL}/${createTime}`, {
+        const response = await fetch(`${API_URL}?name=${encodeURIComponent(name)}`, {
             method: "DELETE",
             headers
         });
+        const data = await response.json(); // Parse the response
+        console.log("Delete response:", data); // Log the response
         if (!response.ok) throw new Error("Failed to delete product");
-        return;
+        return data;
     } catch (error) {
         console.error("Error deleting product:", error);
         throw error;
