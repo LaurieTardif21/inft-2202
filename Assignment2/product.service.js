@@ -11,7 +11,7 @@ const baseUrl = 'https://inft2202-server.onrender.com/api';
 // Common headers for API requests
 const headers = {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${API_KEY}`,
+    "Authorization": `Bearer ${API_KEY}`
 };
 
 // Function to add a product
