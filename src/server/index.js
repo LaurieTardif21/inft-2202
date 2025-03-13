@@ -32,6 +32,11 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// Serve list.html when accessing "/list"
+app.get("/list", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "list.html"));
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
