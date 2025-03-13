@@ -2,7 +2,7 @@ import express from "express";
 import config from './service/config.js';
 
 const app = express();
-const port = 3001;
+const port = 3000;
 
 config(app);
 
