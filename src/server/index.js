@@ -15,13 +15,13 @@ app.listen(port, () => {
 
 import express from "express";
 import config from './service/config.js';
-config(app);
 
 import path from "path";
 import { fileURLToPath } from "url"; // Required for ES module compatibility
 
 const app = express();
 const port = 3001;
+config(app);
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
