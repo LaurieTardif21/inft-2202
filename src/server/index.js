@@ -16,7 +16,7 @@ app.listen(port, () => {
 import express from "express";
 import config from './service/config.js';
 config(app);
-import express from "express";
+
 import path from "path";
 import { fileURLToPath } from "url"; // Required for ES module compatibility
 
