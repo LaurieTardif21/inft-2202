@@ -14,6 +14,9 @@ app.listen(port, () => {
 */
 
 import express from "express";
+import config from './service/config.js';
+config(app);
+import express from "express";
 import path from "path";
 import { fileURLToPath } from "url"; // Required for ES module compatibility
 
@@ -26,6 +29,7 @@ const __dirname = path.dirname(__filename);
 
 // Serve static files from the "public" directory
 app.use(express.static("public"));
+
 
 // Serve index.html when accessing "/"
 app.get("/", (req, res) => {
