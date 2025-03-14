@@ -8,7 +8,7 @@ const animal = {
             let ret;
             const user = _.headers['user'];
             if(_.params.name){
-                ret = await animalService.query(name);
+                ret = await animalService.query(_.params.name);
             } else {
                 ret = await animalService.load(_.query);
             }
