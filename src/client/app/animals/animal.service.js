@@ -6,7 +6,7 @@ const API_KEY = '7bfa2060-9d12-42fe-8549-cf9205d269a0'; // APIKEY
 const headers = {
     'Content-Type': 'application/json',
     'apiKey': API_KEY, //changed x-apikey to apiKey
-     user: 'your student id'
+     user: '100571741'
 };
 
 // Function to get one page of animals
