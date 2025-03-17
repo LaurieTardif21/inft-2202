@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import animalRouter from '../routes/animal.js'
 import { loggingMiddleware } from '../middleware/logging.js';
+import {query} from 'express-validation;'
 
 function config(app) {
     
@@ -11,7 +12,7 @@ function config(app) {
     app.use(loggingMiddleware);
 
     let helloContent = `<!DOCTYPE html><html lang=\"en-us\"><head><title>INFT 2202</title></head><body><main><h1>Hello from Express</h1><p>at ${new Date()}</p></main></body></html>`;
-    app.get("/hello", (req, res) => {
+    app.get("/hello", query('person').notEmpty(), (req, res) => {
         res.send(helloContent);
     }); 
         
