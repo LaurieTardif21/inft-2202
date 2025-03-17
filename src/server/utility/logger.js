@@ -4,7 +4,7 @@ export const logger = winston.createLogger({
   level: 'info', // only messages with a severity level of 'info' and higher (e.g., 'warn' and 'error') will be logged.
   format: winston.format.json(),
   defaultMeta: { 
-    service: 'animal-service' 
+    service: 'animal-service/inft2202 server' 
   },
   transports: [
     //
