@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import animalRouter from '../routes/animal.js'
 import { loggingMiddleware } from '../middleware/logging.js';
+import {errorHandler} from '../middleware/errorHandler.js';
 import { query,validationResult } from 'express-validator';
 
 function config(app) {
@@ -11,18 +12,19 @@ function config(app) {
     
     app.use(loggingMiddleware);
 
-    let helloContent = `<!DOCTYPE html><html lang=\"en-us\"><head><title>INFT 2202</title></head><body><main><h1>Hello from Express</h1><p>at ${new Date()}</p></main></body></html>`;
     app.get("/hello", query('person').notEmpty(),(req, res) => {
         const result = validationResult(req);
         if (result.isEmpty()) {
-          // Pass the sanitized data to the next middleware
-          //request.sanitizedData = matchedData(request); //No need, express will do it under the hood
+          let helloContent = `<!DOCTYPE html><html lang=\"en-us\"><head><title>INFT 2202</title></head><body><main><h1>Hello ${req.query.person} from Express</h1><p>at ${new Date()}</p></main></body></html>`;
           res.send(helloContent);
-        }    
-        res.status(304).json('missing person');
+        }
+        res.send({ errors: result.array() })
     }); 
         
     app.use('/api/animals', animalRouter);
+
+// Error handler middleware (should be the last middleware)
+    app.use(errorHandler);      
 }
 
 export default config;

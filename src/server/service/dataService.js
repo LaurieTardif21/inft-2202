@@ -60,7 +60,8 @@ function dataService(collectionName) {
                 const collection = database.collection(collectionName);
 
                 // Example: Find multiple documents
-                //const cursor = collection.find({ eyes: { $gt: 2 } });
+                //const cursor = collection.find({ eyes: { $gt: 2 \
+                // } });
                 const cursor = collection.find({ name }, { projection});
                 return await cursor.toArray();
             } finally {
