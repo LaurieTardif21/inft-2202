@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 import animalRouter from '../routes/animal.js'
 import { loggingMiddleware } from '../middleware/logging.js';
-import {errorHandler} from '../middleware/errorHandler.js';
+import {errorHandler} from '../middleware/errorhandler.js';
 import { query,validationResult } from 'express-validator';
 
 function config(app) {
