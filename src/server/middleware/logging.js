@@ -1,4 +1,4 @@
-//import { logger } from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 
 export const loggingMiddleware = (request, response, next) => {
     logRequest(request, response);
