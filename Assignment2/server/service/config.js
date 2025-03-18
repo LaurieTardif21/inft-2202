@@ -1,8 +1,8 @@
 import bodyParser from 'body-parser';
 import productRouter from '../routes/product.js'
-import { loggingMiddleware } from '../middleware/logging.js';
-import {errorHandler} from '../middleware/errorhandler.js';
-import { query,validationResult } from 'express-validator';
+//import { loggingMiddleware } from '../middleware/logging.js';
+//import {errorHandler} from '../middleware/errorhandler.js';
+//import { query,validationResult } from 'express-validator';
 
 function config(app) {
     
@@ -10,7 +10,7 @@ function config(app) {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     
-    app.use(loggingMiddleware);
+    //app.use(loggingMiddleware);
 
     app.get("/hello", query('person').notEmpty(),(req, res) => {
         const result = validationResult(req);
@@ -24,7 +24,7 @@ function config(app) {
     app.use('/api/products', productRouter);
 
 // Error handler middleware (should be the last middleware)
-    app.use(errorHandler);      
+   // app.use(errorHandler);      
 }
 
 export default config;
