@@ -4,9 +4,9 @@ import config from './service/config.js';
 const app = express();
 const port = 3001;
 
-config(app);
+app.use(express.static('public'));  
 
-app.use(express.static('public'));   
+config(app); 
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);
