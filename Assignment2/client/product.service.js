@@ -12,7 +12,8 @@ const baseUrl = 'https://inft2202-server.onrender.com/api';
 const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${API_KEY}`,
-    user: 'your student ID'
+    user: 'your student ID',
+    host: window.location.origin
 };
 
 // Function to add a product
