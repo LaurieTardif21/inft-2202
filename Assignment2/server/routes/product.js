@@ -6,6 +6,6 @@ const router = express.Router();
 router.get('/:name?', product.index);
 router.post('/', checkValidation(product.rules), product.add);
 router.delete('/:name?', product.delete);
-router.put('/', product.update);
+router.put('/:name', product.update);
 
 export default router;
