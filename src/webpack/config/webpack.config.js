@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 export default {
   context: __dirname, // Base directory for resolving entry points and loaders
   devtool: 'source-map',
-  entry: './index.js', // Entry point relative to the context (current directory)
+  entry: './src/webpack/index.js', // Entry point relative to the context (current directory)
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'), // Output to the 'dist' folder in the current directory
