@@ -13,6 +13,7 @@ app.listen(port, () => {
 });
 */
 
+/*
 import express from "express";
 import config from './service/config.js';
 
@@ -39,6 +40,33 @@ app.get("/", (req, res) => {
 // Serve list.html when accessing "/list"
 app.get("/list", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "list.html"));
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
+
+*/
+
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import config from "./service/config.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const port = 3000;
+
+config(app);
+
+// Serve static files from Webpack's `dist` folder
+app.use(express.static(path.join(__dirname, "../dist")));
+
+// Handle SPA routes (important for Vue, React, etc.)
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
 
 app.listen(port, () => {
