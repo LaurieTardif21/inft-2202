@@ -7,9 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-  context: path.resolve(__dirname, '../public'),
+  context: path.resolve(__dirname, '../'), // Set the context to the src directory
   devtool: 'source-map',
-  entry: './index.js',
+  entry: './index.js', // Entry point relative to the context
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, '../../dist'),
