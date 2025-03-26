@@ -8,25 +8,26 @@ const __dirname = path.dirname(__filename);
 
 export default {
   devtool: 'source-map',
-  entry: './src/index.js',
+  entry: './index.js', // Corrected: index.js is directly in webpack folder
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, 'dist'), // Corrected: will be created inside webpack
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html',
-      inject: 'body', // Injects the script tag at the end of the body
+      template: './index.html', // Corrected: index.html is directly in webpack folder
+      inject: 'body',
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: './public/img', to: 'img' }//it will copy to a temp folder under dev mode
-      ]
-    })
-  ],  
+        // Remove if you dont have img folder, if you want it, create it.
+        { from: './img', to: 'img' }, // Corrected: img is directly in webpack folder
+      ],
+    }),
+  ],
   devServer: {
     static: {
-      directory: path.join(__dirname, 'public'),
+      directory: __dirname, // Corrected: serve from current directory
     },
     compress: true,
     port: 9000,
@@ -42,14 +43,14 @@ export default {
           name: '[name].[contenthash].[ext]',
           outputPath: 'img',
         },
-      },      
+      },
       {
         test: /\.ejs$/,
         loader: 'ejs-loader',
         options: {
           esModule: false,
         },
-      }
-    ]
+      },
+    ],
   },
 };
