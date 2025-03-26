@@ -7,27 +7,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-  context: path.resolve(__dirname, '../../src'), // Adjust context to the 'src' folder
+  context: __dirname, // Base directory for resolving entry points and loaders
   devtool: 'source-map',
-  entry: './index.js', // Entry point relative to the context (src folder)
+  entry: './index.js', // Entry point relative to the context (current directory)
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, '../../../dist'), // Output to the 'dist' folder in the project root
+    path: path.resolve(__dirname, 'dist'), // Output to the 'dist' folder in the current directory
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html', // Adjust the path to your HTML file within 'src'
+      template: './index.html', // Path to your HTML file within the current directory
       inject: 'body', // Injects the script tag at the end of the body
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: './img', to: 'img' } // Adjust the path to your image directory
+        { from: './img', to: 'img' } // Path to your image directory
       ]
     })
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, '../../src'), // Serve content from the src directory
+      directory: path.join(__dirname, 'public'), // Serve content from the public directory
     },
     compress: true,
     port: 9000,
