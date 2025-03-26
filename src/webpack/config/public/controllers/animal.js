@@ -1,5 +1,5 @@
 //import dataService from '../service/dataService.mock.js';
-import dataService from '../service/dataService.js';
+import dataService from '../service/dataService';
 import { checkSchema } from 'express-validator';
 
 const animalService = dataService('animal');
