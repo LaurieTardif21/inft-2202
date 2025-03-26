@@ -1,5 +1,5 @@
 import express from "express";
-import config from './service/config.js';
+import config from './config/config.js';
 
 const app = express();
 const port = 3000;
