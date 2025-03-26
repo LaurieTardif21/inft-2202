@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-  context: path.resolve(__dirname, '../'), // Set the context to the src directory
+  context: path.resolve(__dirname, '../public'), // Set the context to the public directory
   devtool: 'source-map',
   entry: './index.js', // Entry point relative to the context
   output: {
@@ -16,18 +16,18 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      template: './index.html', // Adjust the path to your HTML file
       inject: 'body', // Injects the script tag at the end of the body
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: './public/img', to: 'img' } // it will copy to a temp folder under dev mode
+        { from: './img', to: 'img' } // Adjust the path to your image directory
       ]
     })
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, '../../public'),
+      directory: path.join(__dirname, '../public'), // Serve content from the public directory
     },
     compress: true,
     port: 9000,
