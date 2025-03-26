@@ -33,6 +33,11 @@ export default {
     port: 9000,
     open: true,
   },
+  resolve: {
+    fallback: {
+      fs: false
+    }
+  },
   module: {
     rules: [
       {
