@@ -7,27 +7,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-  context: path.resolve(__dirname, '../../public'), // Adjust context to the 'public' folder within 'config'
+  context: path.resolve(__dirname, '../../public'),
   devtool: 'source-map',
-  entry: './index.js', // Entry point relative to the context (public folder)
+  entry: './index.js',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, '../../../dist'), // Output to the 'dist' folder in the project root
+    path: path.resolve(__dirname, '../../../dist'),
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html', // Adjust the path to your HTML file within 'public'
-      inject: 'body', // Injects the script tag at the end of the body
+      template: './index.html',
+      inject: 'body',
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: './img', to: 'img' } // Adjust the path to your image directory
+        { from: './img', to: 'img' }
       ]
     })
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, '../../public'), // Serve content from the public directory
+      directory: path.join(__dirname, '../../public'),
     },
     compress: true,
     port: 9000,
@@ -36,17 +36,17 @@ export default {
   resolve: {
     fallback: {
       fs: false,
-      path: require.resolve('path-browserify'),
-      timers: require.resolve('timers-browserify')
+      path: require.resolve('path-browserify'), // Polyfill for path module
+      timers: require.resolve('timers-browserify'), // Polyfill for timers module
     }
   },
   module: {
     rules: [
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
-        type: 'asset/resource', // Using Webpack 5 native asset module
+        type: 'asset/resource',
         generator: {
-          filename: 'img/[name].[contenthash][ext][query]', // Adjust image output path
+          filename: 'img/[name].[contenthash][ext][query]',
         },
       },
       {
