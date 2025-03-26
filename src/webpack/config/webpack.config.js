@@ -20,13 +20,13 @@ export default {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: './public/img', to: 'img' }//it will copy to a temp folder under dev mode
+        { from: './public/img', to: 'img' } // it will copy to a temp folder under dev mode
       ]
     })
-  ],  
+  ],
   devServer: {
     static: {
-      directory: path.join(__dirname, 'public'),
+      directory: path.join(__dirname, '../public'),
     },
     compress: true,
     port: 9000,
@@ -42,7 +42,7 @@ export default {
           name: '[name].[contenthash].[ext]',
           outputPath: 'img',
         },
-      },      
+      },
       {
         test: /\.ejs$/,
         loader: 'ejs-loader',
