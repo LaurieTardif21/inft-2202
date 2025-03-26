@@ -7,12 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-  context: path.resolve(__dirname, '../'),
+  context: path.resolve(__dirname, '../public'),
   devtool: 'source-map',
-  entry: './webpack/public/index.js',
+  entry: './index.js',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, '../../dist'),
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -27,7 +27,7 @@ export default {
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, '../public'),
+      directory: path.join(__dirname, '../../public'),
     },
     compress: true,
     port: 9000,
