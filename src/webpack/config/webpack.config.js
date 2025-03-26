@@ -35,7 +35,9 @@ export default {
   },
   resolve: {
     fallback: {
-      fs: false
+      fs: false,
+      path: require.resolve('path-browserify'),
+      timers: require.resolve('timers-browserify')
     }
   },
   module: {
