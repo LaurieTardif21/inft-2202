@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-  context: __dirname, // Base directory for resolving entry points and loaders
+  context: (__dirname, '../../'), // Base directory for resolving entry points and loaders
   devtool: 'source-map',
   entry: './src/webpack/index.js', // Entry point relative to the context (current directory)
   output: {
