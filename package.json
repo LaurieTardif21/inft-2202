@@ -34,15 +34,15 @@
     "timers-browserify": "^2.0.12",
     "url": "^0.11.4",
     "util": "^0.12.5",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.15.2",
     "winston": "^3.17.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^13.0.0",
     "ejs-loader": "^0.5.0",
-    "html-webpack-plugin": "^5.6.3",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0"
+    "html-webpack-plugin": "^5.6.3"
   },
   "browser": {
     "fs": false
