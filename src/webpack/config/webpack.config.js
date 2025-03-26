@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 export default {
   devtool: 'source-map',
-  entry: './public/index.html',
+  entry: path.resolve(__dirname, '../../public/index.js'),
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, '../dist'),
