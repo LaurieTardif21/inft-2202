@@ -1,4 +1,4 @@
-import { addAnimal, findAnimal, updateAnimal, deleteAnimal } from './animals/animal.service.js'; //You will also need to import delete animal.
+import { addAnimal, findAnimal, updateAnimal, deleteAnimal } from './animal.service.js'; //You will also need to import delete animal.
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('animal-form');
