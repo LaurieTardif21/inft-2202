@@ -7,16 +7,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-  context: path.resolve(__dirname, '../public'), // Set the context to the public directory
+  context: path.resolve(__dirname, '../../public'), // Adjust context to the 'public' folder within 'config'
   devtool: 'source-map',
-  entry: './index.js', // Entry point relative to the context
+  entry: './index.js', // Entry point relative to the context (public folder)
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, '../../dist'),
+    path: path.resolve(__dirname, '../../../dist'), // Output to the 'dist' folder in the project root
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html', // Adjust the path to your HTML file
+      template: './index.html', // Adjust the path to your HTML file within 'public'
       inject: 'body', // Injects the script tag at the end of the body
     }),
     new CopyWebpackPlugin({
@@ -27,7 +27,7 @@ export default {
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, '../public'), // Serve content from the public directory
+      directory: path.join(__dirname, '../../public'), // Serve content from the public directory
     },
     compress: true,
     port: 9000,
@@ -37,11 +37,9 @@ export default {
     rules: [
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
-        loader: 'file-loader',
-        options: {
-          esModule: false,
-          name: '[name].[contenthash].[ext]',
-          outputPath: 'img',
+        type: 'asset/resource', // Using Webpack 5 native asset module
+        generator: {
+          filename: 'img/[name].[contenthash][ext][query]', // Adjust image output path
         },
       },
       {
