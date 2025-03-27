@@ -147,14 +147,6 @@ export function animal(animalName) {
         submitBtn.textContent = 'Add Animal'; //Change button text
         nameInput.disabled = false; // Enable name input in add mode (optional)
     }
-    const links = form.querySelectorAll('a');
-    links.forEach(link => {
-        link.addEventListener('click', event => {
-            event.preventDefault();
-            const href = link.getAttribute('href');
-            navigateTo(href);
-        });
-    });
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Prevent the default form submission
