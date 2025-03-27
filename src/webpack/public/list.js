@@ -85,6 +85,19 @@ async function confirmDeleteAnimal(animalId) {
 
         // Check if the list is empty and update UI
         checkIfListIsEmpty(false);
+        //get the data
+         const response = await getAnimalsWithDelay(currentPage, perPage);
+         if (!response) {
+             manageNoServiceMessage(true);
+             manageLoadingMessage(false);
+             return;
+         }
+         animalsArray = response;
+         perPage = response.pagination.perPage;
+         //populate the table
+         await populateAnimalTable(getCurrentPageAnimals());
+        // manage pagination
+        managePagination();
     } catch (error) {
         console.error("Error deleting animal:", error);
         alert("Failed to delete animal. Please try again.");
@@ -255,77 +268,34 @@ async function managePagination() {
             }
             animalsArray = response;
             perPage = response.pagination.perPage;
-            currentPage = response.pagination.page;
-            checkIfListIsEmpty(false);
-            tableBody.innerHTML = '';
-            managePagination(); // Update the pagination
-            populateAnimalTable(getCurrentPageAnimals());
+            //populate the table
+            await populateAnimalTable(getCurrentPageAnimals());
+            //manage the pagination
+            managePagination();
         });
-
-        //append the elements
         pageNumberLi.appendChild(pageNumberLink);
         paginationUl.insertBefore(pageNumberLi, nextPageLi);
-    }
 
-    //Manage the previous button
-    previousPageLi.classList.toggle('disabled', currentPage === 1);
-    //add the event if is not disabled
-    if (currentPage !== 1) {
-        //remove the old event
-        previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
-        previousPageLi.querySelector('a').addEventListener('click', async (event) => {
-            event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
-            //hide no service message
-            manageNoServiceMessage(false);
-            currentPage--;
-            const response = await getAnimalsWithDelay(currentPage, perPage);
-            if (!response) {
-                manageNoServiceMessage(true);
-                manageLoadingMessage(false);
-                return;
-            }
-            animalsArray = response;
-            perPage = response.pagination.perPage;
-            currentPage = response.pagination.page;
-            checkIfListIsEmpty(false);
-            tableBody.innerHTML = '';
-            managePagination(); // Update the pagination
-            populateAnimalTable(getCurrentPageAnimals());
-        });
     }
-
-    //Manage the next button
-    nextPageLi.classList.toggle('disabled', currentPage === numberOfPages);
-    //add the event if is not disabled
-    if (currentPage !== numberOfPages) {
-        //remove the old event
-        nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
-        nextPageLi.querySelector('a').addEventListener('click', async (event) => {
-            event.preventDefault();
-            //show loading div
-            manageLoadingPagination(true);
-            //hide no service message
-            manageNoServiceMessage(false);
-            currentPage++;
-            const response = await getAnimalsWithDelay(currentPage, perPage);
-            if (!response) {
-                manageNoServiceMessage(true);
-                manageLoadingMessage(false);
-                return;
-            }
-            animalsArray = response;
-            perPage = response.pagination.perPage;
-            currentPage = response.pagination.page;
-            checkIfListIsEmpty(false);
-            tableBody.innerHTML = '';
-            managePagination(); // Update the pagination
-            populateAnimalTable(getCurrentPageAnimals());
-        });
+    //manage the previous button
+    previousPageLi.classList.remove('disabled');
+    if (currentPage === 1) {
+        previousPageLi.classList.add('disabled');
+    }
+    //manage the next button
+    nextPageLi.classList.remove('disabled');
+    if (currentPage === numberOfPages) {
+        nextPageLi.classList.add('disabled');
     }
 }
-async function list() {
+// Manage the next button
+document.getElementById('nextPage').addEventListener('click', async (event) => {
+    event.preventDefault();
+    if (currentPage >= animalsArray.pagination.pages) {
+        return;
+    }
+    currentPage++;
+    manageLoadingPagination(true);
     const response = await getAnimalsWithDelay(currentPage, perPage);
     if (!response) {
         manageNoServiceMessage(true);
@@ -334,13 +304,49 @@ async function list() {
     }
     animalsArray = response;
     perPage = response.pagination.perPage;
-    currentPage = response.pagination.page;
-
-    manageLoadingMessage(false);
-    populateAnimalTable(getCurrentPageAnimals());
+    await populateAnimalTable(getCurrentPageAnimals());
     managePagination();
+});
 
-    return document.getElementById('animals-list');
+// Manage the previous button
+document.getElementById('previousPage').addEventListener('click', async (event) => {
+    event.preventDefault();
+    if (currentPage <= 1) {
+        return;
+    }
+    currentPage--;
+    manageLoadingPagination(true);
+    const response = await getAnimalsWithDelay(currentPage, perPage);
+    if (!response) {
+        manageNoServiceMessage(true);
+        manageLoadingMessage(false);
+        return;
+    }
+    animalsArray = response;
+    perPage = response.pagination.perPage;
+    await populateAnimalTable(getCurrentPageAnimals());
+    managePagination();
+});
+async function list() {
+    //show loading
+    manageLoadingMessage(true);
+    //get the data
+    const response = await getAnimalsWithDelay(currentPage, perPage);
+    if (!response) {
+        manageNoServiceMessage(true);
+        manageLoadingMessage(false);
+        return;
+    }
+    animalsArray = response;
+    perPage = response.pagination.perPage;
+    //populate the table
+    await populateAnimalTable(getCurrentPageAnimals());
+    // manage pagination
+    managePagination();
+    //hide loading
+    manageLoadingMessage(false);
+
+    return document.getElementById('list');
 }
 
 export default list;
