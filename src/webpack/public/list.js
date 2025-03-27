@@ -1,6 +1,3 @@
-list.js without this (Modify list.js to remove whole page refreshing on query url for SinglePage. The sample is here.)
-
-
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 // Global variable to store the animalId to delete
