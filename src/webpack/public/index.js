@@ -28,7 +28,7 @@ function createEditButton(animal) {
 }
 
 // Event listener for confirmDeleteButton outside of button creation logic
-document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
+document.getElementById('confirmDeleteButton')?.addEventListener('click', async () => {
     if (animalIdToDelete !== null) {
         try {
             await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
@@ -413,6 +413,14 @@ export function list() {
     // Add the structure to the root element.
     // show the loading message.
     manageLoadingMessage(true);
+    const links = div.querySelectorAll('a');
+    links.forEach(link => {
+        link.addEventListener('click', event => {
+            event.preventDefault();
+            const href = link.getAttribute('href');
+            navigateTo(href);
+        });
+    });
     getAnimalsWithDelay(currentPage, perPage).then((response) => { // Call getAnimalsWithDelay
         // Check if the response is null
         if (!response) {
