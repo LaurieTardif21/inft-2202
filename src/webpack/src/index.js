@@ -1,5 +1,3 @@
-index.js
-
 import { addAnimal, getAnimals, deleteAnimal } from './animals/animal.service.js';
 
 function animal() {
