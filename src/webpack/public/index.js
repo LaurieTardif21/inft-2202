@@ -1,4 +1,47 @@
-import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
+// src/index.js
+import { addAnimal, findAnimal, updateAnimal } from './animals/animal.service.js';
+import list from './list.js';
+
+function navigateTo(path) {
+    const mainContent = document.getElementById('mainContent');
+    mainContent.innerHTML = '';
+
+    // Extract query parameters
+    const queryParams = new URLSearchParams(path.split('?')[1]);
+    const animalName = queryParams.get('name');
+
+    // Manage the navigation
+    switch (path.split('?')[0]) {
+        case '/':
+            const homeElement = document.createElement('h1');
+            homeElement.textContent = 'Welcome to the Home Page';
+            mainContent.appendChild(homeElement);
+            break;
+        case '/animal':
+            const animalComponent = animal();
+            mainContent.appendChild(animalComponent);
+            break;
+        case '/list':
+            const listComponent = list();
+            mainContent.appendChild(listComponent);
+            break;
+        case '/contact':
+            const contactElement = document.createElement('h1');
+            contactElement.textContent = 'Contact Page';
+            mainContent.appendChild(contactElement);
+            break;
+        case '/about':
+            const aboutElement = document.createElement('h1');
+            aboutElement.textContent = 'About Page';
+            mainContent.appendChild(aboutElement);
+            break;
+        default:
+            const notFoundElement = document.createElement('h1');
+            notFoundElement.textContent = '404 - Not Found';
+            mainContent.appendChild(notFoundElement);
+            break;
+    }
+}
 
 function animal() {
     const form = document.createElement('form');
@@ -8,6 +51,30 @@ function animal() {
     const animalList = document.createElement('ul');
 
     animalList.id = 'animalList';
+
+    async function loadAnimalData(animalName) {
+        if (animalName) {
+            try {
+                const animal = await findAnimal(animalName);
+                if (animal) {
+                    // Populate the form with the retrieved animal data
+                    form.animalName.value = animal.name;
+                    form.animalBreed.value = animal.breed;
+                    form.animalEyes.value = animal.eyes;
+                    form.animalLegs.value = animal.legs;
+                    form.animalSound.value = animal.sound;
+                    // Add the animal ID to the form for updating later
+                    form.setAttribute('data-animal-id', animal.id);
+                    // Change the button text to update
+                    form.querySelector('button[type="submit"]').textContent = 'Update Animal';
+                } else {
+                    console.log('Animal not found');
+                }
+            } catch (error) {
+                console.error('Error fetching animal:', error);
+            }
+        }
+    }
 
     function createContent() {
         const container = document.createElement('div');
@@ -81,7 +148,7 @@ function animal() {
         form.appendChild(container);
     }
 
-    form.addEventListener('submit', async function (event) { // Changed here
+    form.addEventListener('submit', async function (event) {
         event.preventDefault();
         const animalData = {
             name: form.animalName.value,
@@ -90,23 +157,50 @@ function animal() {
             legs: parseInt(form.animalLegs.value, 10),
             sound: form.animalSound.value,
         };
-
-        try { // Added try here
-            await addAnimal(animalData); // await here
+        const animalId = form.getAttribute('data-animal-id');
+        try {
+            if (!animalId) {
+                await addAnimal(animalData);
+            } else {
+                await updateAnimal([animalData], form.animalName.value);
+            }
             form.reset();
-            window.location.href = './list.html';
-            // might mod later for to update here
-        } catch (error) { // catch here
-            console.error('Error adding animal:', error);
+            form.removeAttribute('data-animal-id');
+            form.querySelector('button[type="submit"]').textContent = 'Add Animal';
+            window.history.pushState(null, '', `/list`); // Update URL
+            navigateTo(`/list`); // Load content
+        } catch (error) {
+            console.error('Error adding/updating animal:', error);
         }
     });
 
     createContent();
+    //get the parameters
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const animalName = urlParams.get('name');
+    loadAnimalData(animalName);
+    return form;
+}
+function initializeSPA() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', event => {
+            event.preventDefault();
+            const href = link.getAttribute('href');
+            window.history.pushState(null, '', href); // Update URL
+            navigateTo(href); // Load content
+        });
+    });
 
-    return {
-        element: form,
-        description, // Optional: For debugging or future use
-    };
+    // Handle initial load and browser navigation
+    window.addEventListener('popstate', () => {
+        navigateTo(window.location.pathname);
+    });
+
+    // Initial load
+    navigateTo(window.location.pathname);
 }
 
+initializeSPA();
 export default animal;
