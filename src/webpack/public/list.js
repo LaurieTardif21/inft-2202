@@ -8,7 +8,6 @@ let currentPage = 1;
 let perPage = 5;
 // Global varible for the array of animals
 let animalsArray = [];
-let app; // Add global app
 
 function createEditButton(animal) {
     const button = document.createElement('button');
@@ -22,32 +21,14 @@ function createEditButton(animal) {
     button.appendChild(icon);
     button.addEventListener('click', () => {
         // Redirect to animal.html with the animalname as a query parameter
-        window.history.pushState({ page: 'animal', animalName: animal.name }, '', `?page=animal&name=${encodeURIComponent(animal.name)}`);
-        //updateView(animal.name);
-        window.dispatchEvent(new Event('popstate'));
+        window.history.pushState(null, '', `/animal?name=${encodeURIComponent(animal.name)}`);
+        navigateTo(`/animal?name=${encodeURIComponent(animal.name)}`);
     });
     return button;
 }
 
-// Event listener for confirmDeleteButton outside of button creation logic
-if (document.getElementById('confirmDeleteButton')) {
-    document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
-        if (animalIdToDelete !== null) {
-            try {
-                await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
-            } catch (error) {
-                console.error('Error during deletion', error);
-            } finally {
-                // Close the modal after deletion
-                const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-                deleteConfirmationModal.hide();
-            }
-        }
-    });
-}
-
 // Create the delete button function
-function createDeleteButton(animalId) {
+function createDeleteButton(animalName) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-danger', 'btn-sm');
     button.setAttribute('data-bs-toggle', 'tooltip'); // Enable tooltip
@@ -61,7 +42,7 @@ function createDeleteButton(animalId) {
 
     button.addEventListener('click', () => {
         // Set the animal ID to delete in the global variable
-        animalIdToDelete = animalId;
+        animalIdToDelete = animalName;
 
         // Show the confirmation modal
         const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
@@ -77,12 +58,12 @@ async function confirmDeleteAnimal(animalName) {
 
     try {
         await deleteAnimal(animalName); // Call the delete function
-         const response = await getAnimalsWithDelay(currentPage, perPage);
+        const response = await getAnimalsWithDelay(currentPage, perPage);
         if (!response) {
-             manageNoServiceMessage(true);
-             manageLoadingMessage(false);
-             return;
-         }
+            manageNoServiceMessage(true);
+            manageLoadingMessage(false);
+            return;
+        }
         animalsArray = response;
         perPage = response.pagination.perPage;
         currentPage = response.pagination.page;
@@ -96,6 +77,20 @@ async function confirmDeleteAnimal(animalName) {
         alert("Failed to delete animal. Please try again.");
     }
 }
+// Event listener for confirmDeleteButton outside of button creation logic
+document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
+    if (animalIdToDelete !== null) {
+        try {
+            await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+        } catch (error) {
+            console.error('Error during deletion', error);
+        } finally {
+            // Close the modal after deletion
+            const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+            deleteConfirmationModal.hide();
+        }
+    }
+});
 
 async function populateAnimalTable(animals) {
     if (!animals) {
@@ -335,11 +330,7 @@ function getCurrentPageAnimals() {
     if (!animalsArray || !animalsArray.records) return [];
     return animalsArray.records;
 }
-
-// Function to create the structure and populate the table
-async function setupList(root, appElement) {
-    // Set the app element.
-    app = appElement;
+function list() {
     const div = document.createElement('div');
     div.innerHTML = `
     <!-- No service message box -->
@@ -416,22 +407,23 @@ async function setupList(root, appElement) {
     </div>
     `;
     // Add the structure to the root element.
-    root.appendChild(div);
     // show the loading message.
     manageLoadingMessage(true);
-    const response = await getAnimalsWithDelay(currentPage, perPage);
-    // Check if the response is null
-    if (!response) {
-        manageNoServiceMessage(true);
+    getAnimalsWithDelay(currentPage, perPage).then((response) => { // Call getAnimalsWithDelay
+        // Check if the response is null
+        if (!response) {
+            manageNoServiceMessage(true);
+            manageLoadingMessage(false);
+            return;
+        }
+        animalsArray = response;
+        perPage = response.pagination.perPage;
+        currentPage = response.pagination.page;
         manageLoadingMessage(false);
-        return;
-    }
-    animalsArray = response;
-    perPage = response.pagination.perPage;
-    currentPage = response.pagination.page;
-    manageLoadingMessage(false);
-    populateAnimalTable(getCurrentPageAnimals());
-    managePagination();
+        populateAnimalTable(getCurrentPageAnimals());
+        managePagination();
+    });
+    return div;
 }
 
-export { setupList };
+export default list;
