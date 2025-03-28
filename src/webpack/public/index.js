@@ -55,3 +55,5 @@ function initializeSPA() {
     });
 }
 initializeSPA();
+
+export {navigateTo};
