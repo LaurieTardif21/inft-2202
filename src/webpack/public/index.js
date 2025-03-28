@@ -4,38 +4,37 @@ import { animal } from './animal.js';
 
 const mainContent = document.getElementById('main-content');
 
-// Function to navigate between pages
-function navigateTo(path) {
-    if (mainContent) {
-        // Clear existing content
-        mainContent.innerHTML = '';
-        // Update the url
-        window.history.pushState(null, '', path);
-        switch (path) {
-            case '/':
-                const listComponent = list();
-                mainContent.appendChild(listComponent);
-                break;
-            case '/list':
-                const listComponent2 = list();
-                mainContent.appendChild(listComponent2);
-                break;
-            case '/animal':
-                const urlParams = new URLSearchParams(window.location.search);
-                const animalName = urlParams.get('name');
-                const animalComponent = animal(animalName);
-                mainContent.appendChild(animalComponent);
-                break;
-            default:
-                const notFoundElement = document.createElement('p');
-                notFoundElement.textContent = '404 - Page not found';
-                mainContent.appendChild(notFoundElement);
-                break;
-        }
-    } else {
-        console.error('mainContent element not found');
+// declare the function
+let navigateTo;
+navigateTo = function navigateTo(path) {
+    // Clear existing content
+    mainContent.innerHTML = '';
+    // Update the url
+    window.history.pushState(null, '', path);
+    switch (path) {
+        case '/':
+            const listComponent = list();
+            mainContent.appendChild(listComponent);
+            break;
+        case '/list':
+            const listComponent2 = list();
+            mainContent.appendChild(listComponent2);
+            break;
+        case '/animal':
+            const urlParams = new URLSearchParams(window.location.search);
+            const animalName = urlParams.get('name');
+            const animalComponent = animal(animalName);
+            mainContent.appendChild(animalComponent);
+            break;
+        default:
+            const notFoundElement = document.createElement('p');
+            notFoundElement.textContent = '404 - Page not found';
+            mainContent.appendChild(notFoundElement);
+            break;
     }
 }
+// make the navigateTo exportable
+export {navigateTo};
 
 function initializeSPA() {
     // initial navigation
@@ -54,4 +53,7 @@ function initializeSPA() {
         navigateTo(window.location.pathname + window.location.search);
     });
 }
-initializeSPA();
+//add the document to the dom
+document.addEventListener('DOMContentLoaded', () => {
+    initializeSPA();
+});
