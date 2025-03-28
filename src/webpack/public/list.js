@@ -10,6 +10,45 @@ let perPage = 5;
 // Global variable for the array of animals
 let animalsArray = [];
 
+// Event listener for confirmDeleteButton outside of button creation logic
+document.addEventListener('click', async (event) => {
+    if (event.target.id === 'confirmDeleteButton') {
+        if (animalIdToDelete !== null) {
+            try {
+                await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+            } catch (error) {
+                console.error('Error during deletion', error);
+            } finally {
+                // Close the modal after deletion
+                const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+                deleteConfirmationModal.hide();
+            }
+        }
+    }
+});
+// Confirm the delete operation
+async function confirmDeleteAnimal(animalId) {
+    if (!animalId) return;
+
+    try {
+        await deleteAnimal(animalId); // Call the delete function
+
+        // Remove the row from the table after successful deletion
+        const deletedRow = document.getElementById(`animal-${animalId}`);
+        if (deletedRow) {
+            deletedRow.remove();
+        }
+
+        // Reset the global delete variable
+        animalIdToDelete = null;
+
+        // Check if the list is empty and update UI
+        checkIfListIsEmpty(false);
+    } catch (error) {
+        console.error("Error deleting animal:", error);
+        alert("Failed to delete animal. Please try again.");
+    }
+}
 function createEditButton(animal) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-primary', 'btn-sm', 'me-2');
@@ -26,21 +65,6 @@ function createEditButton(animal) {
     });
     return button;
 }
-
-// Event listener for confirmDeleteButton outside of button creation logic
-document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
-    if (animalIdToDelete !== null) {
-        try {
-            await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
-        } catch (error) {
-            console.error('Error during deletion', error);
-        } finally {
-            // Close the modal after deletion
-            const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-            deleteConfirmationModal.hide();
-        }
-    }
-});
 
 // Create the delete button function
 function createDeleteButton(animalId) {
@@ -67,30 +91,6 @@ function createDeleteButton(animalId) {
     return button;
 }
 
-// Confirm the delete operation
-async function confirmDeleteAnimal(animalId) {
-    if (!animalId) return;
-
-    try {
-        await deleteAnimal(animalId); // Call the delete function
-
-        // Remove the row from the table after successful deletion
-        const deletedRow = document.getElementById(`animal-${animalId}`);
-        if (deletedRow) {
-            deletedRow.remove();
-        }
-
-        // Reset the global delete variable
-        animalIdToDelete = null;
-
-        // Check if the list is empty and update UI
-        checkIfListIsEmpty(false);
-    } catch (error) {
-        console.error("Error deleting animal:", error);
-        alert("Failed to delete animal. Please try again.");
-    }
-}
-
 async function populateAnimalTable(animals) {
     if (!animals) {
         //do something
@@ -100,6 +100,7 @@ async function populateAnimalTable(animals) {
     await new Promise(resolve => setTimeout(resolve, 0));
     const tableBody = document.querySelector('#animals-list tbody');
     manageLoadingPagination(false);
+    tableBody.innerHTML = '';
 
     animals.forEach((animal) => {
         // ... other code to create the row
@@ -136,12 +137,6 @@ async function populateAnimalTable(animals) {
         tableBody.appendChild(row);
         // ... add the button to the row
     });
-    // Initialize Bootstrap tooltips after the table is populated
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-    checkIfListIsEmpty(false);
 }
 
 function checkIfListIsEmpty(isLoading) {
@@ -229,10 +224,10 @@ async function managePagination() {
 
     //Manage the previous button
     previousPageLi.classList.toggle('disabled', currentPage === 1);
+    //remove the old event listener
+    previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
     //add the event if is not disabled
     if (currentPage !== 1) {
-        //remove the old event
-        previousPageLi.querySelector('a').replaceWith(previousPageLi.querySelector('a').cloneNode(true));
         previousPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             //show loading div
@@ -257,9 +252,9 @@ async function managePagination() {
     }
     //manage the next button
     nextPageLi.classList.toggle('disabled', currentPage === numberOfPages);
+    //remove the old event
+    nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
     if (currentPage !== numberOfPages) {
-        //remove the old event
-        nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
         nextPageLi.querySelector('a').addEventListener('click', async (event) => {
             event.preventDefault();
             //show loading div
@@ -296,7 +291,7 @@ function manageLoadingMessage(isLoading) {
 }
 
 function manageLoadingPagination(isLoading) {
-    const loadingPaginationBox = document.getElementById('loading-pagination-box');
+    const loadingPaginationBox = document.getElementById('loading-pagination-message-box');
     if (isLoading) {
         loadingPaginationBox.classList.remove('d-none');
     } else {
@@ -346,7 +341,7 @@ export function list() {
         <p>Loading animals...</p>
     </div>
     <!-- loading pagination box -->
-    <div id="loading-pagination-box" class="d-none">
+    <div id="loading-pagination-message-box" class="d-none">
         <p>Loading page...</p>
     </div>
     <!-- Error message box -->
@@ -391,26 +386,13 @@ export function list() {
             </nav>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this animal?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button id="confirmDeleteButton" type="button" class="btn btn-danger">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
     `;
     // Add the structure to the root element.
+    // Initialize Bootstrap tooltips after the table is populated
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
     // show the loading message.
     manageLoadingMessage(true);
     getAnimalsWithDelay(currentPage, perPage).then((response) => { // Call getAnimalsWithDelay
@@ -433,3 +415,25 @@ export function list() {
     });
     return div;
 }
+// Delete Confirmation Modal
+const modalDiv = document.createElement('div');
+modalDiv.innerHTML = `
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this animal?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="confirmDeleteButton" type="button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+`;
+document.body.appendChild(modalDiv);
