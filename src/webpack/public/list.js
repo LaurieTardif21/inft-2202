@@ -1,4 +1,7 @@
+list.js
+
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
+import { navigateTo } from './index.js'; // Correct import statement
 
 // Global variable to store the animalId to delete
 let animalIdToDelete = null;
@@ -6,7 +9,7 @@ let animalIdToDelete = null;
 let currentPage = 1;
 // Global variable for the number of entries per page
 let perPage = 5;
-// Global varible for the array of animals
+// Global variable for the array of animals
 let animalsArray = [];
 
 function createEditButton(animal) {
@@ -20,17 +23,11 @@ function createEditButton(animal) {
     icon.classList.add('fas', 'fa-pen-to-square'); // Edit icon
     button.appendChild(icon);
     button.addEventListener('click', () => {
-        // Redirect to animal.html with the animalname as a query parameter
-        window.location.href = `/inft-2202/src/client/animal.html?name=${animal.name}`
+        // Use navigateTo to update the URL and load the content
+        navigateTo(`/animal?name=${encodeURIComponent(animal.name)}`);
     });
     return button;
 }
-
-
-
-
-
-
 
 // Event listener for confirmDeleteButton outside of button creation logic
 document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
@@ -63,12 +60,12 @@ function createDeleteButton(animalId) {
     button.addEventListener('click', () => {
         // Set the animal ID to delete in the global variable
         animalIdToDelete = animalId;
-        
+
         // Show the confirmation modal
         const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
         deleteConfirmationModal.show();
     });
-    
+
     return button;
 }
 
@@ -95,15 +92,6 @@ async function confirmDeleteAnimal(animalId) {
         alert("Failed to delete animal. Please try again.");
     }
 }
-
-
-
-
-
-
-
-
-
 
 async function populateAnimalTable(animals) {
     if (!animals) {
@@ -156,7 +144,6 @@ async function populateAnimalTable(animals) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
     checkIfListIsEmpty(false);
-
 }
 
 function checkIfListIsEmpty(isLoading) {
@@ -200,8 +187,8 @@ async function managePagination() {
         return;
     }
     const tableBody = document.querySelector('#animals-list tbody');
-     // Create the page number
-     for (let i = 1; i <= numberOfPages; i++) {
+    // Create the page number
+    for (let i = 1; i <= numberOfPages; i++) {
         //create the li
         const pageNumberLi = document.createElement('li');
         pageNumberLi.classList.add('page-item', 'page-number');
@@ -270,10 +257,8 @@ async function managePagination() {
             populateAnimalTable(getCurrentPageAnimals());
         });
     }
-
-    //Manage the next button
+    //manage the next button
     nextPageLi.classList.toggle('disabled', currentPage === numberOfPages);
-    //add the event if is not disabled
     if (currentPage !== numberOfPages) {
         //remove the old event
         nextPageLi.querySelector('a').replaceWith(nextPageLi.querySelector('a').cloneNode(true));
@@ -300,48 +285,10 @@ async function managePagination() {
         });
     }
 }
-async function getAnimalsWithDelay(page, perPage) {
-    const response = await getAnimals(page, perPage);
-    return response;
-
-}
-
-function manageNoServiceMessage(show) {
-    const noServiceMessageBox = document.getElementById('no-service-message-box');
-    const animalListTable = document.getElementById('animals-list');
-    const loadingMessageBox = document.getElementById('loading-message-box');
-    const messageBox = document.getElementById('message-box');
-    const errorMessagebox = document.getElementById('error-message-box');
-    if (show) {
-        //show the no service message and hide everything else
-        noServiceMessageBox.classList.remove('d-none');
-        animalListTable.classList.add('d-none');
-        loadingMessageBox.classList.add('d-none');
-        messageBox.classList.add('d-none');
-        errorMessagebox.classList.add('d-none');
-        paginationContainer.classList.add('d-none');
-
-    } else {
-        noServiceMessageBox.classList.add('d-none');
-    }
-}
-function manageLoadingPagination(show) {
-    const loadingPaginationMessage = document.getElementById('loading-pagination-message-box');
-    if (show) {
-        loadingPaginationMessage.classList.remove('d-none');
-    } else {
-        loadingPaginationMessage.classList.add('d-none');
-    }
-}
-function getCurrentPageAnimals() {
-    const startIndex = (currentPage - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    return animalsArray.records.slice(startIndex, endIndex);
-}
-function manageLoadingMessage(show) {
+function manageLoadingMessage(isLoading) {
     const loadingMessageBox = document.getElementById('loading-message-box');
     const animalListTable = document.getElementById('animals-list');
-    if (show) {
+    if (isLoading) {
         loadingMessageBox.classList.remove('d-none');
         animalListTable.classList.add('d-none');
     } else {
@@ -349,13 +296,141 @@ function manageLoadingMessage(show) {
         animalListTable.classList.remove('d-none');
     }
 }
-async function initializePage() {
-    checkIfListIsEmpty(true);
-    // show loading message
-    manageLoadingMessage(true);
+
+function manageLoadingPagination(isLoading) {
+    const loadingPaginationBox = document.getElementById('loading-pagination-message-box');
+    if (isLoading) {
+        loadingPaginationBox.classList.remove('d-none');
+    } else {
+        loadingPaginationBox.classList.add('d-none');
+    }
+}
+
+function manageNoServiceMessage(isLoading) {
+    const noServiceMessageBox = document.getElementById('no-service-message-box');
+    const errorMessagebox = document.getElementById('error-message-box');
+    if (isLoading) {
+        noServiceMessageBox.classList.remove('d-none');
+        errorMessagebox.classList.add('d-none');
+    } else {
+        noServiceMessageBox.classList.add('d-none');
+    }
+}
+// Function to get the animals of the current page
+function getCurrentPageAnimals() {
+    if (!animalsArray || !animalsArray.animals) {
+        return null;
+    }
+    return animalsArray.animals;
+}
+// Delay function to call the service
+async function getAnimalsWithDelay(page, perPage) {
     try {
-        const response = await getAnimalsWithDelay(currentPage, perPage);
-        //check if the reponse is define
+        const response = await getAnimals(page, perPage);
+        if (!response) {
+            return null;
+        }
+        return response;
+    } catch (error) {
+        console.error('Error fetching animals:', error);
+        return null;
+    }
+}
+export function list() {
+    // Event listener for confirmDeleteButton outside of button creation logic
+    //confirmDeleteButton.addEventListener('click', async () => {
+        //if (animalIdToDelete !== null) {
+            //try {
+                //await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+            //} catch (error) {
+               // console.error('Error during deletion', error);
+            //} finally {
+                // Close the modal after deletion
+                //const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+                //deleteConfirmationModal.hide();
+            //}
+        //}
+   // });
+    const div = document.createElement('div');
+    div.innerHTML = `
+    <!-- No service message box -->
+    <div id="no-service-message-box" class="d-none">
+        <p>There is no service available. Please try again later.</p>
+    </div>
+    <!-- loading message box -->
+    <div id="loading-message-box" class="d-none">
+        <p>Loading animals...</p>
+    </div>
+    <!-- loading pagination box -->
+    <div id="loading-pagination-box" class="d-none">
+        <p>Loading page...</p>
+    </div>
+    <!-- Error message box -->
+    <div id="error-message-box" class="d-none">
+        <p>Error loading animals. Please try again later.</p>
+    </div>
+    <!-- Message box -->
+    <div id="message-box" class="d-none">
+        <p>There is no animals available. Please add one.</p>
+    </div>
+    <!-- Main container -->
+    <div class="container">
+        <!-- Animal table -->
+        <table id="animals-list" class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Breed</th>
+                    <th scope="col">Eyes</th>
+                    <th scope="col">Legs</th>
+                    <th scope="col">Sound</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div id="paginationContainer">
+            <nav aria-label="Animals navigation">
+                <ul id="pagination" class="pagination">
+                    <li id="previousPage" class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li id="nextPage" class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this animal?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="confirmDeleteButton" type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+    // Add the structure to the root element.
+    // show the loading message.
+    manageLoadingMessage(true);
+    getAnimalsWithDelay(currentPage, perPage).then((response) => { // Call getAnimalsWithDelay
+        // Check if the response is null
         if (!response) {
             manageNoServiceMessage(true);
             manageLoadingMessage(false);
@@ -364,20 +439,13 @@ async function initializePage() {
         animalsArray = response;
         perPage = response.pagination.perPage;
         currentPage = response.pagination.page;
-
-        console.log("animalsArray");
-        console.log(animalsArray);
-        checkIfListIsEmpty(false);
-        managePagination();
-        populateAnimalTable(getCurrentPageAnimals());
-    } catch (error) {
-        const errorMessagebox = document.getElementById('error-message-box');
-        errorMessagebox.classList.remove('d-none');
-        console.error('Error fetching animals:', error);
-    } finally {
-        //hide loading message
         manageLoadingMessage(false);
-    }
+        populateAnimalTable(getCurrentPageAnimals());
+        managePagination();
+    }).catch((error) => {
+        manageNoServiceMessage(true);
+        manageLoadingMessage(false);
+        return;
+    });
+    return div;
 }
-
-initializePage();
