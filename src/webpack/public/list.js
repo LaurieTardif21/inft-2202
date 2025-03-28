@@ -1,5 +1,7 @@
+list.js
+
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
-import { navigateTo } from './index.js';
+import { navigateTo } from './index.js'; // Correct import statement
 
 // Global variable to store the animalId to delete
 let animalIdToDelete = null;
@@ -26,6 +28,21 @@ function createEditButton(animal) {
     });
     return button;
 }
+
+// Event listener for confirmDeleteButton outside of button creation logic
+document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
+    if (animalIdToDelete !== null) {
+        try {
+            await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+        } catch (error) {
+            console.error('Error during deletion', error);
+        } finally {
+            // Close the modal after deletion
+            const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+            deleteConfirmationModal.hide();
+        }
+    }
+});
 
 // Create the delete button function
 function createDeleteButton(animalId) {
@@ -320,6 +337,20 @@ async function getAnimalsWithDelay(page, perPage) {
     }
 }
 export function list() {
+    // Event listener for confirmDeleteButton outside of button creation logic
+    //confirmDeleteButton.addEventListener('click', async () => {
+        //if (animalIdToDelete !== null) {
+            //try {
+                //await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+            //} catch (error) {
+               // console.error('Error during deletion', error);
+            //} finally {
+                // Close the modal after deletion
+                //const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+                //deleteConfirmationModal.hide();
+            //}
+        //}
+   // });
     const div = document.createElement('div');
     div.innerHTML = `
     <!-- No service message box -->
@@ -398,20 +429,6 @@ export function list() {
     // Add the structure to the root element.
     // show the loading message.
     manageLoadingMessage(true);
-    // Event listener for confirmDeleteButton outside of button creation logic
-    document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
-        if (animalIdToDelete !== null) {
-            try {
-                await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
-            } catch (error) {
-                console.error('Error during deletion', error);
-            } finally {
-                // Close the modal after deletion
-                const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-                deleteConfirmationModal.hide();
-            }
-        }
-    });
     getAnimalsWithDelay(currentPage, perPage).then((response) => { // Call getAnimalsWithDelay
         // Check if the response is null
         if (!response) {
