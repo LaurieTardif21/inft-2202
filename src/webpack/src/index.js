@@ -55,3 +55,6 @@ function initializeSPA() {
     });
 }
 initializeSPA();
+
+//export the navigateTo function
+export { navigateTo };
