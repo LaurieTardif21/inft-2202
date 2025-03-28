@@ -281,7 +281,7 @@ function manageLoadingMessage(isLoading) {
 }
 
 function manageLoadingPagination(isLoading) {
-    const loadingPaginationBox = document.getElementById('loading-pagination-box');
+    const loadingPaginationBox = document.getElementById('loading-pagination-message-box');
     if (isLoading) {
         loadingPaginationBox.classList.remove('d-none');
     } else {
@@ -388,16 +388,18 @@ export function list() {
                     Are you sure you want to delete this animal?
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button id="confirmDeleteButton" type="button" class="btn btn-danger">Delete</button>
                 </div>
             </div>
         </div>
     </div>
     `;
-    const confirmDeleteButton = div.querySelector('#confirmDeleteButton');
-
-    // Event listener for confirmDeleteButton inside of button creation logic
-    confirmDeleteButton.addEventListener('click', async () => {
+    // Add the structure to the root element.
+    // show the loading message.
+    manageLoadingMessage(true);
+    // Event listener for confirmDeleteButton outside of button creation logic
+    document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
         if (animalIdToDelete !== null) {
             try {
                 await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
@@ -410,9 +412,6 @@ export function list() {
             }
         }
     });
-    // Add the structure to the root element.
-    // show the loading message.
-    manageLoadingMessage(true);
     getAnimalsWithDelay(currentPage, perPage).then((response) => { // Call getAnimalsWithDelay
         // Check if the response is null
         if (!response) {
