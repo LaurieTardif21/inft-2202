@@ -41,7 +41,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-               -item"><a class="nav-link active" href="list.html">List</a></li>
+                <li class="nav-item"><a class="nav-link active" href="list.html">List</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="animal.html">Animal</a></li>
@@ -63,7 +63,8 @@
     <!--Timeout message-->
     <div id="loading-message-box" class="alert alert-info text-center flex-column d-flex" role="alert">
         <i class="fa fa-spinner fa-5x fa-spin"></i>
-        <div>Loading animals list... Please </div>
+        <div>Loading animals list... Please wait.</div>
+    </div>
 
     <!-- Error message box -->
     <div id="error-message-box" class="alert alert-danger text-center d-none" role="alert">
@@ -143,7 +144,7 @@
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
 
-        navLinks.forEach(link => {
+       (link => {
             if (link.getAttribute('href') === currentPath) {
                 link.classList.add('active');
                 link.setAttribute('aria-current', 'page');
@@ -160,7 +161,7 @@
             deleteConfirmationModal.removeAttribute('aria-hidden');
         });
 
-        //        // Add inert and aria-hidden when the modal is being hidden
+        // Add inert and aria-hidden when the modal is being hidden
         deleteConfirmationModal.addEventListener('hide.bs.modal', () => {
             deleteConfirmationModal.setAttribute('inert', '');
             deleteConfirmationModal.setAttribute('aria-hidden', 'true');
