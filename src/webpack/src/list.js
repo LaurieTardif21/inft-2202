@@ -1,5 +1,5 @@
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
-import navigateTo from './index.js';
+import { navigateTo } from './index.js'; // Correct import statement
 
 // Global variable to store the animalId to delete
 let animalIdToDelete = null;
@@ -296,7 +296,7 @@ function manageLoadingMessage(isLoading) {
 }
 
 function manageLoadingPagination(isLoading) {
-    const loadingPaginationBox = document.getElementById('loading-pagination-box');
+    const loadingPaginationBox = document.getElementById('loading-pagination-message-box');
     if (isLoading) {
         loadingPaginationBox.classList.remove('d-none');
     } else {
@@ -335,6 +335,20 @@ async function getAnimalsWithDelay(page, perPage) {
     }
 }
 export function list() {
+    // Event listener for confirmDeleteButton outside of button creation logic
+    //confirmDeleteButton.addEventListener('click', async () => {
+        //if (animalIdToDelete !== null) {
+            //try {
+                //await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+            //} catch (error) {
+               // console.error('Error during deletion', error);
+            //} finally {
+                // Close the modal after deletion
+                //const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+                //deleteConfirmationModal.hide();
+            //}
+        //}
+   // });
     const div = document.createElement('div');
     div.innerHTML = `
     <!-- No service message box -->
