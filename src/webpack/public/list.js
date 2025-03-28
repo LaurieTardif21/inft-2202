@@ -27,21 +27,6 @@ function createEditButton(animal) {
     return button;
 }
 
-// Event listener for confirmDeleteButton outside of button creation logic
-document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
-    if (animalIdToDelete !== null) {
-        try {
-            await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
-        } catch (error) {
-            console.error('Error during deletion', error);
-        } finally {
-            // Close the modal after deletion
-            const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-            deleteConfirmationModal.hide();
-        }
-    }
-});
-
 // Create the delete button function
 function createDeleteButton(animalId) {
     const button = document.createElement('button');
@@ -403,7 +388,6 @@ export function list() {
                     Are you sure you want to delete this animal?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button id="confirmDeleteButton" type="button" class="btn btn-danger">Delete</button>
                 </div>
             </div>
@@ -431,5 +415,23 @@ export function list() {
         manageLoadingMessage(false);
         return;
     });
+
+    //add the listener here.
+    // Event listener for confirmDeleteButton outside of button creation logic
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    confirmDeleteButton.addEventListener('click', async () => {
+        if (animalIdToDelete !== null) {
+            try {
+                await confirmDeleteAnimal(animalIdToDelete); // Confirm delete and delete the animal
+            } catch (error) {
+                console.error('Error during deletion', error);
+            } finally {
+                // Close the modal after deletion
+                const deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+                deleteConfirmationModal.hide();
+            }
+        }
+    });
+
     return div;
 }
