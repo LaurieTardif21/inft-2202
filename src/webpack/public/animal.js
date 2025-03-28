@@ -1,5 +1,5 @@
 import { addAnimal, findAnimal, updateAnimal } from './animals/animal.service.js';
-import { navigateTo } from './index.js';
+import {navigateTo} from './index.js';
 
 export function animal(animalName) {
     //create the form element

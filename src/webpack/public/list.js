@@ -1,5 +1,5 @@
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
-import { navigateTo } from './index.js';
+import {navigateTo} from './index.js';
 
 // Global variable to store the animalId to delete
 let animalIdToDelete = null;

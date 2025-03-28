@@ -5,7 +5,7 @@ import { animal } from './animal.js';
 const mainContent = document.getElementById('main-content');
 
 // Function to navigate between pages
-function navigateTo(path) {
+export const navigateTo = (path) => {
     if (mainContent) {
         // Clear existing content
         mainContent.innerHTML = '';
