@@ -5,7 +5,8 @@ import { animal } from './animal.js';
 const mainContent = document.getElementById('main-content');
 
 // Function to navigate between pages
-export const navigateTo = (path) => {
+// Function to navigate between pages
+function navigateTo(path) {
     if (mainContent) {
         // Clear existing content
         mainContent.innerHTML = '';
@@ -56,4 +57,4 @@ function initializeSPA() {
 }
 initializeSPA();
 
-export {navigateTo};
+export default navigateTo;
