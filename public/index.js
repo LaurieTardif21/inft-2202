@@ -1,4 +1,4 @@
-import { addAnimal, getAnimals, deleteAnimal } from './animal.service.js';
+import { addAnimal, getAnimals, deleteAnimal } from './animals/animal.service.js'; // Corrected import path
 
 function animal() {
     const form = document.createElement('form');
@@ -94,7 +94,7 @@ function animal() {
         try { // Added try here
             await addAnimal(animalData); // await here
             form.reset();
-            window.location.href = './list.html';
+            window.location.href = '/'; // Corrected redirection
             // might mod later for to update here
         } catch (error) { // catch here
             console.error('Error adding animal:', error);
@@ -109,4 +109,6 @@ function animal() {
     };
 }
 
+console.log('index.js: index file loaded');
 export default animal;
+//import "./list.js" // We are not using it in this file, you can delete it if you want.

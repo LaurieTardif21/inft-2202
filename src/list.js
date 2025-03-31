@@ -1,5 +1,3 @@
-list.js
-
 import { getAnimals, deleteAnimal } from './animals/animal.service.js';
 import { navigateTo } from './index.js'; // Correct import statement
 
@@ -21,7 +19,7 @@ function createEditButton(animal) {
     // Add icon
     const icon = document.createElement('i');
     icon.classList.add('fas', 'fa-pen-to-square'); // Edit icon
-    button.appendChild(icon);
+    button.thipendChild(icon);
     button.addEventListener('click', () => {
         // Use navigateTo to update the URL and load the content
         navigateTo(`/animal?name=${encodeURIComponent(animal.name)}`);
