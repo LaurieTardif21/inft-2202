@@ -5,7 +5,8 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
     mode: 'development', // Or 'production' for a production build
-    entry: './src/index.js', // Your entry point (where your app starts)
+    entry: './public/index.js',
+    //entry: './src/index.js', // Your entry point (where your app starts)
     output: {
         filename: 'bundle.js', // The name of the output bundle file
         path: path.resolve(__dirname, 'dist'), // Where to put the bundled file, creates a dist folder
