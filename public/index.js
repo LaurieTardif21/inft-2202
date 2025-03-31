@@ -1,6 +1,6 @@
 // Import the list component.
-import { list } from './list.js';
-import { animal } from './animal.js';
+import { list } from '../src/list.js';
+import { animal } from '../src/animal.js';
 
 const mainContent = document.getElementById('main-content');
 
